@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const BarChartResponse: any = {
   id: "12345",
-  query: "What is Elysia?",
+  query: "What is Athena?",
   messages: [
     {
       type: "User",
@@ -430,7 +430,7 @@ export const BarChartResponse: any = {
   query_start: new Date(),
   query_end: new Date(new Date().getTime() + 1000),
   NER: {
-    text: "What is Elysia?",
+    text: "What is Athena?",
     noun_spans: [],
     entity_spans: [[8, 14]],
   },

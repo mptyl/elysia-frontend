@@ -324,9 +324,8 @@ export default function Home() {
             {/* Scrollable Configuration Sections */}
             {userConfig ? (
               <div
-                className={`flex flex-col gap-6 overflow-y-auto pb-8 flex-1 min-h-0 fade-in transition-opacity mb-8 ${
-                  loadingConfig ? "opacity-70" : "opacity-100"
-                }`}
+                className={`flex flex-col gap-6 overflow-y-auto pb-8 flex-1 min-h-0 fade-in transition-opacity mb-8 ${loadingConfig ? "opacity-70" : "opacity-100"
+                  }`}
               >
                 <div className="flex flex-col gap-2">
                   {/* Weaviate Cluster Configuration */}
@@ -346,7 +345,7 @@ export default function Home() {
                     onUpdateFrontend={updateFrontendFields}
                   />
 
-                  {/* Elysia Storage Configuration */}
+                  {/* Athena Storage Configuration */}
                   <StorageSection
                     currentFrontendConfig={currentFrontendConfig}
                     storageIssues={getStorageIssues}

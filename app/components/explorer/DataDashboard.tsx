@@ -344,8 +344,8 @@ const Dashboard: React.FC = () => {
                       }}
                       className="text-warning text-sm"
                     >
-                      You currently have no data sources analyzed by Elysia. To
-                      use Elysia please analyze a data source from the list
+                      You currently have no data sources analyzed by Athena. To
+                      use Athena please analyze a data source from the list
                       below. If no collections are available, please verify if
                       your Weaviate instance contains any collections.
                     </motion.p>

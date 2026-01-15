@@ -33,7 +33,7 @@ interface StorageSectionProps {
 }
 
 /**
- * Component for configuring Elysia storage settings
+ * Component for configuring Athena storage settings
  * Handles storage URL, API key, and save options for configs and conversations
  */
 export default function StorageSection({
@@ -55,18 +55,17 @@ export default function StorageSection({
           <div className="h-7 w-7 bg-background rounded-md flex items-center justify-center">
             <MdStorage />
           </div>
-          <p className="text-primary text-lg">Elysia Storage</p>
+          <p className="text-primary text-lg">Athena Storage</p>
         </div>
         <div className="flex items-center justify-end w-full sm:w-auto">
           <div>
             <Button
               variant="default"
               onClick={onCopyWeaviateValues}
-              className={`flex items-center gap-2 w-full sm:w-[10rem] ${
-                shouldHighlightUseSameCluster
+              className={`flex items-center gap-2 w-full sm:w-[10rem] ${shouldHighlightUseSameCluster
                   ? "bg-highlight/10 text-highlight hover:bg-highlight/20 border-highlight/30"
                   : ""
-              }`}
+                }`}
             >
               <IoCopy />
               <span className="text-sm font-base">Use Same Cluster</span>

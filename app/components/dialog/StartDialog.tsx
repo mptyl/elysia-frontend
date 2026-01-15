@@ -89,7 +89,7 @@ const StartDialog: React.FC = () => {
           <DialogHeader>
             <DialogTitle className="flex gap-3 items-center justify-start">
               <p className="text-primary text-3xl font-bold">
-                Welcome to Elysia!
+                Welcome to Athena!
               </p>
             </DialogTitle>
             <DialogDescription className="flex justify-start">
@@ -99,7 +99,7 @@ const StartDialog: React.FC = () => {
           <div className="flex flex-col gap-4">
             <div className="flex flex-col items-center gap-4">
               <p>
-                Elysia is your newest open-source agentic AI platform powered by
+                Athena is your newest open-source agentic AI platform powered by
                 <strong> Weaviate </strong>. Import your own data and start
                 exploring them with the power of agentic AI.
               </p>
@@ -119,8 +119,8 @@ const StartDialog: React.FC = () => {
               ) : (
                 <p>
                   Good job! Seems like you already got all the settings ready.
-                  You can start by adding existing data to Elysia via the
-                  Weaviate console. Elysia will analyze your data and create an
+                  You can start by adding existing data to Athena via the
+                  Weaviate console. Athena will analyze your data and create an
                   agentic chain-of-thought reasoning process to navigate your
                   data.
                 </p>
@@ -161,7 +161,7 @@ const StartDialog: React.FC = () => {
                     onClick={handleElysiaDocs}
                   >
                     <HiMiniSparkles />
-                    Elysia Docs
+                    Athena Docs
                   </Button>
                 </motion.div>
                 <motion.div
@@ -250,7 +250,7 @@ const StartDialog: React.FC = () => {
                           }}
                           className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-[length:200%_100%] bg-clip-text text-transparent font-semibold"
                         >
-                          Setup Elysia
+                          Setup Athena
                         </motion.span>
                       </Button>
                     </motion.div>
@@ -273,7 +273,7 @@ const StartDialog: React.FC = () => {
                       onClick={handleClose}
                     >
                       <IoIosCheckmarkCircleOutline />
-                      Start Elysia
+                      Start Athena
                     </Button>
                   </motion.div>
                 )}

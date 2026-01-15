@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const TextResponse: any = {
   id: "12345",
-  query: "What is Elysia?",
+  query: "What is Athena?",
   messages: [
     {
       type: "User",
@@ -17,7 +17,7 @@ export const TextResponse: any = {
           title: "",
           text: "",
         },
-        objects: ["What is Elysia?"],
+        objects: ["What is Athena?"],
       },
     },
     {
@@ -31,7 +31,7 @@ export const TextResponse: any = {
         metadata: {},
         objects: [
           {
-            text: "Elysia is an agentic retrieval augmented generation (RAG) service, where you can query from Weaviate collections, and I will retrieve the most relevant information and answer your question. This includes a variety of different ways to query, such as by filtering, sorting, querying multiple collections, and providing summaries and textual responses.",
+            text: "Athena is an agentic retrieval augmented generation (RAG) service, where you can query from Weaviate collections, and I will retrieve the most relevant information and answer your question. This includes a variety of different ways to query, such as by filtering, sorting, querying multiple collections, and providing summaries and textual responses.",
           },
         ],
       },
@@ -41,7 +41,7 @@ export const TextResponse: any = {
   query_start: new Date(),
   query_end: new Date(new Date().getTime() + 1000),
   NER: {
-    text: "What is Elysia?",
+    text: "What is Athena?",
     noun_spans: [],
     entity_spans: [[8, 14]],
   },

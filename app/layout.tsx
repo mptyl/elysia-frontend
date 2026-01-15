@@ -34,7 +34,7 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Elysia",
+  title: "Athena",
   description: "Your AI Platform",
 };
 

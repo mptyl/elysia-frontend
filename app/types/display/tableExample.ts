@@ -160,7 +160,7 @@ export const tableResponse: any = {
   query_start: new Date(),
   query_end: new Date(new Date().getTime() + 1000),
   NER: {
-    text: "What is Elysia?",
+    text: "What is Athena?",
     noun_spans: [],
     entity_spans: [[8, 14]],
   },

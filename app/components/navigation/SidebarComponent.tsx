@@ -117,10 +117,10 @@ const SidebarComponent: React.FC = () => {
           <div className="flex items-center gap-2">
             <img
               src={`${public_path}logo.svg`}
-              alt="Elysia"
+              alt="Athena"
               className="w-5 h-5 stext-primary"
             />
-            <p className="text-sm font-bold text-primary">Elysia</p>
+            <p className="text-sm font-bold text-primary">Athena</p>
           </div>
           <div className="flex items-center justify-center gap-1">
             {socketOnline ? (

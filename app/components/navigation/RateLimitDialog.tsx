@@ -62,7 +62,7 @@ const RateLimitDialog: React.FC = () => {
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Thank you for trying Elysia!</DialogTitle>
+          <DialogTitle>Thank you for trying Athena!</DialogTitle>
           <DialogDescription>
             You hit today&apos;s rate limit, but no worries, we&apos;ll reset it
             tomorrow!
@@ -71,7 +71,7 @@ const RateLimitDialog: React.FC = () => {
         <div className="flex flex-col gap-6">
           <p>
             In the meantime, you can follow us on social media to stay updated
-            on Elysia, or subscribe to one of our newsletters to get updates on
+            on Athena, or subscribe to one of our newsletters to get updates on
             our latest features.
           </p>
           <div className="flex flex-col gap-2">

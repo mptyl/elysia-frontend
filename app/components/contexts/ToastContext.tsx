@@ -71,20 +71,20 @@ export const ToastContext = createContext<{
   handleConfirmModal: () => void;
   handleCancelModal: () => void;
 }>({
-  analyzeCollection: () => {},
+  analyzeCollection: () => { },
   currentToasts: [],
-  showErrorToast: () => {},
-  showSuccessToast: () => {},
-  showWarningToast: () => {},
-  finishProcessingSocket: () => {},
-  updateProcessingSocket: () => {},
+  showErrorToast: () => { },
+  showSuccessToast: () => { },
+  showWarningToast: () => { },
+  finishProcessingSocket: () => { },
+  updateProcessingSocket: () => { },
   // Confirmation Modal
   isConfirmModalOpen: false,
   confirmModalTitle: "",
   confirmModalDescription: "",
-  showConfirmModal: () => {},
-  handleConfirmModal: () => {},
-  handleCancelModal: () => {},
+  showConfirmModal: () => { },
+  handleConfirmModal: () => { },
+  handleCancelModal: () => { },
 });
 
 export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
@@ -229,11 +229,11 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
           } else {
             showErrorToast(
               "Error analyzing " + collection.name + "...",
-              "Connection to Elysia lost (Socket: " +
-                socket +
-                ") (ID: " +
-                user_id +
-                ")"
+              "Connection to Athena lost (Socket: " +
+              socket +
+              ") (ID: " +
+              user_id +
+              ")"
             );
             setCurrentToasts((prev) =>
               prev.filter((toast) => toast.collection_name !== collection.name)

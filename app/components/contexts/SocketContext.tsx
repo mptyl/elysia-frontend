@@ -49,7 +49,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
     const interval = setInterval(() => {
       if (!socketOnline || socket?.readyState === WebSocket.CLOSED || !socket) {
-        console.log("Elysia not online, trying to reconnect...");
+        console.log("Athena not online, trying to reconnect...");
         initialRef.current = false;
         setReconnect((prev) => !prev);
       }
@@ -70,7 +70,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
     localSocket.onopen = () => {
       setSocketOnline(true);
-      showSuccessToast("Connected to Elysia");
+      showSuccessToast("Connected to Athena");
       if (process.env.NODE_ENV === "development") {
         console.log("Socket opened");
       }
@@ -95,7 +95,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       setSocket(undefined);
       setAllConversationStatuses("");
       handleAllConversationsError();
-      showErrorToast("Connection to Elysia lost");
+      showErrorToast("Connection to Athena lost");
     };
 
     localSocket.onclose = () => {
@@ -103,7 +103,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       setAllConversationStatuses("");
       setSocket(undefined);
       handleAllConversationsError();
-      showErrorToast("Connection to Elysia lost");
+      showErrorToast("Connection to Athena lost");
       if (process.env.NODE_ENV === "development") {
         console.log("Socket closed");
       }

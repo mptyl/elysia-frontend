@@ -220,7 +220,7 @@ const DataExplorer = () => {
               <p className="text-sm font-bold text-warning">Warning</p>
               <p className="text-sm ">
                 This collection needs to be analyzed before it can be used in
-                Elysia and to access its metadata.
+                Athena and to access its metadata.
               </p>
             </div>
           </div>

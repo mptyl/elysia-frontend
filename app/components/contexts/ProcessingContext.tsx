@@ -10,7 +10,7 @@ import { ToastContext } from "./ToastContext";
 export const ProcessingContext = createContext<{
   triggerAnalysis: (collection: Collection, user_id: string) => void;
 }>({
-  triggerAnalysis: () => {},
+  triggerAnalysis: () => { },
 });
 
 export const ProcessingProvider = ({
@@ -37,11 +37,11 @@ export const ProcessingProvider = ({
     } else {
       showErrorToast(
         "Error analyzing " + collection.name + "...",
-        "Connection to Elysia lost (Socket: " +
-          socket +
-          ") (ID: " +
-          user_id +
-          ")"
+        "Connection to Athena lost (Socket: " +
+        socket +
+        ") (ID: " +
+        user_id +
+        ")"
       );
     }
   };

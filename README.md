@@ -1,8 +1,8 @@
-# Elysia Frontend
+# Athena Frontend
 
 ![Elysia](./public/logo.svg)
 
-Elysia is a modern AI-powered platform built as a single-page application (SPA) that provides an intuitive interface for AI interactions, data exploration, and configuration management. This frontend application serves as the user interface for the broader Elysia ecosystem.
+Athena is a modern AI-powered platform built as a single-page application (SPA) that provides an intuitive interface for AI interactions, data exploration, and configuration management. This frontend application serves as the user interface for the broader Elysia ecosystem.
 
 ## 🏗️ Built With
 
@@ -108,20 +108,22 @@ elysia-frontend/
 - **`app/pages/`** - Main page components (Chat, Data, Settings, etc.)
 - **`app/types/`** - TypeScript interfaces and type definitions
 - **`components/ui/`** - Reusable UI components built with Radix UI
-- **`hooks/`** - Custom React hooks for shared logic
-- **`public/`** - Static files like images and icons
+-   **`app/api/`** - Contains server-side API routes for backend communication
+-   **`app/components/`** - Core application components organized by feature
+-   **`app/pages/`** - Main page components (Chat, Data, Settings, etc.)
+-   **`app/types/`** - TypeScript interfaces and type definitions
+-   **`components/ui/`** - Reusable UI components built with Radix UI
+-   **`hooks/`** - Custom React hooks for shared logic
+-   **`public/`** - Static files like images and icons
 
 ## 🎯 Application Features
 
 ### Single Page Application (SPA)
 
-Elysia is built as a SPA using Next.js with client-side routing. The main navigation happens through React context (`RouterContext`) without page reloads, providing a smooth user experience.
+Athena is built as a SPA using Next.js with client-side routing. The main navigation happens through React context (`RouterContext`) without page reloads, providing a smooth user experience.
 
 ### Main Sections:
 
-- **Chat** - AI conversation interface
-- **Data** - Data exploration and visualization
-- **Settings** - Configuration management
 - **Evaluation** - AI model evaluation tools
 - **Explorer** - Advanced data browsing
 

@@ -92,7 +92,7 @@ const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({
   useEffect(() => {
     if (showFeedbackNotification) {
       // Start fade out after 4 seconds
-      const fadeTimer = setTimeout(() => {}, 4000);
+      const fadeTimer = setTimeout(() => { }, 4000);
 
       // Disable notification after fade out (7 seconds total)
       const disableTimer = setTimeout(() => {
@@ -118,7 +118,7 @@ const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({
           >
             <GrInfo size={16} className="text-primary" />
             <p className="text-sm text-primary">
-              Rate this response and help Elysia improve!
+              Rate this response and help Athena improve!
             </p>
           </div>
         </div>
@@ -128,11 +128,11 @@ const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({
         {query_end
           ? query_end.getTime() - query_start.getTime() > 60000
             ? `${Math.round(
-                (query_end.getTime() - query_start.getTime()) / 60000
-              )}m`
+              (query_end.getTime() - query_start.getTime()) / 60000
+            )}m`
             : `${Math.round(
-                (query_end.getTime() - query_start.getTime()) / 1000
-              )}s`
+              (query_end.getTime() - query_start.getTime()) / 1000
+            )}s`
           : "0s"}
       </p>
       <div className="flex ">
@@ -142,9 +142,8 @@ const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({
             <TooltipTrigger asChild>
               <Button
                 size="icon"
-                className={`bg-background ${
-                  superLiked ? "text-alt_color_a" : ""
-                }`}
+                className={`bg-background ${superLiked ? "text-alt_color_a" : ""
+                  }`}
                 onClick={handleSuperLike}
               >
                 <FaHeart size={16} />
