@@ -167,7 +167,7 @@ const QueryInput: React.FC<QueryInputProps> = ({
                 <TbSettings size={16} />
               </Button>
             )}
-            <CollectionSelection />
+            {!skipRag && <CollectionSelection />}
             <Button
               variant="ghost"
               size={"icon"}
