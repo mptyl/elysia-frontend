@@ -103,15 +103,19 @@ const RenderChat: React.FC<RenderChatProps> = ({
     buildRefMap(filtered_messages);
   }, [messages, addDisplacement, addDistortion]);
 
+  useEffect(() => {
+    setCollapsed(_collapsed);
+  }, [_collapsed]);
+
   const processedOutputItems = React.useMemo(() => {
     const output: (
       | Message
       | {
-          type: "merged_result";
-          id: string;
-          originalMessage: Message;
-          payloadsToMerge: ResultPayload[];
-        }
+        type: "merged_result";
+        id: string;
+        originalMessage: Message;
+        payloadsToMerge: ResultPayload[];
+      }
     )[] = [];
     const messagesToProcess = displayMessages.filter(
       (m) => m.type !== "User" && m.type !== "suggestion"
@@ -248,7 +252,7 @@ const RenderChat: React.FC<RenderChatProps> = ({
               payloads: combinedSelfHealingPayloads,
               latest:
                 combinedSelfHealingPayloads[
-                  combinedSelfHealingPayloads.length - 1
+                combinedSelfHealingPayloads.length - 1
                 ],
             } as MergedSelfHealingErrorPayload,
           };
@@ -358,33 +362,33 @@ const RenderChat: React.FC<RenderChatProps> = ({
                             <div className="w-full flex flex-col justify-start items-start ">
                               {(message.payload as ResponsePayload).type ===
                                 "response" && (
-                                <TextDisplay
-                                  key={`${index}-${message.id}-response`}
-                                  payload={
-                                    (message.payload as ResponsePayload)
-                                      .objects as TextPayload[]
-                                  }
-                                />
-                              )}
+                                  <TextDisplay
+                                    key={`${index}-${message.id}-response`}
+                                    payload={
+                                      (message.payload as ResponsePayload)
+                                        .objects as TextPayload[]
+                                    }
+                                  />
+                                )}
                               {/* TODO Replace with text_with_title */}
                               {(message.payload as ResponsePayload).type ===
                                 "summary" && (
-                                <SummaryDisplay
-                                  key={`${index}-${message.id}-summary`}
-                                  payload={
-                                    (message.payload as ResponsePayload)
-                                      .objects as SummaryPayload[]
-                                  }
-                                />
-                              )}
+                                  <SummaryDisplay
+                                    key={`${index}-${message.id}-summary`}
+                                    payload={
+                                      (message.payload as ResponsePayload)
+                                        .objects as SummaryPayload[]
+                                    }
+                                  />
+                                )}
 
                               {(message.payload as ResponsePayload).type ===
                                 "text_with_citations" && (
-                                <CitationDisplay
-                                  key={`${index}-${message.id}-summary`}
-                                  payload={message.payload as ResponsePayload}
-                                />
-                              )}
+                                  <CitationDisplay
+                                    key={`${index}-${message.id}-summary`}
+                                    payload={message.payload as ResponsePayload}
+                                  />
+                                )}
                             </div>
                           )}
                         {/* Error Messages */}
@@ -426,8 +430,8 @@ const RenderChat: React.FC<RenderChatProps> = ({
                               key={`${index}-${message.id}-self-healing-error`}
                               payload={
                                 message.payload as
-                                  | SelfHealingErrorPayload
-                                  | MergedSelfHealingErrorPayload
+                                | SelfHealingErrorPayload
+                                | MergedSelfHealingErrorPayload
                               }
                             />
                           )}

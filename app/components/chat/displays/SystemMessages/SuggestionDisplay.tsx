@@ -37,11 +37,10 @@ const SuggestionDisplay: React.FC<SuggestionDisplayProps> = ({
               handleSendQuery(suggestion, "", false);
             }}
             className={`rounded-lg flex flex-col gap-3 w-full cursor-pointer transition-all duration-300 
-            ${
-              clickedSuggestion === suggestion
+            ${clickedSuggestion === suggestion
                 ? "text-primary"
                 : "text-secondary hover:text-primary"
-            }`}
+              }`}
           >
             <div className="flex w-full justify-between items-center gap-2">
               <p className="text-sm">{suggestion}</p>

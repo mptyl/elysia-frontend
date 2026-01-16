@@ -15,7 +15,8 @@ export const SocketContext = createContext<{
     conversation_id: string,
     query_id: string,
     route?: string,
-    mimick?: boolean
+    mimick?: boolean,
+    disable_rag?: boolean
   ) => Promise<boolean>;
 }>({
   socketOnline: false,
@@ -118,7 +119,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     conversation_id: string,
     query_id: string,
     route: string = "",
-    mimick: boolean = false
+    mimick: boolean = false,
+    disable_rag: boolean = false
   ) => {
     setConversationStatus("Thinking...", conversation_id);
     const enabled_collections = getAllEnabledCollections();
@@ -138,6 +140,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         collection_names: enabled_collections,
         route,
         mimick,
+        disable_rag,
       })
     );
 

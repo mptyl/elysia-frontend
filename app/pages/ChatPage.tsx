@@ -93,7 +93,8 @@ export default function ChatPage() {
   const handleSendQuery = async (
     query: string,
     route: string = "",
-    mimick: boolean = false
+    mimick: boolean = false,
+    disable_rag: boolean = false
   ) => {
     if (query.trim() === "" || currentStatus !== "") return;
     const trimmedQuery = query.trim();
@@ -112,7 +113,8 @@ export default function ChatPage() {
         _conversation.id,
         query_id,
         route,
-        mimick
+        mimick,
+        disable_rag
       );
       changeBaseToQuery(_conversation.id, trimmedQuery);
       addTreeToConversation(_conversation.id);
@@ -273,7 +275,7 @@ export default function ChatPage() {
                 .map(([queryId, query], index, array) => (
                   <ChatProvider key={queryId}>
                     <RenderChat
-                      key={queryId + index}
+                      key={queryId}
                       messages={query.messages}
                       conversationID={currentConversation || ""}
                       queryID={queryId}

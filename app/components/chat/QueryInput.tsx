@@ -7,10 +7,15 @@ import { RiFlowChart } from "react-icons/ri";
 import { FaTrash } from "react-icons/fa";
 import CollectionSelection from "./components/CollectionSelection";
 import { Button } from "@/components/ui/button";
-import { TbSettings } from "react-icons/tb";
+import { TbSettings, TbDatabase } from "react-icons/tb";
 
 interface QueryInputProps {
-  handleSendQuery: (query: string, route?: string, mimick?: boolean) => void;
+  handleSendQuery: (
+    query: string,
+    route?: string,
+    mimick?: boolean,
+    disable_rag?: boolean
+  ) => void;
   query_length: number;
   currentStatus: string;
   addDisplacement: (value: number) => void;
@@ -31,10 +36,11 @@ const QueryInput: React.FC<QueryInputProps> = ({
   const [route, setRoute] = useState<string>("");
   const [mimick, setMimick] = useState<boolean>(false);
   const [showRoute, setShowRoute] = useState<boolean>(false);
+  const [skipRag, setSkipRag] = useState<boolean>(true);
 
   const triggerQuery = (_query: string) => {
     if (_query.trim() === "" || currentStatus !== "") return;
-    handleSendQuery(_query, route, mimick);
+    handleSendQuery(_query, route, mimick, skipRag);
     setQuery("");
   };
 
@@ -126,17 +132,27 @@ const QueryInput: React.FC<QueryInputProps> = ({
             }}
           />
           <div className="flex justify-end gap-1 w-full">
+            <Button
+              variant="ghost"
+              size={"sm"}
+              className={`${!skipRag ? "text-accent font-bold" : "text-secondary opacity-50"}`}
+              onClick={() => setSkipRag(!skipRag)}
+              title={
+                !skipRag ? "RAG Enabled" : "RAG Disabled (Direct Answer)"
+              }
+            >
+              RAG
+            </Button>
             {process.env.NODE_ENV === "development" && (
               <Button
                 variant="ghost"
                 size={"icon"}
-                className={`${
-                  showRoute && !route
-                    ? "text-primary"
-                    : route
-                      ? "text-accent"
-                      : "text-secondary"
-                }`}
+                className={`${showRoute && !route
+                  ? "text-primary"
+                  : route
+                    ? "text-accent"
+                    : "text-secondary"
+                  }`}
                 onClick={() => setShowRoute(!showRoute)}
               >
                 <RiFlowChart size={16} />
