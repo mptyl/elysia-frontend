@@ -113,6 +113,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     setSocket(localSocket);
   }, [reconnect]);
 
+  // [ATHENA-DEBT] Signature expanded to support RAG bypass.
+  // TODO: Refactor to usage of an 'options' object to avoid parameter explosion in future merges.
   const sendQuery = async (
     user_id: string,
     query: string,

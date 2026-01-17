@@ -52,6 +52,7 @@ import { RouterContext } from "../contexts/RouterContext";
 import { CollectionContext } from "../contexts/CollectionContext";
 import { SessionContext } from "../contexts/SessionContext";
 import packageJson from "../../../package.json";
+import { BRANDING } from "@/app/config/branding";
 
 const SidebarComponent: React.FC = () => {
   const { socketOnline } = useContext(SocketContext);
@@ -116,11 +117,11 @@ const SidebarComponent: React.FC = () => {
         <div className={`flex items-center gap-2 w-full justify-between p-2`}>
           <div className="flex items-center gap-2">
             <img
-              src={`${public_path}logo.svg`}
-              alt="Athena"
+              src={BRANDING.logoPath}
+              alt={BRANDING.appName}
               className="w-5 h-5 stext-primary"
             />
-            <p className="text-sm font-bold text-primary">Athena</p>
+            <p className="text-sm font-bold text-primary">{BRANDING.appName}</p>
           </div>
           <div className="flex items-center justify-center gap-1">
             {socketOnline ? (
@@ -191,12 +192,24 @@ const SidebarComponent: React.FC = () => {
           <SidebarMenuItem>
             <SidebarMenuButton
               className="w-full justify-start items-center"
-              onClick={() => openNewTab("https://weaviate.github.io/elysia/")}
+              onClick={() => openNewTab(BRANDING.links.documentation)}
             >
               <CgFileDocument />
               <span>Documentation</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
+
+          {BRANDING.sidebar.showGithub && (
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                className="w-full justify-start items-center"
+                onClick={() => openNewTab("https://github.com/weaviate/elysia")}
+              >
+                <FaGithub />
+                <span>Github</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
 
           <SidebarMenuItem>
             <DropdownMenu>
