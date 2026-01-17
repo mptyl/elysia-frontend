@@ -216,17 +216,48 @@ function BasicSphere({
 
   return (
     <mesh ref={meshRef} scale={[1, 1, 1]} {...props}>
-      {/* Using sphereGeometry with computed tangents */}
-      <sphereGeometry
-        args={[
-          1,
-          (settings || DEFAULT_GLOBE_SETTINGS).subdivisionX,
-          (settings || DEFAULT_GLOBE_SETTINGS).subdivisionY,
-        ]}
-        onUpdate={(geometry) => {
-          geometry.computeTangents();
-        }}
-      />
+      {/* Dynamic geometry based on shapeType setting */}
+      {settings.shapeType === "sphere" && (
+        <sphereGeometry
+          args={[
+            1,
+            (settings || DEFAULT_GLOBE_SETTINGS).subdivisionX,
+            (settings || DEFAULT_GLOBE_SETTINGS).subdivisionY,
+          ]}
+          onUpdate={(geometry) => {
+            geometry.computeTangents();
+          }}
+        />
+      )}
+      {settings.shapeType === "torusKnot" && (
+        <torusKnotGeometry
+          args={[
+            0.7,
+            0.3,
+            (settings || DEFAULT_GLOBE_SETTINGS).subdivisionX,
+            64,
+          ]}
+          onUpdate={(geometry) => {
+            geometry.computeTangents();
+          }}
+        />
+      )}
+      {settings.shapeType === "box" && (
+        <boxGeometry
+          args={[1.5, 1.5, 1.5, 32, 32, 32]}
+          onUpdate={(geometry) => {
+            geometry.computeTangents();
+          }}
+        />
+      )}
+      {settings.shapeType === "icosahedron" && (
+        <icosahedronGeometry
+          args={[1, 0]}
+          onUpdate={(geometry) => {
+            geometry.computeTangents();
+          }}
+        />
+      )}
       <shaderMaterial
         ref={materialRef}
         vertexShader={vertex}

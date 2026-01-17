@@ -1,5 +1,8 @@
 // Default configuration for the Abstract Sphere
+export type ShapeType = "sphere" | "torusKnot" | "box" | "icosahedron";
+
 export interface GlobeSettings {
+  shapeType: ShapeType;
   timeFrequency: number;
   distortionFrequency: number;
   distortionStrength: number;
@@ -21,6 +24,7 @@ export interface GlobeSettings {
 }
 
 export const DEFAULT_GLOBE_SETTINGS: GlobeSettings = {
+  shapeType: "sphere",
   timeFrequency: 0.3,
   distortionFrequency: 1.8,
   distortionStrength: 0.3,

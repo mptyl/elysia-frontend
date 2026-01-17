@@ -79,6 +79,27 @@ export default function GlobeControlsPanel({
           )}
 
           <div className="space-y-4">
+            {/* Shape Selection */}
+            <div>
+              <div className="flex items-center gap-2">
+                <TbGeometry className="text-primary" />
+                <p className="font-semibold"> Shape Type</p>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {["sphere", "torusKnot", "box", "icosahedron"].map((shape) => (
+                  <Button
+                    key={shape}
+                    variant={settings.shapeType === shape ? "default" : "outline"}
+                    size="sm"
+                    className="text-[10px] h-7 px-2 capitalize"
+                    onClick={() => updateSetting("shapeType", shape as any)}
+                  >
+                    {shape === "torusKnot" ? "Torus" : shape}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
             {/* Animation Settings */}
             <div>
               <div className="flex items-center gap-2">

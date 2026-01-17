@@ -13,6 +13,8 @@ This document tracks all divergences from the upstream `weaviate/elysia-frontend
 - **Change**: Added RAG Toggle UI element to switch between Retrieval and Direct Answer modes.
 - **File**: `app/pages/ChatPage.tsx`
 - **Change**: Integration of RAG toggle state handling.
+- **File**: `app/components/threejs/*`
+- **Change**: Implemented "Shape Type" selector in `GlobeControlsPanel.tsx` (Shapes: Sphere, Torus, Box, Icosahedron) and updated `AbstractSphere.tsx` to handle dynamic geometry switching.
 
 ## Refactoring
 - **File**: `ac1b1f3` (Commit)
