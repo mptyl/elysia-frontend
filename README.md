@@ -67,7 +67,7 @@ Athena is a modern AI-powered platform built as a single-page application (SPA) 
    ```
 
 4. **Open your browser**
-   Navigate to `http://localhost:3000`
+   Navigate to `http://localhost:3090`
 
 ## 📁 Project Structure
 
