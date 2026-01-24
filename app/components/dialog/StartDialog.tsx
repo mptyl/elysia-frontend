@@ -30,12 +30,7 @@ const StartDialog: React.FC = () => {
   const { correctSettings } = useContext(SessionContext);
   const { collections } = useContext(CollectionContext);
   const [open, setOpen] = useState(() => {
-    // Check if we're in the browser environment
-    if (typeof window !== "undefined") {
-      const dontShow = localStorage.getItem(dontShowAgainKey);
-      return dontShow ? false : true;
-    }
-    return true; // Default to showing dialog on server-side render
+    return false; // Always default to false to skip the dialog
   });
   const [dontShowAgain, setDontShowAgain] = useState(false);
   const [invalidSettings, setInvalidSettings] = useState(false);

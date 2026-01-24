@@ -18,6 +18,8 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { RouterProvider } from "./components/contexts/RouterContext";
 import { ProcessingProvider } from "./components/contexts/ProcessingContext";
+import { UserNav } from "@/components/user-nav";
+import { AuthGuard } from "@/components/auth-guard";
 
 const space_grotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -59,17 +61,20 @@ export default function RootLayout({
                       <EvaluationProvider>
                         <ProcessingProvider>
                           <SidebarProvider>
-                            <SidebarComponent />
-                            <main className="flex flex-1 min-w-0 flex-col md:flex-row w-full gap-2 md:gap-6 items-start justify-start p-2 md:p-6 overflow-hidden">
-                              {/* <img
+                            <AuthGuard>
+                              <SidebarComponent />
+                              <main className="relative flex flex-1 min-w-0 flex-col md:flex-row w-full gap-2 md:gap-6 items-start justify-start p-2 md:p-6 overflow-hidden">
+                                {/* <img
                               referrerPolicy="no-referrer-when-downgrade"
                               className="absolute bottom-0 right-0"
                               src="https://pixel.weaviate.cloud/a.png?x-pxid=32943cfc-5ae4-4f43-9f12-0c057a0b0df9"
                             /> */}
-                              <SidebarTrigger className="lg:hidden flex text-secondary hover:text-primary hover:bg-foreground_alt z-50" />
-                              <StartDialog />
-                              {children}
-                            </main>
+                                <SidebarTrigger className="lg:hidden flex text-secondary hover:text-primary hover:bg-foreground_alt z-50" />
+                                <StartDialog />
+                                {children}
+                              </main>
+                              <UserNav />
+                            </AuthGuard>
                           </SidebarProvider>
                         </ProcessingProvider>
                         <Toaster />
