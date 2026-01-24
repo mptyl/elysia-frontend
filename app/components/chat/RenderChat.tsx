@@ -56,6 +56,7 @@ interface RenderChatProps {
   addDistortion: (value: number) => void;
   handleSendQuery: (query: string, route?: string, mimick?: boolean) => void;
   isLastQuery: boolean;
+  onExpand?: (queryId: string) => void;
 }
 
 const RenderChat: React.FC<RenderChatProps> = ({
@@ -74,6 +75,7 @@ const RenderChat: React.FC<RenderChatProps> = ({
   addDistortion,
   handleSendQuery,
   isLastQuery,
+  onExpand,
 }) => {
   const [displayMessages, setDisplayMessages] = useState<Message[]>([]);
   const [collapsed, setCollapsed] = useState<boolean>(_collapsed);
@@ -284,7 +286,13 @@ const RenderChat: React.FC<RenderChatProps> = ({
                 {message.type === "User" && (
                   <UserMessageDisplay
                     NER={NER}
-                    onClick={() => setCollapsed((prev) => !prev)}
+                    onClick={() => {
+                      const willExpand = collapsed;
+                      setCollapsed((prev) => !prev);
+                      if (willExpand && onExpand) {
+                        onExpand(queryID);
+                      }
+                    }}
                     key={`${index}-${message.id}-user`}
                     payload={
                       (message.payload as ResultPayload).objects as string[]

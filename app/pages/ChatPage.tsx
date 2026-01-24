@@ -74,6 +74,7 @@ export default function ChatPage() {
     "chat"
   );
   const [currentTrees, setCurrentTrees] = useState<DecisionTreeNode[]>([]);
+  const [expandedQueryId, setExpandedQueryId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const displacementStrength = useRef(0.0);
@@ -152,6 +153,8 @@ export default function ChatPage() {
         ? conversations.find((c) => c.id === currentConversation)?.name || ""
         : ""
     );
+    // Reset expanded query when conversation changes
+    setExpandedQueryId(null);
   }, [currentConversation, conversations]);
 
   useEffect(() => {
@@ -287,7 +290,11 @@ export default function ChatPage() {
                       finished={query.finished}
                       query_start={query.query_start}
                       query_end={query.query_end}
-                      _collapsed={index !== array.length - 1}
+                      _collapsed={
+                        expandedQueryId !== null
+                          ? queryId !== expandedQueryId
+                          : index !== array.length - 1
+                      }
                       messagesEndRef={messagesEndRef}
                       NER={query.NER}
                       feedback={query.feedback}
@@ -296,6 +303,7 @@ export default function ChatPage() {
                       addDistortion={addDistortion}
                       handleSendQuery={handleSendQuery}
                       isLastQuery={index === array.length - 1}
+                      onExpand={(queryId) => setExpandedQueryId(queryId)}
                     />
                   </ChatProvider>
                 ))}
@@ -316,6 +324,10 @@ export default function ChatPage() {
               conversationId={currentConversation}
               defaultRagEnabled={(() => {
                 const queries = Object.values(currentQuery);
+                // If a query is expanded, use its RAG state; otherwise use last query
+                if (expandedQueryId && currentQuery[expandedQueryId]) {
+                  return currentQuery[expandedQueryId].rag_enabled ?? false;
+                }
                 const sorted = queries.sort((a, b) => b.index - a.index);
                 const lastQuery = sorted[0];
                 return lastQuery?.rag_enabled ?? false;

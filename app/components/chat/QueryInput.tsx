@@ -71,6 +71,8 @@ const QueryInput: React.FC<QueryInputProps> = ({
 
     handleSendQuery(_query, route, mimick, skipRag);
     setQuery("");
+    // Reset interaction flag after submission so toggle syncs to completed query's state
+    userHasInteractedRef.current = false;
   };
 
   // Track user manual interaction with the toggle
