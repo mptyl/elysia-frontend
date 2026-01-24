@@ -40,7 +40,7 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-background p-6">
+        <div className="min-h-screen w-full flex flex-col items-center justify-center bg-background p-6">
             {/* Logo with shine animation */}
             <div className="mb-8 flex flex-col items-center gap-4">
                 <div className="w-20 h-20 rounded-2xl bg-background_alt flex items-center justify-center border border-border">

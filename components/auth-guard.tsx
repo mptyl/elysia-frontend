@@ -9,8 +9,12 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     const router = useRouter();
     const pathname = usePathname();
     const [authorized, setAuthorized] = useState(false);
+    const [isLoginPage, setIsLoginPage] = useState(false);
 
     useEffect(() => {
+        const loginPage = pathname === "/login";
+        setIsLoginPage(loginPage);
+
         const checkAuth = async () => {
             console.log("AuthGuard: Checking auth state...");
             try {
@@ -24,13 +28,12 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
                 const user = session?.user;
                 console.log("AuthGuard: User found:", !!user, "Path:", pathname);
 
-                const isLoginPage = pathname === "/login";
                 const isStaticAsset = pathname?.includes(".");
 
-                if (!user && !isLoginPage && !isStaticAsset) {
+                if (!user && !loginPage && !isStaticAsset) {
                     console.log("AuthGuard: Redirecting to /login");
                     router.replace("/login");
-                } else if (user && isLoginPage) {
+                } else if (user && loginPage) {
                     console.log("AuthGuard: Redirecting to /");
                     router.replace("/");
                 } else {
@@ -39,8 +42,6 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
                 }
             } catch (err) {
                 console.error("AuthGuard: Unexpected error", err);
-                // In case of error, maybe allow render to avoid hard lock?
-                // setAuthorized(true); 
             }
         };
 
@@ -52,8 +53,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
                 setAuthorized(false);
                 router.replace("/login");
             } else if (event === "SIGNED_IN") {
-                const isLoginPage = pathname === "/login";
-                if (isLoginPage) {
+                if (loginPage) {
                     router.replace("/");
                 }
             }
@@ -63,6 +63,12 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
             subscription.unsubscribe();
         };
     }, [router, pathname, supabase.auth]);
+
+    // On login page, render children directly without app shell
+    // This gives the login page a clean, standalone appearance
+    if (isLoginPage) {
+        return <>{children}</>;
+    }
 
     if (!authorized) {
         return (
@@ -75,3 +81,4 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
     return <>{children}</>;
 }
+

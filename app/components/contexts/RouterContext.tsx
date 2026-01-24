@@ -16,7 +16,7 @@ export const RouterContext = createContext<{
   ) => void;
 }>({
   currentPage: "chat",
-  changePage: () => {},
+  changePage: () => { },
 });
 
 export const RouterProvider = ({ children }: { children: React.ReactNode }) => {
@@ -72,6 +72,11 @@ export const RouterProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
+    // Skip URL modification on login page to prevent redirect loop
+    if (typeof window !== 'undefined' && window.location.pathname === '/login') {
+      return;
+    }
+
     // Get page from URL parameter
     const pageParam = searchParams.get("page");
 
