@@ -75,7 +75,8 @@ export function UserNav() {
     // 3. Authenticated User State
     // Derive initials or display name
     const email = user.email || "";
-    const name = user.user_metadata?.full_name || user.user_metadata?.name || email.split("@")[0] || "User";
+    const fullName = user.user_metadata?.full_name || user.user_metadata?.name || email.split("@")[0] || "User";
+    const name = fullName.split(" ")[0]; // Show only first name
     const initials = name
         .split(" ")
         .map((n: string) => n[0])
@@ -88,14 +89,8 @@ export function UserNav() {
             <DropdownMenuTrigger asChild>
                 <Button
                     variant="ghost"
-                    className="h-10 text-secondary hover:bg-foreground_alt hover:text-primary gap-2 px-3 transition-colors duration-200"
+                    className="h-10 text-secondary hover:bg-foreground_alt hover:text-primary px-3 transition-colors duration-200"
                 >
-                    <Avatar className="h-5 w-5 border border-border">
-                        <AvatarImage src={user.user_metadata?.avatar_url} alt={name} />
-                        <AvatarFallback className="bg-primary/10 text-[10px] items-center justify-center flex font-medium text-primary">
-                            {initials}
-                        </AvatarFallback>
-                    </Avatar>
                     <span className="text-sm font-medium">{name}</span>
                 </Button>
             </DropdownMenuTrigger>
