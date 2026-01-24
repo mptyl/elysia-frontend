@@ -61,16 +61,14 @@ export function UserNav() {
     if (!user) {
         // 2. Guest / Not Found State - Render this to verify positioning!
         return (
-            <div className="fixed top-2 right-2 z-[150]">
-                <Button
-                    variant="ghost"
-                    className="h-10 border border-dashed border-secondary text-secondary hover:text-primary gap-2 px-3"
-                    onClick={() => router.push("/login")}
-                >
-                    <UserIcon className="h-5 w-5" />
-                    <span className="text-sm">Guest (Login)</span>
-                </Button>
-            </div>
+            <Button
+                variant="ghost"
+                className="h-10 border border-dashed border-secondary text-secondary hover:text-primary gap-2 px-3"
+                onClick={() => router.push("/login")}
+            >
+                <UserIcon className="h-5 w-5" />
+                <span className="text-sm">Guest (Login)</span>
+            </Button>
         );
     }
 
@@ -86,45 +84,43 @@ export function UserNav() {
         .substring(0, 2);
 
     return (
-        <div className="fixed top-2 right-2 z-[150]">
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button
-                        variant="ghost"
-                        className="h-10 text-secondary hover:bg-foreground_alt hover:text-primary gap-2 px-3 transition-colors duration-200"
-                    >
-                        <Avatar className="h-5 w-5 border border-border">
-                            <AvatarImage src={user.user_metadata?.avatar_url} alt={name} />
-                            <AvatarFallback className="bg-primary/10 text-[10px] items-center justify-center flex font-medium text-primary">
-                                {initials}
-                            </AvatarFallback>
-                        </Avatar>
-                        <span className="text-sm font-medium">{name}</span>
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
-                    <DropdownMenuLabel className="font-normal">
-                        <div className="flex flex-col space-y-1">
-                            <p className="text-sm font-medium leading-none">{name}</p>
-                            <p className="text-xs leading-none text-muted-foreground">
-                                {email}
-                            </p>
-                        </div>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuGroup>
-                        <DropdownMenuItem onClick={() => router.push("/profile")}>
-                            <UserIcon className="mr-2 h-4 w-4" />
-                            <span>Profile</span>
-                        </DropdownMenuItem>
-                    </DropdownMenuGroup>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleSignOut} className="text-red-600 focus:text-red-600">
-                        <LogOut className="mr-2 h-4 w-4" />
-                        <span>Log out</span>
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button
+                    variant="ghost"
+                    className="h-10 text-secondary hover:bg-foreground_alt hover:text-primary gap-2 px-3 transition-colors duration-200"
+                >
+                    <Avatar className="h-5 w-5 border border-border">
+                        <AvatarImage src={user.user_metadata?.avatar_url} alt={name} />
+                        <AvatarFallback className="bg-primary/10 text-[10px] items-center justify-center flex font-medium text-primary">
+                            {initials}
+                        </AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm font-medium">{name}</span>
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">{name}</p>
+                        <p className="text-xs leading-none text-muted-foreground">
+                            {email}
+                        </p>
+                    </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                    <DropdownMenuItem onClick={() => router.push("/profile")}>
+                        <UserIcon className="mr-2 h-4 w-4" />
+                        <span>Profile</span>
                     </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-        </div>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignOut} className="text-red-600 focus:text-red-600">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
     );
 }
