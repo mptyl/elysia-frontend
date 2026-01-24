@@ -17,7 +17,7 @@ import { createConfig } from "@/app/api/createConfig";
 import { loadConfig } from "@/app/api/loadConfig";
 import { deleteConfig } from "@/app/api/deleteConfig";
 import { ToastContext } from "./ToastContext";
-import { useDeviceId } from "@/app/getDeviceId";
+import { useAuthUserId } from "@/hooks/useAuthUserId";
 
 export const SessionContext = createContext<{
   mode: string;
@@ -51,25 +51,25 @@ export const SessionContext = createContext<{
   mode: "home",
   id: "",
   showRateLimitDialog: false,
-  enableRateLimitDialog: () => {},
+  enableRateLimitDialog: () => { },
   userConfig: null,
   savingConfig: false,
-  fetchCurrentConfig: () => {},
+  fetchCurrentConfig: () => { },
   configIDs: [],
   updateConfig: async () => false,
-  handleCreateConfig: () => {},
-  getConfigIDs: () => {},
-  handleLoadConfig: () => {},
-  handleDeleteConfig: () => {},
+  handleCreateConfig: () => { },
+  getConfigIDs: () => { },
+  handleLoadConfig: () => { },
+  handleDeleteConfig: () => { },
   loadingConfig: false,
   loadingConfigs: false,
   correctSettings: null,
-  triggerFetchCollection: () => {},
+  triggerFetchCollection: () => { },
   fetchCollectionFlag: false,
   initialized: false,
-  triggerFetchConversation: () => {},
+  triggerFetchConversation: () => { },
   fetchConversationFlag: false,
-  updateUnsavedChanges: () => {},
+  updateUnsavedChanges: () => { },
   unsavedChanges: false,
 });
 
@@ -87,7 +87,7 @@ export const SessionProvider = ({
 
   const [showRateLimitDialog, setShowRateLimitDialog] =
     useState<boolean>(false);
-  const id = useDeviceId();
+  const { id } = useAuthUserId();
   const [userConfig, setUserConfig] = useState<UserConfig | null>(null);
   const [configIDs, setConfigIDs] = useState<ConfigListEntry[]>([]);
   const [correctSettings, setCorrectSettings] =

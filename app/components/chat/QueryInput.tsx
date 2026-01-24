@@ -7,7 +7,7 @@ import { RiFlowChart } from "react-icons/ri";
 import { FaTrash } from "react-icons/fa";
 import CollectionSelection from "./components/CollectionSelection";
 import { Button } from "@/components/ui/button";
-import { TbSettings, TbDatabase } from "react-icons/tb";
+import { TbSettings } from "react-icons/tb";
 
 interface QueryInputProps {
   handleSendQuery: (
