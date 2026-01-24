@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { FaCircle } from "react-icons/fa";
 import { IoArrowUpCircleSharp, IoClose } from "react-icons/io5";
 import { RiFlowChart } from "react-icons/ri";
@@ -21,6 +21,8 @@ interface QueryInputProps {
   addDisplacement: (value: number) => void;
   addDistortion: (value: number) => void;
   selectSettings: () => void;
+  defaultRagEnabled?: boolean;
+  conversationId?: string | null;
 }
 
 const QueryInput: React.FC<QueryInputProps> = ({
@@ -30,18 +32,51 @@ const QueryInput: React.FC<QueryInputProps> = ({
   addDisplacement,
   addDistortion,
   selectSettings,
+  defaultRagEnabled = false,
+  conversationId,
 }) => {
   const [query, setQuery] = useState("");
 
   const [route, setRoute] = useState<string>("");
   const [mimick, setMimick] = useState<boolean>(false);
   const [showRoute, setShowRoute] = useState<boolean>(false);
-  const [skipRag, setSkipRag] = useState<boolean>(true);
+  // skipRag=true means RAG is disabled, so we invert the logic
+  const [skipRag, setSkipRag] = useState<boolean>(!defaultRagEnabled);
+
+  // Track previous conversationId to detect conversation switches
+  const prevConversationIdRef = useRef<string | null | undefined>(undefined);
+  // Track if user has manually interacted with the toggle in this conversation
+  const userHasInteractedRef = useRef<boolean>(false);
+
+  // Sync skipRag with defaultRagEnabled when:
+  // 1. Conversation changes (reset interaction flag and sync)
+  // 2. defaultRagEnabled changes AND user hasn't manually interacted
+  useEffect(() => {
+    const conversationChanged = prevConversationIdRef.current !== conversationId;
+
+    if (conversationChanged) {
+      // Conversation changed: reset interaction flag and sync
+      prevConversationIdRef.current = conversationId;
+      userHasInteractedRef.current = false;
+      setSkipRag(!defaultRagEnabled);
+    } else if (!userHasInteractedRef.current) {
+      // Same conversation, but user hasn't interacted yet: sync to defaultRagEnabled
+      // This handles the case where data loads after initial render
+      setSkipRag(!defaultRagEnabled);
+    }
+  }, [conversationId, defaultRagEnabled]);
 
   const triggerQuery = (_query: string) => {
     if (_query.trim() === "" || currentStatus !== "") return;
+
     handleSendQuery(_query, route, mimick, skipRag);
     setQuery("");
+  };
+
+  // Track user manual interaction with the toggle
+  const handleToggleRag = () => {
+    userHasInteractedRef.current = true;
+    setSkipRag(!skipRag);
   };
 
   useEffect(() => {
@@ -136,7 +171,7 @@ const QueryInput: React.FC<QueryInputProps> = ({
               variant="ghost"
               size={"sm"}
               className={`${!skipRag ? "text-accent font-bold" : "text-secondary opacity-50"}`}
-              onClick={() => setSkipRag(!skipRag)}
+              onClick={handleToggleRag}
               title={
                 !skipRag ? "RAG Enabled" : "RAG Disabled (Direct Answer)"
               }

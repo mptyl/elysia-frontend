@@ -119,7 +119,7 @@ export default function ChatPage() {
       );
       changeBaseToQuery(_conversation.id, trimmedQuery);
       addTreeToConversation(_conversation.id);
-      addQueryToConversation(_conversation.id, trimmedQuery, query_id);
+      addQueryToConversation(_conversation.id, trimmedQuery, query_id, !disable_rag);
     }
   };
 
@@ -313,6 +313,13 @@ export default function ChatPage() {
               addDisplacement={addDisplacement}
               addDistortion={addDistortion}
               selectSettings={selectSettings}
+              conversationId={currentConversation}
+              defaultRagEnabled={(() => {
+                const queries = Object.values(currentQuery);
+                const sorted = queries.sort((a, b) => b.index - a.index);
+                const lastQuery = sorted[0];
+                return lastQuery?.rag_enabled ?? false;
+              })()}
             />
           </div>
           {Object.keys(currentQuery).length === 0 && (

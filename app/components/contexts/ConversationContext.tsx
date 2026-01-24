@@ -11,6 +11,7 @@ import {
   Message,
   TextPayload,
   UserPromptPayload,
+  CompletedPayload,
 } from "@/app/types/chat";
 import { TreeUpdatePayload } from "@/app/components/types";
 
@@ -69,9 +70,10 @@ export const ConversationContext = createContext<{
   addQueryToConversation: (
     conversationId: string,
     query: string,
-    query_id: string
+    query_id: string,
+    rag_enabled?: boolean
   ) => void;
-  finishQuery: (conversationId: string, queryId: string) => void;
+  finishQuery: (conversationId: string, queryId: string, rag_enabled?: boolean) => void;
   updateNERForQuery: (
     conversationId: string,
     queryId: string,
@@ -98,37 +100,37 @@ export const ConversationContext = createContext<{
   loadingConversation: boolean;
 }>({
   conversations: [],
-  setConversations: () => {},
+  setConversations: () => { },
   currentConversation: null,
-  setCurrentConversation: () => {},
+  setCurrentConversation: () => { },
   creatingNewConversation: false,
-  setCreatingNewConversation: () => {},
+  setCreatingNewConversation: () => { },
   loadingConversations: false,
   loadingConversation: false,
-  startNewConversation: () => {},
+  startNewConversation: () => { },
   conversationPreviews: {},
   addConversation: () => Promise.resolve(null),
-  removeConversation: () => {},
-  selectConversation: () => {},
-  setConversationStatus: () => {},
-  setAllConversationStatuses: () => {},
-  addMessageToConversation: () => {},
-  initializeEnabledCollections: () => {},
-  handleConversationError: () => {},
-  toggleCollectionEnabled: () => {},
-  handleWebsocketMessage: () => {},
-  updateTree: () => {},
-  addTreeToConversation: () => {},
-  changeBaseToQuery: () => {},
-  addQueryToConversation: () => {},
-  finishQuery: () => {},
-  updateNERForQuery: () => {},
-  updateFeedbackForQuery: () => {},
-  triggerAllCollections: () => {},
-  handleAllConversationsError: () => {},
-  addSuggestionToConversation: () => {},
+  removeConversation: () => { },
+  selectConversation: () => { },
+  setConversationStatus: () => { },
+  setAllConversationStatuses: () => { },
+  addMessageToConversation: () => { },
+  initializeEnabledCollections: () => { },
+  handleConversationError: () => { },
+  toggleCollectionEnabled: () => { },
+  handleWebsocketMessage: () => { },
+  updateTree: () => { },
+  addTreeToConversation: () => { },
+  changeBaseToQuery: () => { },
+  addQueryToConversation: () => { },
+  finishQuery: () => { },
+  updateNERForQuery: () => { },
+  updateFeedbackForQuery: () => { },
+  triggerAllCollections: () => { },
+  handleAllConversationsError: () => { },
+  addSuggestionToConversation: () => { },
   getAllEnabledCollections: () => [],
-  loadConversationsFromDB: () => {},
+  loadConversationsFromDB: () => { },
 });
 
 export const ConversationProvider = ({
@@ -209,6 +211,19 @@ export const ConversationProvider = ({
         const queries = data.rebuild.filter(
           (m) => m && m.type === "user_prompt"
         );
+
+        // Build a map of query_id -> rag_enabled from completed messages
+        const completedMessages = data.rebuild.filter(
+          (m) => m && m.type === "completed"
+        );
+        const ragStatusMap: { [queryId: string]: boolean } = {};
+        for (const completed of completedMessages) {
+          const payload = completed.payload as CompletedPayload;
+          if (payload && typeof payload.rag_enabled === 'boolean') {
+            ragStatusMap[completed.query_id] = payload.rag_enabled;
+          }
+        }
+
         const prebuiltQueries: { [key: string]: Query } = {};
 
         for (const query of queries) {
@@ -218,6 +233,7 @@ export const ConversationProvider = ({
             query.query_id,
             conversations
           );
+          newQuery.rag_enabled = ragStatusMap[query.query_id] ?? true;
           prebuiltQueries[query.query_id] = newQuery;
         }
 
@@ -232,12 +248,12 @@ export const ConversationProvider = ({
           // Create a new tree for each query with the query name, plus one base tree
           tree: tree.tree
             ? [
-                ...queries.map((query) => ({
-                  ...tree.tree!,
-                  name: (query.payload as UserPromptPayload).prompt,
-                })),
-                tree.tree,
-              ]
+              ...queries.map((query) => ({
+                ...tree.tree!,
+                name: (query.payload as UserPromptPayload).prompt,
+              })),
+              tree.tree,
+            ]
             : [],
           base_tree: tree.tree || null,
           queries: prebuiltQueries,
@@ -610,7 +626,8 @@ export const ConversationProvider = ({
     query: string,
     query_id: string,
     prevConversations: Conversation[],
-    messages: Message[] = []
+    messages: Message[] = [],
+    rag_enabled: boolean = true
   ) => {
     const newMessage: Message = {
       type: "User",
@@ -642,6 +659,7 @@ export const ConversationProvider = ({
           query_id
         ]?.index || 0,
       messages: [newMessage, ...messages],
+      rag_enabled: rag_enabled,
     };
 
     return newQuery;
@@ -650,7 +668,8 @@ export const ConversationProvider = ({
   const addQueryToConversation = (
     conversationId: string,
     query: string,
-    query_id: string
+    query_id: string,
+    rag_enabled: boolean = true
   ) => {
     setConversations((prevConversations) =>
       prevConversations.map((c) => {
@@ -658,7 +677,9 @@ export const ConversationProvider = ({
           conversationId,
           query,
           query_id,
-          prevConversations
+          prevConversations,
+          [],  // messages
+          rag_enabled
         );
         if (c.id === conversationId) {
           return { ...c, queries: { ...c.queries, [query_id]: newQuery } };
@@ -668,7 +689,7 @@ export const ConversationProvider = ({
     );
   };
 
-  const finishQuery = (conversationId: string, queryId: string) => {
+  const finishQuery = (conversationId: string, queryId: string, rag_enabled?: boolean) => {
     setConversations((prevConversations) =>
       prevConversations.map((c) => {
         if (c.id === conversationId && c.queries[queryId]) {
@@ -680,6 +701,7 @@ export const ConversationProvider = ({
                 ...c.queries[queryId],
                 finished: true,
                 query_end: new Date(),
+                ...(rag_enabled !== undefined ? { rag_enabled } : {}),
               },
             },
           };
@@ -802,8 +824,9 @@ export const ConversationProvider = ({
       const payload = message.payload as NERPayload;
       updateNERForQuery(message.conversation_id, message.query_id, payload);
     } else if (message.type === "completed") {
+      const payload = message.payload as CompletedPayload;
       setConversationStatus("", message.conversation_id);
-      finishQuery(message.conversation_id, message.query_id);
+      finishQuery(message.conversation_id, message.query_id, payload.rag_enabled);
       addSuggestionToConversation(
         message.conversation_id,
         message.query_id,
