@@ -17,6 +17,30 @@ export function useAuthUserId() {
     const supabase = createClient();
 
     const fetchUser = useCallback(async () => {
+        if (process.env.NEXT_PUBLIC_AUTH_ENABLED === "false") {
+            // Mock user for local development
+            const mockUser: User = {
+                id: "1234",
+                aud: "authenticated",
+                role: "authenticated",
+                email: "mock@local",
+                phone: "",
+                app_metadata: {
+                    provider: "email",
+                    providers: ["email"]
+                },
+                user_metadata: {},
+                identities: [],
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+                is_anonymous: false
+            };
+            setUser(mockUser);
+            setId("1234");
+            setLoading(false);
+            return;
+        }
+
         try {
             const { data: { user }, error } = await supabase.auth.getUser();
             if (error) {
@@ -46,6 +70,10 @@ export function useAuthUserId() {
         // Listen for auth state changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             async (event, session) => {
+                if (process.env.NEXT_PUBLIC_AUTH_ENABLED === "false") {
+                    return;
+                }
+
                 if (session?.user) {
                     setUser(session.user);
                     setId(session.user.id);

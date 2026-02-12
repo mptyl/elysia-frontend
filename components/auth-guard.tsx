@@ -17,6 +17,18 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
         const checkAuth = async () => {
             console.log("AuthGuard: Checking auth state...");
+
+            // Bypass auth if disabled
+            if (process.env.NEXT_PUBLIC_AUTH_ENABLED === "false") {
+                console.log("AuthGuard: Auth disabled, bypassing checks.");
+                if (loginPage) {
+                    router.replace("/");
+                } else {
+                    setAuthorized(true);
+                }
+                return;
+            }
+
             try {
                 const {
                     data: { session },

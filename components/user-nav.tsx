@@ -25,6 +25,26 @@ export function UserNav() {
 
     useEffect(() => {
         const getUser = async () => {
+            // Check for Auth Bypass Mode
+            if (process.env.NEXT_PUBLIC_AUTH_ENABLED === "false") {
+                console.log("UserNav: Auth disabled, using mock user");
+                // Create a partial mock user that satisfies the component's needs
+                // We cast to any or Partial<User> -> User because constructing a full Supabase User object is verbose
+                const mockUser: any = {
+                    id: "1234",
+                    email: "mock@local",
+                    user_metadata: {
+                        full_name: "Mock User",
+                        name: "Mock"
+                    },
+                    aud: "authenticated",
+                    created_at: new Date().toISOString(),
+                    app_metadata: {},
+                };
+                setUser(mockUser as User);
+                return;
+            }
+
             console.log("UserNav: Fetching session...");
             const {
                 data: { session },
@@ -37,6 +57,11 @@ export function UserNav() {
             setUser(session?.user ?? null);
         };
         getUser();
+
+        // If auth is disabled, we don't need to subscribe to changes
+        if (process.env.NEXT_PUBLIC_AUTH_ENABLED === "false") {
+            return () => { };
+        }
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             console.log("UserNav: Auth change", _event);

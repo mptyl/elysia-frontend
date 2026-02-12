@@ -38,6 +38,17 @@ export async function middleware(request: NextRequest) {
     // Redirect unauthenticated users to login
     // Exclude login page, API routes, and static assets
     const isLoginPage = request.nextUrl.pathname === "/login";
+
+    // Bypass auth if disabled
+    if (process.env.NEXT_PUBLIC_AUTH_ENABLED === "false") {
+        if (isLoginPage) {
+            const url = request.nextUrl.clone();
+            url.pathname = "/";
+            return NextResponse.redirect(url);
+        }
+        return response;
+    }
+
     const isApiRoute = request.nextUrl.pathname.startsWith("/api");
     const isStaticAsset =
         request.nextUrl.pathname.startsWith("/_next") ||

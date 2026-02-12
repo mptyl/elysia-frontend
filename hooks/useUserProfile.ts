@@ -18,6 +18,29 @@ export function useUserProfile(userId: string | undefined): UseUserProfileResult
     const supabase = createClient();
 
     const fetchProfile = async () => {
+        // Check for Auth Bypass Mode
+        if (process.env.NEXT_PUBLIC_AUTH_ENABLED === "false") {
+            setLoading(false);
+            const savedProfile = typeof window !== 'undefined' ? localStorage.getItem("mock_user_profile") : null;
+            if (savedProfile) {
+                setProfile(JSON.parse(savedProfile));
+            } else {
+                setProfile({
+                    id: "1234",
+                    org_unit: "mock-unit",
+                    app_role: "admin",
+                    ai_identity_user: "Mock Identity Context",
+                    ai_identity_mode: "APPEND",
+                    org_units: {
+                        id: "mock-unit",
+                        name: "Mock Unit",
+                        ai_identity_base: "Base Mock Identity"
+                    }
+                } as UserProfileWithOrgUnit);
+            }
+            return;
+        }
+
         if (!userId) {
             setLoading(false);
             return;
