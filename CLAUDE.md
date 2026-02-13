@@ -59,7 +59,7 @@ User identity hooks: `hooks/useAuthUserId.ts` (Supabase user), `hooks/useUserPro
 
 ### WebSocket
 
-Direct connection to Elysia backend (`host.ts:getWebsocketHost()`). In server mode connects to port 8090 directly (Next.js rewrites don't support WebSocket).
+Direct connection to Elysia backend (`host.ts:getWebsocketHost()`). In server mode connects directly to the backend (default port 8090, configurable via `NEXT_PUBLIC_ELYSIA_WS_PORT`). Next.js rewrites don't support WebSocket.
 
 ### Key Environment Variables
 
@@ -72,7 +72,18 @@ ELYSIA_INTERNAL_URL=http://127.0.0.1:8090
 ENTRA_INTERNAL_URL=http://127.0.0.1:8029
 ENTRA_EMULATOR_INTERNAL_HOST=http://host.docker.internal:8029
 NEXT_PUBLIC_ENTRA_EMULATOR_PUBLIC_BASE=/entra
+NEXT_PUBLIC_ELYSIA_WS_PORT=8090           # Browser WebSocket port (default: 8090)
 ```
+
+### Environment Setup
+
+Copy the local profile template and set the Supabase anon key:
+```bash
+cp config/env/.env.frontend.local.example .env.local
+# Edit .env.local: set NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY from supabase-project/.env ANON_KEY
+```
+
+See `docs/mac-setup.md` for full setup instructions.
 
 ## Code Organization
 
