@@ -1,25 +1,26 @@
 "use client";
 
+// In server mode (non-static), all traffic is proxied through Next.js rewrites.
+// In static mode, the app is served directly by the Elysia backend.
 export const host =
-  //http://localhost:8000
-  process.env.NEXT_PUBLIC_IS_STATIC !== "true" ? "http://localhost:8090" : "";
+  process.env.NEXT_PUBLIC_IS_STATIC !== "true"
+    ? ""  // All API paths are relative, proxied via Next.js rewrites
+    : "";
 
 export const public_path =
   process.env.NEXT_PUBLIC_IS_STATIC !== "true" ? "/" : "/static/";
 
 export const getWebsocketHost = () => {
-  if (
-    process.env.NODE_ENV === "development" &&
-    process.env.NEXT_PUBLIC_IS_STATIC !== "true"
-  ) {
-    //172.17.202.220
-    return `ws://localhost:8090/ws/`;
-  } else if (process.env.NEXT_PUBLIC_IS_STATIC === "true") {
-    // If you're serving the app directly through FastAPI, generate the WebSocket URL based on the current location.
+  if (process.env.NEXT_PUBLIC_IS_STATIC === "true") {
+    // Static mode: app is served by FastAPI, derive WebSocket URL from browser location
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const current_host = window.location.host;
     return `${protocol}//${current_host}/ws/`;
-  } else {
-    return `wss://localhost:8090/ws/`;
   }
+
+  // Server mode: WebSocket connects directly to Elysia backend.
+  // Next.js rewrites don't support WebSocket; Elysia must bind to 0.0.0.0
+  const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+  const wsPort = process.env.NEXT_PUBLIC_ELYSIA_WS_PORT || "8090";
+  return `${protocol}//${window.location.hostname}:${wsPort}/ws/`;
 };

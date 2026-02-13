@@ -1,42 +1,101 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { useEffect, type MouseEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { BRANDING } from "@/app/config/branding";
+import {
+    getAuthProviderMode,
+    getOAuthRedirectPath,
+    isEmulatorAuthProvider,
+} from "@/lib/auth/provider";
 
 export default function LoginPage() {
-    const router = useRouter();
     const supabase = createClient();
+    const emulatorAuthorizePath = "/api/auth/authorize?provider=azure&scopes=openid%20profile%20email";
 
     useEffect(() => {
-        // Check if already authenticated
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            if (session) {
-                router.replace("/");
+        const handleHashTokens = async () => {
+            const hash = window.location.hash;
+            if (hash && hash.includes("access_token")) {
+                const params = new URLSearchParams(hash.substring(1));
+                const accessToken = params.get("access_token");
+                const refreshToken = params.get("refresh_token");
+
+                if (accessToken && refreshToken) {
+                    try {
+                        const serverSessionResponse = await fetch("/api/auth/session", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            credentials: "include",
+                            body: JSON.stringify({
+                                access_token: accessToken,
+                                refresh_token: refreshToken,
+                            }),
+                        });
+
+                        if (serverSessionResponse.ok) {
+                            window.history.replaceState(null, "", "/login");
+                            window.location.assign("/");
+                            return;
+                        }
+                    } catch (e) {
+                        console.error("LoginPage: /api/auth/session request failed", e);
+                    }
+
+                    // Fallback to browser-side setSession if server session endpoint is unavailable.
+                    const { error } = await supabase.auth.setSession({
+                        access_token: accessToken,
+                        refresh_token: refreshToken,
+                    });
+
+                    if (!error) {
+                        window.history.replaceState(null, "", "/login");
+                        window.location.assign("/");
+                        return;
+                    }
+                    console.error("LoginPage: setSession error", error);
+                }
             }
-        });
+        };
 
-        // Listen for auth state changes (e.g., after OAuth redirect)
-        const {
-            data: { subscription },
-        } = supabase.auth.onAuthStateChange((_event, session) => {
-            if (session) {
-                router.replace("/");
+        handleHashTokens();
+        return () => undefined;
+    }, [supabase.auth]);
+
+    const handleLogin = (event: MouseEvent<HTMLAnchorElement>) => {
+        const appOrigin = window.location.origin;
+
+        try {
+            const providerMode = getAuthProviderMode();
+
+            if (!isEmulatorAuthProvider(providerMode)) {
+                // Standard Supabase OAuth (for real Entra ID)
+                event.preventDefault();
+                supabase.auth.signInWithOAuth({
+                    provider: "azure",
+                    options: {
+                        scopes: "openid profile email",
+                        redirectTo: `${appOrigin}${getOAuthRedirectPath()}`,
+                    },
+                });
+                return;
             }
-        });
 
-        return () => subscription.unsubscribe();
-    }, [router, supabase.auth]);
-
-    const handleLogin = async () => {
-        await supabase.auth.signInWithOAuth({
-            provider: "azure",
-            options: {
+            // Emulator: route through proxy to rewrite Docker-internal URLs
+            const params = new URLSearchParams({
+                provider: "azure",
                 scopes: "openid profile email",
-                redirectTo: "http://localhost:3090",
-            },
-        });
+                redirect_to: `${appOrigin}${getOAuthRedirectPath()}`,
+            });
+            event.preventDefault();
+            window.location.assign(`/api/auth/authorize?${params.toString()}`);
+        } catch (error) {
+            // Fallback keeps login working even if client-side env resolution fails.
+            console.error("LoginPage: OAuth config error, using emulator authorize fallback", error);
+        }
     };
 
     return (
@@ -44,9 +103,11 @@ export default function LoginPage() {
             {/* Logo with shine animation */}
             <div className="mb-8 flex flex-col items-center gap-4">
                 <div className="w-20 h-20 rounded-2xl bg-background_alt flex items-center justify-center border border-border">
-                    <img
+                    <Image
                         src={BRANDING.logoPath}
                         alt={BRANDING.appName}
+                        width={48}
+                        height={48}
                         className="w-12 h-12"
                     />
                 </div>
@@ -68,7 +129,8 @@ export default function LoginPage() {
                 </div>
 
                 {/* Microsoft login button */}
-                <button
+                <a
+                    href={emulatorAuthorizePath}
                     onClick={handleLogin}
                     className="w-full flex items-center justify-center gap-3 bg-[#0078D4] hover:bg-[#006cbd] text-white font-medium py-4 px-6 rounded-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-lg"
                 >
@@ -83,7 +145,7 @@ export default function LoginPage() {
                         <rect x="11" y="11" width="9" height="9" fill="#ffb900" />
                     </svg>
                     Accedi con Microsoft
-                </button>
+                </a>
 
                 {/* Footer hint */}
                 <p className="mt-6 text-center text-xs text-secondary">

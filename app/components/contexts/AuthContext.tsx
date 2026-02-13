@@ -3,6 +3,11 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { Session, AuthChangeEvent } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
+import {
+    getAuthProviderMode,
+    getOAuthRedirectPath,
+    isEmulatorAuthProvider,
+} from "@/lib/auth/provider";
 
 interface AuthContextType {
     session: Session | null;
@@ -43,21 +48,46 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         );
 
         return () => subscription.unsubscribe();
-    }, []);
+    }, [supabase.auth]);
 
     const signInWithMicrosoft = async () => {
-        await supabase.auth.signInWithOAuth({
+        const providerMode = getAuthProviderMode();
+        const appOrigin = window.location.origin;
+
+        if (!isEmulatorAuthProvider(providerMode)) {
+            // Standard flow — Supabase handles redirect to real Entra ID
+            await supabase.auth.signInWithOAuth({
+                provider: "azure",
+                options: {
+                    scopes: "openid profile email",
+                    redirectTo: `${appOrigin}${getOAuthRedirectPath()}`,
+                },
+            });
+            return;
+        }
+
+        // Emulator flow uses our authorize proxy so callback and redirect URI are host-aware.
+        const params = new URLSearchParams({
             provider: "azure",
-            options: {
-                scopes: "openid profile email",
-                redirectTo: "http://localhost:3090",
-            },
+            scopes: "openid profile email",
+            redirect_to: `${appOrigin}${getOAuthRedirectPath()}`,
         });
+        window.location.assign(`/api/auth/authorize?${params.toString()}`);
     };
 
     const signOut = async () => {
-        await supabase.auth.signOut();
+        try {
+            await fetch("/api/auth/signout", {
+                method: "POST",
+                credentials: "include",
+            });
+        } catch (error) {
+            console.error("AuthContext: server signout failed", error);
+        }
+
+        await supabase.auth.signOut({ scope: "local" });
         setSession(null);
+        window.location.assign("/login");
     };
 
     return (

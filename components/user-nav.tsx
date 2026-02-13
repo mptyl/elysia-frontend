@@ -1,6 +1,5 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -14,7 +13,6 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { LogOut, User as UserIcon } from "lucide-react";
-import { LuChevronDown } from "react-icons/lu";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -25,26 +23,6 @@ export function UserNav() {
 
     useEffect(() => {
         const getUser = async () => {
-            // Check for Auth Bypass Mode
-            if (process.env.NEXT_PUBLIC_AUTH_ENABLED === "false") {
-                console.log("UserNav: Auth disabled, using mock user");
-                // Create a partial mock user that satisfies the component's needs
-                // We cast to any or Partial<User> -> User because constructing a full Supabase User object is verbose
-                const mockUser: any = {
-                    id: "1234",
-                    email: "mock@local",
-                    user_metadata: {
-                        full_name: "Mock User",
-                        name: "Mock"
-                    },
-                    aud: "authenticated",
-                    created_at: new Date().toISOString(),
-                    app_metadata: {},
-                };
-                setUser(mockUser as User);
-                return;
-            }
-
             console.log("UserNav: Fetching session...");
             const {
                 data: { session },
@@ -58,11 +36,6 @@ export function UserNav() {
         };
         getUser();
 
-        // If auth is disabled, we don't need to subscribe to changes
-        if (process.env.NEXT_PUBLIC_AUTH_ENABLED === "false") {
-            return () => { };
-        }
-
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             console.log("UserNav: Auth change", _event);
             setUser(session?.user ?? null);
@@ -72,9 +45,18 @@ export function UserNav() {
     }, [supabase.auth]);
 
     const handleSignOut = async () => {
-        await supabase.auth.signOut();
+        try {
+            await fetch("/api/auth/signout", {
+                method: "POST",
+                credentials: "include",
+            });
+        } catch (error) {
+            console.error("UserNav: server signout failed", error);
+        }
+
+        await supabase.auth.signOut({ scope: "local" });
         router.refresh();
-        router.push("/login");
+        window.location.assign("/login");
     };
 
     // 1. Loading State
@@ -102,13 +84,6 @@ export function UserNav() {
     const email = user.email || "";
     const fullName = user.user_metadata?.full_name || user.user_metadata?.name || email.split("@")[0] || "User";
     const name = fullName.split(" ")[0]; // Show only first name
-    const initials = name
-        .split(" ")
-        .map((n: string) => n[0])
-        .join("")
-        .toUpperCase()
-        .substring(0, 2);
-
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>

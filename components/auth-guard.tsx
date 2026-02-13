@@ -9,59 +9,26 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     const router = useRouter();
     const pathname = usePathname();
     const loginPage = pathname === "/login";
-    const [authorized, setAuthorized] = useState(false);
+    const [authorized, setAuthorized] = useState<boolean>(!loginPage);
 
     useEffect(() => {
-        const checkAuth = async () => {
-            console.log("AuthGuard: Checking auth state...");
-
-            // Bypass auth if disabled
-            if (process.env.NEXT_PUBLIC_AUTH_ENABLED === "false") {
-                console.log("AuthGuard: Auth disabled, bypassing checks.");
-                if (loginPage) {
-                    router.replace("/");
-                } else {
-                    setAuthorized(true);
-                }
-                return;
-            }
-
-            try {
-                const {
-                    data: { session },
-                    error,
-                } = await supabase.auth.getSession();
-
-                if (error) console.error("AuthGuard: Error getting session", error);
-
-                const user = session?.user;
-                console.log("AuthGuard: User found:", !!user, "Path:", pathname);
-
-                const isStaticAsset = pathname?.includes(".");
-
-                if (!user && !loginPage && !isStaticAsset) {
-                    console.log("AuthGuard: Redirecting to /login");
-                    router.replace("/login");
-                } else if (user && loginPage) {
-                    console.log("AuthGuard: Redirecting to /");
-                    router.replace("/");
-                } else {
-                    console.log("AuthGuard: Authorized to view content.");
-                    setAuthorized(true);
-                }
-            } catch (err) {
-                console.error("AuthGuard: Unexpected error", err);
-            }
-        };
-
-        checkAuth();
+        // Middleware is the source of truth for protected route access.
+        // Client-side auth state can lag behind right after OAuth callback.
+        if (!loginPage) {
+            setAuthorized(true);
+        }
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
             console.log("AuthGuard: Auth state change:", event);
             if (event === "SIGNED_OUT") {
                 setAuthorized(false);
                 router.replace("/login");
-            } else if (event === "SIGNED_IN") {
+            } else if (
+                event === "SIGNED_IN" ||
+                event === "INITIAL_SESSION" ||
+                event === "TOKEN_REFRESHED"
+            ) {
+                setAuthorized(true);
                 if (loginPage) {
                     router.replace("/");
                 }
@@ -71,7 +38,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
         return () => {
             subscription.unsubscribe();
         };
-    }, [router, pathname, supabase.auth, loginPage]);
+    }, [router, supabase.auth, loginPage]);
 
     // On login page, render children directly without app shell
     // This gives the login page a clean, standalone appearance

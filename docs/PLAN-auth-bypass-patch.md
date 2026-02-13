@@ -1,5 +1,8 @@
 # PLAN-auth-bypass-patch
 
+> Deprecated: auth-bypass mode is no longer supported.  
+> Use `NEXT_PUBLIC_AUTH_PROVIDER=emulator|entra` as documented in `docs/auth/reconfiguration-manual.md`.
+
 ## 1. Context Analysis
 - **Goal**: Allow the frontend to run in two modes based on an environment variable (`NEXT_PUBLIC_AUTH_ENABLED`).
   - **Auth Active**: Standard behavior (login required, real user ID).

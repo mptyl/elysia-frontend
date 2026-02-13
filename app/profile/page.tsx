@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useOrgUnits } from "@/hooks/useOrgUnits";
-import type { AIIdentityMode, OrgUnit } from "@/app/types/profile-types";
+import type { AIIdentityMode } from "@/app/types/profile-types";
 
 export default function ProfilePage() {
     const supabase = createClient();
@@ -43,24 +43,6 @@ export default function ProfilePage() {
     // Load user on mount
     useEffect(() => {
         const getUser = async () => {
-            // Check for Auth Bypass Mode
-            if (process.env.NEXT_PUBLIC_AUTH_ENABLED === "false") {
-                // Mock user for local development
-                const mockUser: any = {
-                    id: "1234",
-                    email: "mock@local",
-                    user_metadata: {
-                        full_name: "Mock User",
-                        name: "Mock"
-                    },
-                    aud: "authenticated",
-                    created_at: new Date().toISOString(),
-                    app_metadata: {},
-                };
-                setUser(mockUser as User);
-                return;
-            }
-
             const { data: { user }, error } = await supabase.auth.getUser();
             if (error || !user) {
                 router.push("/login");
@@ -86,41 +68,6 @@ export default function ProfilePage() {
         setSaving(true);
         setSaveError(null);
         setSaveSuccess(false);
-
-        // Check for Auth Bypass Mode
-        if (process.env.NEXT_PUBLIC_AUTH_ENABLED === "false") {
-            // Simulate API delay
-            await new Promise(resolve => setTimeout(resolve, 500));
-            console.log("ProfilePage: Auth disabled, mocking save success", {
-                org_unit: selectedOrgUnitId,
-                ai_identity_user: aiIdentityUser,
-                ai_identity_mode: aiIdentityMode
-            });
-
-            // Persist to localStorage
-            const mockProfile = {
-                id: "1234",
-                org_unit: selectedOrgUnitId,
-                app_role: "admin",
-                ai_identity_user: aiIdentityUser,
-                ai_identity_mode: aiIdentityMode,
-                org_units: orgUnits.find(ou => ou.id === selectedOrgUnitId) || {
-                    id: "mock-unit",
-                    name: "Mock Unit",
-                    ai_identity_base: "Base Mock Identity"
-                }
-            };
-            localStorage.setItem("mock_user_profile", JSON.stringify(mockProfile));
-
-            setSaveSuccess(true);
-            setSaving(false);
-            // Refetch to update UI state
-            await refetch();
-
-            // Clear success message after 3 seconds
-            setTimeout(() => setSaveSuccess(false), 3000);
-            return;
-        }
 
         try {
             const { error } = await supabase

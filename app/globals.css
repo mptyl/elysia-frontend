@@ -199,6 +199,9 @@ body {
 
 @layer base {
   :root {
+    --font-text: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    --font-heading: "Trebuchet MS", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+
     --background: 0 0% 9%;
     --background_alt: 0 0% 14%;
     --foreground: 0 0% 18%;

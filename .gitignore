@@ -41,4 +41,5 @@ next-env.d.ts
 
 .vscode
 
-
+# Server-specific env profiles (contain instance keys)
+config/env/.env.*.server-vpn

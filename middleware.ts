@@ -1,17 +1,25 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { getAuthProviderMode, getOAuthRedirectPath, isEmulatorAuthProvider } from "@/lib/auth/provider";
+import { getSupabaseCookieOptions } from "@/lib/supabase/cookies";
 
 export async function middleware(request: NextRequest) {
+    const providerMode = getAuthProviderMode();
+    const isEmulatorProvider = isEmulatorAuthProvider(providerMode);
+
     let response = NextResponse.next({
         request: {
             headers: request.headers,
         },
     });
 
+    // Server-side needs a full URL; NEXT_PUBLIC_SUPABASE_URL may be a relative path
+    const supabaseUrl = process.env.SUPABASE_INTERNAL_URL || process.env.NEXT_PUBLIC_SUPABASE_URL!;
     const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        supabaseUrl,
         process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
         {
+            cookieOptions: getSupabaseCookieOptions(),
             cookies: {
                 getAll() {
                     return request.cookies.getAll();
@@ -38,23 +46,36 @@ export async function middleware(request: NextRequest) {
     // Redirect unauthenticated users to login
     // Exclude login page, API routes, and static assets
     const isLoginPage = request.nextUrl.pathname === "/login";
-
-    // Bypass auth if disabled
-    if (process.env.NEXT_PUBLIC_AUTH_ENABLED === "false") {
-        if (isLoginPage) {
-            const url = request.nextUrl.clone();
-            url.pathname = "/";
-            return NextResponse.redirect(url);
-        }
-        return response;
-    }
+    const isAuthCallbackPage = request.nextUrl.pathname === getOAuthRedirectPath();
 
     const isApiRoute = request.nextUrl.pathname.startsWith("/api");
+    // Proxy routes: Supabase, Entra emulator, and Elysia backend APIs
+    // These bypass Next.js middleware auth checks (Elysia handles its own auth or was previously accessed directly)
+    const isProxyRoute =
+        request.nextUrl.pathname.startsWith("/supabase") ||
+        (isEmulatorProvider && request.nextUrl.pathname.startsWith("/entra")) ||
+        (isEmulatorProvider && request.nextUrl.pathname.startsWith("/common")) ||
+        // Elysia backend routes
+        request.nextUrl.pathname.startsWith("/init") ||
+        request.nextUrl.pathname.startsWith("/user") ||
+        request.nextUrl.pathname.startsWith("/collections") ||
+        request.nextUrl.pathname.startsWith("/db") ||
+        request.nextUrl.pathname.startsWith("/tree") ||
+        request.nextUrl.pathname.startsWith("/feedback") ||
+        request.nextUrl.pathname.startsWith("/util") ||
+        request.nextUrl.pathname.startsWith("/ws");
     const isStaticAsset =
         request.nextUrl.pathname.startsWith("/_next") ||
         request.nextUrl.pathname.includes(".");
 
-    if (!user && !isLoginPage && !isApiRoute && !isStaticAsset) {
+    if (
+        !user &&
+        !isLoginPage &&
+        !isAuthCallbackPage &&
+        !isApiRoute &&
+        !isProxyRoute &&
+        !isStaticAsset
+    ) {
         const url = request.nextUrl.clone();
         url.pathname = "/login";
         return NextResponse.redirect(url);
