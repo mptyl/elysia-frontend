@@ -8,13 +8,10 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     const supabase = createClient();
     const router = useRouter();
     const pathname = usePathname();
+    const loginPage = pathname === "/login";
     const [authorized, setAuthorized] = useState(false);
-    const [isLoginPage, setIsLoginPage] = useState(false);
 
     useEffect(() => {
-        const loginPage = pathname === "/login";
-        setIsLoginPage(loginPage);
-
         const checkAuth = async () => {
             console.log("AuthGuard: Checking auth state...");
 
@@ -59,7 +56,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
         checkAuth();
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
             console.log("AuthGuard: Auth state change:", event);
             if (event === "SIGNED_OUT") {
                 setAuthorized(false);
@@ -74,11 +71,11 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
         return () => {
             subscription.unsubscribe();
         };
-    }, [router, pathname, supabase.auth]);
+    }, [router, pathname, supabase.auth, loginPage]);
 
     // On login page, render children directly without app shell
     // This gives the login page a clean, standalone appearance
-    if (isLoginPage) {
+    if (loginPage) {
         return <>{children}</>;
     }
 
@@ -93,4 +90,3 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
     return <>{children}</>;
 }
-

@@ -50,7 +50,7 @@ const AbstractSphereScene = dynamic(
 
 export default function ChatPage() {
   const { sendQuery, socketOnline } = useContext(SocketContext);
-  const { id, showRateLimitDialog } = useContext(SessionContext);
+  const { id, showRateLimitDialog, initError } = useContext(SessionContext);
   const {
     changeBaseToQuery,
     addTreeToConversation,
@@ -182,6 +182,21 @@ export default function ChatPage() {
     }
   }, [collections]);
 
+  if (initError) {
+    return (
+      <div className="flex flex-col w-screen h-screen items-center justify-center gap-4">
+        <p className="text-error text-xl font-semibold">Initialization Failed</p>
+        <p className="text-secondary text-center max-w-md">{initError}</p>
+        <Button
+          onClick={() => window.location.reload()}
+          className="bg-primary text-background hover:bg-primary/90"
+        >
+          Retry
+        </Button>
+      </div>
+    );
+  }
+
   if (!socketOnline) {
     return (
       <div className="flex flex-col w-screen h-screen items-center justify-center">
@@ -207,56 +222,54 @@ export default function ChatPage() {
     <div className="flex flex-col w-full h-full items-center justify-start gap-3">
       <div className="flex w-full justify-between items-center lg:sticky z-20 top-0 lg:p-0 p-4 gap-5 bg-background">
         <div className="flex items-center gap-5">
-          {currentConversation != null && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button className="bg-accent/10 hover:bg-accent/20 border-accent border">
-                  {mode === "chat" ? (
-                    <>
-                      <BsChatFill size={14} className="text-accent" />
-                      <p className="text-accent">Chat</p>
-                    </>
-                  ) : mode === "flow" ? (
-                    <>
-                      <RiFlowChart size={14} className="text-accent" />
-                      <p className="text-accent">Tree</p>
-                    </>
-                  ) : mode === "debug" ? (
-                    <>
-                      <CgDebug size={14} className="text-accent" />
-                      <p className="text-accent">Debug</p>
-                    </>
-                  ) : mode === "settings" ? (
-                    <>
-                      <TbSettings size={14} className="text-accent" />
-                      <p className="text-accent">Settings</p>
-                    </>
-                  ) : null}
-                  <LuChevronDown size={14} className="text-accent" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setMode("chat")}>
-                  <BsChatFill size={14} />
-                  Chat
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="bg-accent/10 hover:bg-accent/20 border-accent border">
+                {mode === "chat" ? (
+                  <>
+                    <BsChatFill size={14} className="text-accent" />
+                    <p className="text-accent">Chat</p>
+                  </>
+                ) : mode === "flow" ? (
+                  <>
+                    <RiFlowChart size={14} className="text-accent" />
+                    <p className="text-accent">Tree</p>
+                  </>
+                ) : mode === "debug" ? (
+                  <>
+                    <CgDebug size={14} className="text-accent" />
+                    <p className="text-accent">Debug</p>
+                  </>
+                ) : mode === "settings" ? (
+                  <>
+                    <TbSettings size={14} className="text-accent" />
+                    <p className="text-accent">Settings</p>
+                  </>
+                ) : null}
+                <LuChevronDown size={14} className="text-accent" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => setMode("chat")}>
+                <BsChatFill size={14} />
+                Chat
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setMode("flow")}>
+                <RiFlowChart size={14} />
+                Tree
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setMode("settings")}>
+                <TbSettings size={14} />
+                Settings
+              </DropdownMenuItem>
+              {process.env.NODE_ENV === "development" && (
+                <DropdownMenuItem onClick={() => setMode("debug")}>
+                  <CgDebug size={14} />
+                  Debug
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setMode("flow")}>
-                  <RiFlowChart size={14} />
-                  Tree
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setMode("settings")}>
-                  <TbSettings size={14} />
-                  Settings
-                </DropdownMenuItem>
-                {process.env.NODE_ENV === "development" && (
-                  <DropdownMenuItem onClick={() => setMode("debug")}>
-                    <CgDebug size={14} />
-                    Debug
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
           <div className="flex gap-2 items-center justify-center fade-in">
             <p className="text-primary text-sm">
               {currentTitle && currentTitle != "New Conversation"

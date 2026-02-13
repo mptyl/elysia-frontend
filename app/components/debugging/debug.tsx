@@ -20,6 +20,7 @@ const DebugView: React.FC<DebugViewProps> = ({
   const [debug, setDebug] = useState<DebugResponse | null>(null);
 
   const updateDebug = async (conversation_id: string) => {
+    if (!conversation_id) return;
     const debug = await fetchDebug(conversation_id);
     setDebug(debug);
   };
