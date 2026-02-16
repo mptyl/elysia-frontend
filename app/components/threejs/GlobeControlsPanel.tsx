@@ -51,7 +51,7 @@ export default function GlobeControlsPanel({
           onClick={() => setCollapsed(!collapsed)}
           className="h-10 w-10"
         >
-          {collapsed ? <IoChevronForward /> : <IoChevronBack />}
+          {collapsed ? <IoChevronBack /> : <IoChevronForward />}
         </Button>
       </div>
 

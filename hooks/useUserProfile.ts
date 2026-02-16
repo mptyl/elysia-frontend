@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type {
     UserProfileWithOrgUnit,
-    AIIdentityMode,
     UserProfile,
     OrgUnit,
 } from "@/app/types/profile-types";
@@ -49,8 +48,12 @@ export function useUserProfile(userId: string | undefined): UseUserProfileResult
                     id: userId,
                     org_unit: null,
                     app_role: "user",
-                    ai_identity_user: "",
-                    ai_identity_mode: "APPEND" as AIIdentityMode,
+                    response_detail_level: "balanced",
+                    communication_tone: "professional",
+                    preferred_language: "it",
+                    response_focus: "technical",
+                    custom_instructions: "",
+                    custom_instructions_mode: "append",
                 };
 
                 const { data: createdProfile, error: createError } = await supabase
