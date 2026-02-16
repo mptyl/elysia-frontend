@@ -58,6 +58,7 @@ export default function Home() {
     loadingConfigs,
     savingConfig,
     updateUnsavedChanges,
+    initError,
   } = useContext(SessionContext);
 
   // Configuration state management
@@ -393,6 +394,21 @@ export default function Home() {
                     onOpenEnvModal={() => setIsEnvModalOpen(true)}
                   />
                 </div>
+              </div>
+            ) : initError ? (
+              <div className="flex flex-col items-center justify-center h-full w-full gap-4">
+                <p className="text-error text-lg font-semibold">
+                  Initialization Failed
+                </p>
+                <p className="text-secondary text-center max-w-md">
+                  {initError}
+                </p>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="px-4 py-2 bg-primary text-background rounded-md hover:bg-primary/90 transition-colors"
+                >
+                  Retry
+                </button>
               </div>
             ) : (
               <div className="flex items-center justify-center h-full w-full">

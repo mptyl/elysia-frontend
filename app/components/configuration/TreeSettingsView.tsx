@@ -83,10 +83,12 @@ export default function TreeSettingsView({
     );
   }
 
-  if (!currentConfig) {
+  if (!currentConfig || !conversation_id) {
     return (
       <div className="flex flex-col items-center justify-center h-full w-full gap-4">
-        <p className="text-secondary">No chat configuration found</p>
+        <p className="text-secondary">
+          {!conversation_id ? "No conversation selected" : "No chat configuration found"}
+        </p>
         <button
           onClick={selectChat}
           className="flex items-center gap-2 px-4 py-2 border border-foreground_alt rounded-md hover:bg-foreground_alt/10 transition-colors"
@@ -139,7 +141,7 @@ export default function TreeSettingsView({
             modelsIssues={getAllModelsIssues()}
             onUpdateSettings={updateSettingsFields}
             onUpdateConfig={setCurrentConfig}
-            setChangedConfig={() => {}} // Changes are tracked by the tree state hook
+            setChangedConfig={() => { }} // Changes are tracked by the tree state hook
             showDocumentation={false}
             onResetConfig={resetConfig}
           />

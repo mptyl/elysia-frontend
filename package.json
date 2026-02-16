@@ -3,13 +3,15 @@
   "version": "0.2.5",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3090",
+    "dev": "next dev -p ${APP_BIND_PORT:-3090}",
+    "dev:server": "next dev -H ${APP_BIND_HOST:-0.0.0.0} -p ${APP_BIND_PORT:-3090}",
     "build": "cross-env NEXT_PUBLIC_IS_STATIC=true next build",
     "build:clean": "rm -rf .next out && cross-env NEXT_PUBLIC_IS_STATIC=true next build",
     "export": "chmod +x export.sh && ./export.sh",
     "assemble": "cross-env NEXT_PUBLIC_IS_STATIC=true next build && chmod +x export.sh && ./export.sh",
     "assemble:clean": "rm -rf .next out && cross-env NEXT_PUBLIC_IS_STATIC=true next build && chmod +x export.sh && ./export.sh",
-    "start": "next start -p 3090",
+    "start": "next start -p ${APP_BIND_PORT:-3090}",
+    "start:server": "next start -H ${APP_BIND_HOST:-0.0.0.0} -p ${APP_BIND_PORT:-3090}",
     "lint": "next lint",
     "test": "npm run lint"
   },

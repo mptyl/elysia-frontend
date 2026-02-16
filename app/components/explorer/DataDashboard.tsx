@@ -44,7 +44,7 @@ const Dashboard: React.FC = () => {
     fetchCollections,
     loadingCollections,
   } = useContext(CollectionContext);
-  const { id } = useContext(SessionContext);
+  const { id, initError } = useContext(SessionContext);
   const { currentToasts, showErrorToast } = useContext(ToastContext);
   const { triggerAnalysis } = useContext(ProcessingContext);
   const { changePage } = useContext(RouterContext);
@@ -133,6 +133,22 @@ const Dashboard: React.FC = () => {
     }
     fetchCollections();
   };
+
+
+  if (initError) {
+    return (
+      <div className="flex flex-col w-full h-full items-center justify-center gap-4">
+        <p className="text-error text-xl font-semibold">Initialization Failed</p>
+        <p className="text-secondary text-center max-w-md">{initError}</p>
+        <Button
+          onClick={() => window.location.reload()}
+          className="bg-primary text-background hover:bg-primary/90"
+        >
+          Retry
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex w-full flex-col gap-2 min-h-0 items-center justify-start h-full fade-in">

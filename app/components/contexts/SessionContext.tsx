@@ -47,6 +47,7 @@ export const SessionContext = createContext<{
   fetchConversationFlag: boolean;
   updateUnsavedChanges: (unsaved: boolean) => void;
   unsavedChanges: boolean;
+  initError: string | null;
 }>({
   mode: "home",
   id: "",
@@ -71,6 +72,7 @@ export const SessionContext = createContext<{
   fetchConversationFlag: false,
   updateUnsavedChanges: () => { },
   unsavedChanges: false,
+  initError: null,
 });
 
 export const SessionProvider = ({
@@ -102,6 +104,7 @@ export const SessionProvider = ({
     useState<boolean>(false);
 
   const [unsavedChanges, setUnsavedChanges] = useState<boolean>(false);
+  const [initError, setInitError] = useState<string | null>(null);
 
   const triggerFetchCollection = () => {
     setFetchCollectionFlag((prev) => !prev);
@@ -186,12 +189,20 @@ export const SessionProvider = ({
     if (!id) {
       return;
     }
+    // Reset error state on new initialization attempt
+    setInitError(null);
     const user_object = await initializeUser(id);
     setLoadingConfig(true);
 
     if (user_object.error) {
       console.error(user_object.error);
-      showErrorToast("Failed to Initialize User", user_object.error);
+      const errorMessage = user_object.error || "Failed to initialize user configuration";
+      setInitError(errorMessage);
+      showErrorToast("Failed to Initialize User", errorMessage);
+      // Even if initialization fails, we mark as initialized to allow the app to attempt to proceed
+      // This prevents the app from being stuck in a loading state
+      initialized.current = true;
+      setLoadingConfig(false);
       return;
     }
 
@@ -381,6 +392,7 @@ export const SessionProvider = ({
         fetchConversationFlag,
         updateUnsavedChanges,
         unsavedChanges,
+        initError,
       }}
     >
       {children}

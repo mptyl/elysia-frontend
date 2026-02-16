@@ -1,8 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
-import type { UserProfileWithOrgUnit, AIIdentityMode } from "@/app/types/profile-types";
+import type {
+    UserProfileWithOrgUnit,
+    AIIdentityMode,
+    UserProfile,
+    OrgUnit,
+} from "@/app/types/profile-types";
 
 interface UseUserProfileResult {
     profile: UserProfileWithOrgUnit | null;
@@ -15,33 +20,11 @@ export function useUserProfile(userId: string | undefined): UseUserProfileResult
     const [profile, setProfile] = useState<UserProfileWithOrgUnit | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const supabase = createClient();
+    const supabase = useMemo(() => createClient(), []);
 
-    const fetchProfile = async () => {
-        // Check for Auth Bypass Mode
-        if (process.env.NEXT_PUBLIC_AUTH_ENABLED === "false") {
-            setLoading(false);
-            const savedProfile = typeof window !== 'undefined' ? localStorage.getItem("mock_user_profile") : null;
-            if (savedProfile) {
-                setProfile(JSON.parse(savedProfile));
-            } else {
-                setProfile({
-                    id: "1234",
-                    org_unit: "mock-unit",
-                    app_role: "admin",
-                    ai_identity_user: "Mock Identity Context",
-                    ai_identity_mode: "APPEND",
-                    org_units: {
-                        id: "mock-unit",
-                        name: "Mock Unit",
-                        ai_identity_base: "Base Mock Identity"
-                    }
-                } as UserProfileWithOrgUnit);
-            }
-            return;
-        }
-
+    const fetchProfile = useCallback(async () => {
         if (!userId) {
+            setProfile(null);
             setLoading(false);
             return;
         }
@@ -50,65 +33,75 @@ export function useUserProfile(userId: string | undefined): UseUserProfileResult
         setError(null);
 
         try {
-            // Try to fetch existing profile with org unit join
-            const { data, error: fetchError } = await supabase
+            const { data: profileRow, error: fetchError } = await supabase
                 .from("user_profiles")
-                .select(`
-                    *,
-                    org_units (
-                        id,
-                        name,
-                        ai_identity_base
-                    )
-                `)
+                .select("*")
                 .eq("id", userId)
-                .single();
+                .maybeSingle();
 
             if (fetchError) {
-                // Profile doesn't exist - create on-the-fly without org_unit
-                if (fetchError.code === "PGRST116") {
-                    const newProfile = {
-                        id: userId,
-                        org_unit: null,
-                        app_role: "user",
-                        ai_identity_user: "",
-                        ai_identity_mode: "APPEND" as AIIdentityMode,
-                    };
-
-                    const { data: createdProfile, error: createError } = await supabase
-                        .from("user_profiles")
-                        .insert(newProfile)
-                        .select(`
-                            *,
-                            org_units (
-                                id,
-                                name,
-                                ai_identity_base
-                            )
-                        `)
-                        .single();
-
-                    if (createError) {
-                        throw createError;
-                    }
-
-                    setProfile(createdProfile as UserProfileWithOrgUnit);
-                } else {
-                    throw fetchError;
-                }
-            } else {
-                setProfile(data as UserProfileWithOrgUnit);
+                throw fetchError;
             }
+
+            let resolvedProfile = profileRow as UserProfile | null;
+            if (!resolvedProfile) {
+                const newProfile = {
+                    id: userId,
+                    org_unit: null,
+                    app_role: "user",
+                    ai_identity_user: "",
+                    ai_identity_mode: "APPEND" as AIIdentityMode,
+                };
+
+                const { data: createdProfile, error: createError } = await supabase
+                    .from("user_profiles")
+                    .upsert(newProfile, { onConflict: "id" })
+                    .select("*")
+                    .single();
+
+                if (createError) {
+                    throw createError;
+                }
+
+                resolvedProfile = createdProfile as UserProfile;
+            }
+
+            let orgUnit: OrgUnit | null = null;
+            if (resolvedProfile.org_unit) {
+                const { data: orgUnitRow, error: orgUnitError } = await supabase
+                    .from("org_units")
+                    .select("id, name, ai_identity_base, created_at")
+                    .eq("id", resolvedProfile.org_unit)
+                    .maybeSingle();
+
+                if (orgUnitError) {
+                    throw orgUnitError;
+                }
+
+                orgUnit = (orgUnitRow as OrgUnit | null) ?? null;
+            }
+
+            setProfile({
+                ...resolvedProfile,
+                org_units: orgUnit,
+            } as UserProfileWithOrgUnit);
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Failed to load profile");
+            const errorMessage =
+                typeof err === "object" &&
+                    err !== null &&
+                    "message" in err &&
+                    typeof (err as { message?: unknown }).message === "string"
+                    ? ((err as { message: string }).message)
+                    : "Failed to load profile";
+            setError(errorMessage);
         } finally {
             setLoading(false);
         }
-    };
+    }, [supabase, userId]);
 
     useEffect(() => {
-        fetchProfile();
-    }, [userId]);
+        void fetchProfile();
+    }, [fetchProfile]);
 
     return { profile, loading, error, refetch: fetchProfile };
 }
