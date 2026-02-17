@@ -1,7 +1,6 @@
 "use client";
 
-import { MoveLeft, Save, Home, Loader2 } from "lucide-react";
-import Link from "next/link";
+import { Save, Home, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
@@ -120,14 +119,9 @@ export default function ProfilePage() {
 
     return (
         <div className="flex flex-col items-center h-full w-full gap-6 p-6 overflow-hidden">
-            <div className="flex items-center gap-4">
-                <Link href="/" className="hover:text-primary transition-colors">
-                    <MoveLeft className="w-6 h-6" />
-                </Link>
-                <h1 className="text-2xl font-bold font-heading text-primary">
-                    Profilo
-                </h1>
-            </div>
+            <h1 className="text-2xl font-bold font-heading text-primary">
+                Profilo Utente
+            </h1>
 
             <div className="flex-1 w-full max-w-4xl bg-background_alt rounded-xl border border-border p-8 shadow-sm overflow-y-auto">
                 {isLoading ? (
@@ -141,16 +135,25 @@ export default function ProfilePage() {
                 ) : (
                     <div className="flex flex-col gap-6">
                         {/* User Info Header */}
-                        <div className="flex items-center gap-4">
-                            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center text-primary text-2xl font-bold border border-border">
-                                {user.email?.substring(0, 2).toUpperCase()}
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center text-primary text-2xl font-bold border border-border">
+                                    {user.email?.substring(0, 2).toUpperCase()}
+                                </div>
+                                <div>
+                                    <h2 className="text-xl font-bold text-foreground">
+                                        {user.user_metadata?.full_name || "User"}
+                                    </h2>
+                                    <p className="text-secondary">{user.email}</p>
+                                </div>
                             </div>
-                            <div>
-                                <h2 className="text-xl font-bold text-foreground">
-                                    {user.user_metadata?.full_name || "User"}
-                                </h2>
-                                <p className="text-secondary">{user.email}</p>
-                            </div>
+                            <Button
+                                onClick={handleCancel}
+                                className="flex items-center gap-2"
+                            >
+                                <Home className="w-4 h-4" />
+                                Torna alla Home
+                            </Button>
                         </div>
 
                         <div className="h-px w-full bg-border" />
@@ -332,8 +335,14 @@ export default function ProfilePage() {
 
                         <div className="h-px w-full bg-border" />
 
-                        {/* Save/Cancel Buttons */}
-                        <div className="flex items-center gap-4">
+                        {/* Save Button */}
+                        <div className="flex justify-end items-center gap-4">
+                            {saveSuccess && (
+                                <span className="text-green-500 text-sm">Profilo salvato!</span>
+                            )}
+                            {saveError && (
+                                <span className="text-red-500 text-sm">{saveError}</span>
+                            )}
                             <Button
                                 variant="outline"
                                 onClick={handleSave}
@@ -347,20 +356,6 @@ export default function ProfilePage() {
                                 )}
                                 Salva
                             </Button>
-                            <Button
-                                onClick={handleCancel}
-                                disabled={saving}
-                                className="flex items-center gap-2"
-                            >
-                                <Home className="w-4 h-4" />
-                                Torna alla Home
-                            </Button>
-                            {saveSuccess && (
-                                <span className="text-green-500 text-sm">Profilo salvato!</span>
-                            )}
-                            {saveError && (
-                                <span className="text-red-500 text-sm">{saveError}</span>
-                            )}
                         </div>
                     </div>
                 )}
