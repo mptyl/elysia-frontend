@@ -31,6 +31,14 @@ function parseBaseUrl(rawValue: string, origin: string): URL {
 }
 
 export async function GET(request: NextRequest) {
+    // Static export build: return placeholder to avoid request.headers usage
+    if (process.env.NEXT_PUBLIC_IS_STATIC === "true") {
+        return NextResponse.json(
+            { error: "Not available in static export mode" },
+            { status: 405 }
+        );
+    }
+
     if (getAuthProviderMode() !== "emulator") {
         return NextResponse.json(
             {

@@ -24,6 +24,7 @@ import { FaLinkedin } from "react-icons/fa";
 import { FaYoutube } from "react-icons/fa";
 
 import { RiRobot2Line } from "react-icons/ri";
+import { TbReportAnalytics } from "react-icons/tb";
 
 import { public_path } from "@/app/components/host";
 
@@ -102,6 +103,12 @@ const SidebarComponent: React.FC = () => {
         mode: ["eval", "feedback", "display"],
         icon: <AiOutlineExperiment />,
         onClick: () => changePage("eval", {}, true, unsavedChanges),
+      },
+      {
+        title: "Reportistica",
+        mode: ["reportistica"],
+        icon: <TbReportAnalytics />,
+        onClick: () => changePage("reportistica", {}, true, unsavedChanges),
       },
     ];
     setItems(_items);

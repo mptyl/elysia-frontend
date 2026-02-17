@@ -12,6 +12,14 @@ import { getSupabaseCookieOptions } from "@/lib/supabase/cookies";
  * If using PKCE flow (code in query params), this route exchanges the code.
  */
 export async function GET(request: NextRequest) {
+    // Static export build: return placeholder to avoid request.headers usage
+    if (process.env.NEXT_PUBLIC_IS_STATIC === "true") {
+        return NextResponse.json(
+            { error: "Not available in static export mode" },
+            { status: 405 }
+        );
+    }
+
     const forwardedHostRaw = request.headers.get("x-forwarded-host");
     const forwardedProtoRaw = request.headers.get("x-forwarded-proto");
     const hostRaw = request.headers.get("host");

@@ -9,6 +9,7 @@ const useEmulator = authProvider === "emulator";
 const supabaseInternal = process.env.SUPABASE_INTERNAL_URL || "http://127.0.0.1:8000";
 const entraInternal = process.env.ENTRA_INTERNAL_URL || "http://127.0.0.1:8029";
 const elysiaInternal = process.env.ELYSIA_INTERNAL_URL || "http://127.0.0.1:8090";
+const n8nInternal = process.env.N8N_INTERNAL_URL || "http://10.1.1.11:5678";
 
 const nextConfig = {
   ...(isStaticExport ? { output: "export" } : {}),
@@ -33,6 +34,11 @@ const nextConfig = {
         destination: `${supabaseInternal}/:path*`,
       },
       ...elysiaRoutes,
+      // N8N webhook proxy
+      {
+        source: "/n8n/:path*",
+        destination: `${n8nInternal}/:path*`,
+      },
     ];
 
     // Entra emulator proxy — only needed with local auth emulator
