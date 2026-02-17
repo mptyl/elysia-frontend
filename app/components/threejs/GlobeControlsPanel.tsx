@@ -1,4 +1,4 @@
-import { GlobeSettings } from "./globeConfig";
+import { GlobeSettings, ShapeType } from "./globeConfig";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -51,7 +51,7 @@ export default function GlobeControlsPanel({
           onClick={() => setCollapsed(!collapsed)}
           className="h-10 w-10"
         >
-          {collapsed ? <IoChevronForward /> : <IoChevronBack />}
+          {collapsed ? <IoChevronBack /> : <IoChevronForward />}
         </Button>
       </div>
 
@@ -92,7 +92,7 @@ export default function GlobeControlsPanel({
                     variant={settings.shapeType === shape ? "default" : "outline"}
                     size="sm"
                     className="text-[10px] h-7 px-2 capitalize"
-                    onClick={() => updateSetting("shapeType", shape as any)}
+                    onClick={() => updateSetting("shapeType", shape as ShapeType)}
                   >
                     {shape === "torusKnot" ? "Torus" : shape}
                   </Button>

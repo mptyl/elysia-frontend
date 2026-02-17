@@ -49,6 +49,21 @@ export async function GET(request: NextRequest) {
         );
 
         await supabase.auth.exchangeCodeForSession(code);
+
+        // Sync profile from directory service (fire-and-forget)
+        const { data: { user: authedUser } } = await supabase.auth.getUser();
+        if (authedUser?.email) {
+            fetch(`${origin}/api/auth/sync-profile`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Cookie: request.headers.get("cookie") || "",
+                },
+            }).catch((err) =>
+                console.error("[Callback] sync-profile failed:", err),
+            );
+        }
+
         return response;
     }
 
@@ -58,6 +73,7 @@ export async function GET(request: NextRequest) {
     const loginUrl = `${origin}/login`;
     const homeUrl = `${origin}/`;
     const sessionUrl = `${origin}/api/auth/session`;
+    const syncProfileUrl = `${origin}/api/auth/sync-profile`;
     const callbackPath = getOAuthRedirectPath();
 
     const html = `<!doctype html>
@@ -73,6 +89,7 @@ export async function GET(request: NextRequest) {
         var loginUrl = ${JSON.stringify(loginUrl)};
         var homeUrl = ${JSON.stringify(homeUrl)};
         var sessionUrl = ${JSON.stringify(sessionUrl)};
+        var syncProfileUrl = ${JSON.stringify(syncProfileUrl)};
         var callbackPath = ${JSON.stringify(callbackPath)};
         var hash = window.location.hash || "";
         var search = window.location.search || "";
@@ -94,6 +111,9 @@ export async function GET(request: NextRequest) {
             })
               .then(function (res) {
                 if (!res.ok) throw new Error("Session exchange failed");
+                return fetch(syncProfileUrl, { method: "POST", credentials: "include" });
+              })
+              .then(function () {
                 window.history.replaceState(null, "", callbackPath);
                 window.location.replace(homeUrl);
               })

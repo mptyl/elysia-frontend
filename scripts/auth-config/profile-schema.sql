@@ -132,3 +132,94 @@ insert into public.user_profiles (id)
 select id
 from auth.users
 on conflict (id) do nothing;
+
+-- ============================================================
+-- Migration: structured profile fields
+-- ============================================================
+
+-- New directory-service fields (read-only, synced from Entra/emulator)
+ALTER TABLE public.user_profiles
+    ADD COLUMN IF NOT EXISTS job_title TEXT,
+    ADD COLUMN IF NOT EXISTS department TEXT;
+
+-- New communication preference fields
+ALTER TABLE public.user_profiles
+    ADD COLUMN IF NOT EXISTS response_detail_level TEXT NOT NULL DEFAULT 'balanced'
+        CHECK (response_detail_level IN ('executive_summary', 'balanced', 'operational_detail')),
+    ADD COLUMN IF NOT EXISTS communication_tone TEXT NOT NULL DEFAULT 'professional'
+        CHECK (communication_tone IN ('formal', 'professional', 'direct')),
+    ADD COLUMN IF NOT EXISTS preferred_language TEXT NOT NULL DEFAULT 'it'
+        CHECK (preferred_language IN ('it', 'en')),
+    ADD COLUMN IF NOT EXISTS response_focus TEXT NOT NULL DEFAULT 'technical'
+        CHECK (response_focus IN ('normative', 'managerial', 'technical', 'relational')),
+    ADD COLUMN IF NOT EXISTS custom_instructions TEXT NOT NULL DEFAULT '';
+
+-- Migrate existing data
+UPDATE public.user_profiles
+    SET custom_instructions = ai_identity_user
+    WHERE ai_identity_user IS NOT NULL AND ai_identity_user != '';
+
+-- Remove old fields
+ALTER TABLE public.user_profiles DROP COLUMN IF EXISTS ai_identity_user;
+ALTER TABLE public.user_profiles DROP COLUMN IF EXISTS ai_identity_mode;
+
+-- Drop old constraint (may fail silently if not present)
+ALTER TABLE public.user_profiles DROP CONSTRAINT IF EXISTS user_profiles_ai_identity_mode_check;
+
+-- ============================================================
+-- Role standard instructions (per department/job_title)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS public.role_standard_instructions (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    department text NOT NULL,
+    job_title text NOT NULL,
+    instructions text NOT NULL DEFAULT '',
+    created_at timestamptz NOT NULL DEFAULT timezone('utc', now()),
+    updated_at timestamptz NOT NULL DEFAULT timezone('utc', now()),
+    UNIQUE(department, job_title)
+);
+
+ALTER TABLE public.role_standard_instructions ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies
+        WHERE schemaname = 'public'
+          AND tablename = 'role_standard_instructions'
+          AND policyname = 'role_std_instr_select_auth'
+    ) THEN
+        CREATE POLICY role_std_instr_select_auth
+            ON public.role_standard_instructions
+            FOR SELECT TO authenticated USING (true);
+    END IF;
+END $$;
+
+GRANT SELECT ON public.role_standard_instructions TO authenticated;
+GRANT ALL ON public.role_standard_instructions TO service_role;
+
+DROP TRIGGER IF EXISTS trg_role_std_instr_updated_at ON public.role_standard_instructions;
+CREATE TRIGGER trg_role_std_instr_updated_at
+BEFORE UPDATE ON public.role_standard_instructions
+FOR EACH ROW EXECUTE FUNCTION public.set_current_timestamp_updated_at();
+
+-- Custom instructions mode on user_profiles
+ALTER TABLE public.user_profiles
+    ADD COLUMN IF NOT EXISTS custom_instructions_mode text NOT NULL DEFAULT 'append'
+        CHECK (custom_instructions_mode IN ('append', 'override'));
+
+-- Seed standard instructions for each department/job_title combination
+INSERT INTO public.role_standard_instructions (department, job_title, instructions) VALUES
+('DGE', 'Responsabile Direzione Generale',
+ 'Rispondi con prospettiva strategica e di governance. Enfatizza impatti organizzativi, rischi e opportunità. Fornisci sintesi decisionali con raccomandazioni chiare. Considera sempre le implicazioni inter-dipartimentali e i vincoli normativi di alto livello.'),
+('AFC', 'Addetta/o Amministrazione, Finanza e Controllo',
+ 'Concentrati su aspetti contabili, finanziari e di controllo di gestione. Cita riferimenti normativi fiscali e contabili quando rilevante. Fornisci dati e analisi quantitative. Evidenzia impatti sul bilancio e sulla compliance finanziaria.'),
+('IES', 'Technical Project Manager',
+ 'Fornisci risposte orientate alla gestione progettuale e tecnica. Includi riferimenti a metodologie di project management. Evidenzia dipendenze, rischi tecnici e milestone. Suggerisci approcci strutturati per la pianificazione e il monitoraggio.'),
+('IES', 'Funzionario/a Tecnico/a Attività Normative',
+ 'Concentrati su aspetti normativi e regolamentari tecnici. Cita riferimenti a norme, standard e regolamenti applicabili. Fornisci analisi di conformità e gap analysis. Evidenzia scadenze normative e obblighi di adeguamento.'),
+('CEM', 'Responsabile Comunicazione e Coordinamento',
+ 'Adotta un approccio orientato alla comunicazione efficace e al coordinamento stakeholder. Suggerisci strategie comunicative e di engagement. Considera il pubblico target e il tono appropriato. Enfatizza chiarezza, coerenza del messaggio e tempistiche.'),
+('DIT', 'Responsabile Trasformazione Digitale',
+ 'Rispondi con focus su innovazione digitale e trasformazione tecnologica. Considera architetture IT, integrazione sistemi e roadmap digitali. Evidenzia best practice di digitalizzazione e change management tecnologico. Valuta impatti su processi e competenze digitali.')
+ON CONFLICT (department, job_title) DO NOTHING;
