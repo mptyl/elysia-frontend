@@ -84,12 +84,6 @@ export async function GET(request: NextRequest) {
             locationUrl.pathname = `${basePath}${targetPath}`;
         }
 
-        // Keep callback pinned to the same origin used by the browser request.
-        locationUrl.searchParams.set(
-            "redirect_uri",
-            `${origin}/supabase/auth/v1/callback`
-        );
-
         const redirectResponse = NextResponse.redirect(
             locationUrl.toString(),
             response.status === 301 ? 301 : 302
