@@ -3,6 +3,7 @@
 import { Save, Home, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { navigateTo } from "@/app/components/host";
 import { useRouter } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
@@ -54,7 +55,7 @@ export default function ProfilePage() {
         const getUser = async () => {
             const { data: { user }, error } = await supabase.auth.getUser();
             if (error || !user) {
-                router.push("/login");
+                navigateTo("/login");
             } else {
                 setUser(user);
             }

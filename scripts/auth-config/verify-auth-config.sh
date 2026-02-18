@@ -77,9 +77,11 @@ if [[ "${additional_redirects}" != *"${site_url}${oauth_redirect_path}"* ]]; the
   exit 1
 fi
 
-expected_callback_uri="${site_url}/supabase/auth/v1/callback"
-if [[ "${callback_uri}" != "${expected_callback_uri}" ]]; then
-  echo "[ERROR] GOTRUE_EXTERNAL_AZURE_REDIRECT_URI mismatch. Expected ${expected_callback_uri}, got ${callback_uri}."
+expected_proxy="${site_url}/supabase/auth/v1/callback"
+api_ext_url="$(read_value "${SUPABASE_ENV}" "API_EXTERNAL_URL")"
+expected_direct="${api_ext_url}/auth/v1/callback"
+if [[ "${callback_uri}" != "${expected_proxy}" && "${callback_uri}" != "${expected_direct}" ]]; then
+  echo "[ERROR] GOTRUE_EXTERNAL_AZURE_REDIRECT_URI mismatch. Expected ${expected_proxy} (proxy) or ${expected_direct} (direct), got ${callback_uri}."
   exit 1
 fi
 

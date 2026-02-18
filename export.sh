@@ -4,7 +4,7 @@
 SOURCE_DIR="out"
 
 # Destination directory
-DEST_DIR="../elysia/api/static"
+DEST_DIR="../elysia/elysia/api/static"
 
 # Clear Next.js cache to ensure fresh build
 echo "Clearing Next.js cache..."

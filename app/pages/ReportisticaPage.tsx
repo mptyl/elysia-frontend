@@ -23,7 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-const CATEGORIES_URL = "/n8n/webhook-test/get-categories";
+const CATEGORIES_URL = "/n8n/webhook/get-categories";
 
 export default function ReportisticaPage() {
   const [categories, setCategories] = useState<string[]>([]);
@@ -40,9 +40,11 @@ export default function ReportisticaPage() {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
       })
-      .then((data: { categories: string[] }[]) => {
+      .then((data: { categories: string[] } | { categories: string[] }[]) => {
         if (!cancelled) {
-          const cats = data?.[0]?.categories ?? [];
+          const cats = Array.isArray(data)
+            ? data?.[0]?.categories ?? []
+            : data?.categories ?? [];
           setCategories(cats);
         }
       })

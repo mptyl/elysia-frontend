@@ -11,6 +11,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { createClient } from "@/lib/supabase/client";
+import { navigateTo } from "@/app/components/host";
 import { User } from "@supabase/supabase-js";
 import { LogOut, User as UserIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -71,7 +72,7 @@ export function UserNav() {
             <Button
                 variant="ghost"
                 className="h-10 border border-dashed border-secondary text-secondary hover:text-primary gap-2 px-3"
-                onClick={() => router.push("/login")}
+                onClick={() => navigateTo("/login")}
             >
                 <UserIcon className="h-5 w-5" />
                 <span className="text-sm">Guest (Login)</span>
@@ -105,7 +106,7 @@ export function UserNav() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    <DropdownMenuItem onClick={() => router.push("/profile")}>
+                    <DropdownMenuItem onClick={() => navigateTo("/profile")}>
                         <UserIcon className="mr-2 h-4 w-4" />
                         <span>Profile</span>
                     </DropdownMenuItem>

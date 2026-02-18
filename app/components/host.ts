@@ -10,6 +10,30 @@ export const host =
 export const public_path =
   process.env.NEXT_PUBLIC_IS_STATIC !== "true" ? "/" : "/static/";
 
+export const isStaticMode = process.env.NEXT_PUBLIC_IS_STATIC === "true";
+
+/**
+ * Navigate to a page. In static mode, uses window.location for full page
+ * navigation (since Next.js client-side router can't handle separate HTML pages).
+ */
+export function navigateTo(path: string, replace = false) {
+  if (isStaticMode) {
+    if (replace) {
+      window.location.replace(path);
+    } else {
+      window.location.assign(path);
+    }
+  } else {
+    // In server mode, fall back to window.location as well.
+    // The caller can use Next.js router if preferred.
+    if (replace) {
+      window.location.replace(path);
+    } else {
+      window.location.assign(path);
+    }
+  }
+}
+
 export const getWebsocketHost = () => {
   if (process.env.NEXT_PUBLIC_IS_STATIC === "true") {
     // Static mode: app is served by FastAPI, derive WebSocket URL from browser location

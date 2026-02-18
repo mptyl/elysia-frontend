@@ -1,36 +1,64 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
+import { isStaticMode } from "@/app/components/host";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
     const supabase = createClient();
     const router = useRouter();
-    const pathname = usePathname();
-    const loginPage = pathname === "/login";
-    const [authorized, setAuthorized] = useState<boolean>(!loginPage);
+    const nextPathname = usePathname();
+
+    // In static mode, usePathname() may not reflect the real URL.
+    const loginPage = typeof window !== "undefined"
+        ? window.location.pathname === "/login"
+        : nextPathname === "/login";
+
+    // Server mode: middleware already validated session, start authorized.
+    // Static mode: no middleware, start unauthorized until session is confirmed.
+    const [authorized, setAuthorized] = useState<boolean>(
+        isStaticMode ? loginPage : !loginPage
+    );
 
     useEffect(() => {
-        // Middleware is the source of truth for protected route access.
-        // Client-side auth state can lag behind right after OAuth callback.
-        if (!loginPage) {
+        // In server mode, trust middleware — mark non-login pages as authorized immediately.
+        if (!isStaticMode && !loginPage) {
             setAuthorized(true);
         }
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-            console.log("AuthGuard: Auth state change:", event);
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            console.log("AuthGuard: Auth state change:", event, "session:", !!session);
             if (event === "SIGNED_OUT") {
                 setAuthorized(false);
-                router.replace("/login");
+                if (isStaticMode) {
+                    window.location.replace("/login");
+                } else {
+                    router.replace("/login");
+                }
             } else if (
                 event === "SIGNED_IN" ||
                 event === "INITIAL_SESSION" ||
                 event === "TOKEN_REFRESHED"
             ) {
-                setAuthorized(true);
-                if (loginPage) {
-                    router.replace("/");
+                if (session) {
+                    setAuthorized(true);
+                    if (loginPage) {
+                        if (isStaticMode) {
+                            window.location.replace("/");
+                        } else {
+                            router.replace("/");
+                        }
+                    }
+                } else if (event === "INITIAL_SESSION" && !loginPage && isStaticMode) {
+                    // Static mode only: no middleware to protect routes,
+                    // so redirect to login if there's no session.
+                    // Skip if URL hash has access_token (Supabase is processing it).
+                    const hash = typeof window !== "undefined" ? window.location.hash : "";
+                    if (!hash.includes("access_token=")) {
+                        setAuthorized(false);
+                        window.location.replace("/login");
+                    }
                 }
             }
         });
@@ -41,7 +69,6 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     }, [router, supabase.auth, loginPage]);
 
     // On login page, render children directly without app shell
-    // This gives the login page a clean, standalone appearance
     if (loginPage) {
         return <>{children}</>;
     }

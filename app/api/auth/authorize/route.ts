@@ -84,11 +84,13 @@ export async function GET(request: NextRequest) {
             locationUrl.pathname = `${basePath}${targetPath}`;
         }
 
-        // Keep callback pinned to the same origin used by the browser request.
-        locationUrl.searchParams.set(
-            "redirect_uri",
-            `${origin}/supabase/auth/v1/callback`
-        );
+        // redirect_uri must match GOTRUE_EXTERNAL_AZURE_REDIRECT_URI exactly,
+        // since Supabase uses it in the token exchange with the identity provider.
+        // Defaults to Supabase Kong directly (port 8000) so it works regardless of
+        // which frontend port (3090 or 8090) initiated the flow.
+        const gotrueRedirectUri = process.env.GOTRUE_EXTERNAL_AZURE_REDIRECT_URI
+            || `${origin}/supabase/auth/v1/callback`;
+        locationUrl.searchParams.set("redirect_uri", gotrueRedirectUri);
 
         const redirectResponse = NextResponse.redirect(
             locationUrl.toString(),
