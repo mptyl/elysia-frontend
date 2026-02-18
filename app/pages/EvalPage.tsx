@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { FeedbackMetadata } from "../components/types";
 import { Button } from "../../components/ui/button";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
@@ -96,7 +96,7 @@ export default function Home() {
     setFeedbackChartData(chartData);
   };
 
-  const fetchMetadata = async () => {
+  const fetchMetadata = useCallback(async () => {
     if (!id || loading.current) {
       return;
     }
@@ -105,7 +105,7 @@ export default function Home() {
     setFeedbackMetadata(data);
     convertToChartData(data);
     loading.current = false;
-  };
+  }, [id]);
 
   const handleBrowseFeedback = () => {
     changePage("eval", { page: "feedback" }, true);
@@ -113,7 +113,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchMetadata();
-  }, [id]);
+  }, [fetchMetadata]);
 
   return (
     <div

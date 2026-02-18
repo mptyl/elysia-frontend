@@ -46,7 +46,7 @@ import { SlOptions } from "react-icons/sl";
 
 import { useSearchParams, usePathname } from "next/navigation";
 
-import React, { useContext } from "react";
+import React, { useCallback, useContext } from "react";
 import { SessionContext } from "@/app/components/contexts/SessionContext";
 import { getFeedback } from "@/app/api/getFeedback";
 import { deleteFeedback } from "@/app/api/deleteFeedback";
@@ -78,15 +78,15 @@ export default function Home() {
   const [feedbackFilter, setFeedbackFilter] = useState<string>("all");
   const [maxPage, setMaxPage] = useState<number>(0);
 
-  const fetchMetadata = async () => {
+  const fetchMetadata = useCallback(async () => {
     if (!id) {
       return;
     }
     const data: FeedbackMetadata = await getFeedback(id);
     setMaxPage(Math.ceil(data.total_feedback / feedbackPageSize) - 1);
-  };
+  }, [id, feedbackPageSize]);
 
-  const fetchFeedbackData = async () => {
+  const fetchFeedbackData = useCallback(async () => {
     if (!id || feedbackLoading.current) {
       return;
     }
@@ -141,7 +141,7 @@ export default function Home() {
     setFeedbackData(feedbackData as FeedbackCollectionData);
     fetchMetadata();
     feedbackLoading.current = false;
-  };
+  }, [id, feedbackFilter, feedbackPage, feedbackPageSize, feedbackSortOn, feedbackAscending, fetchMetadata]);
 
   const handleSortOrderChange = (value: string) => {
     setFeedbackAscending(value === "ascending");
@@ -149,14 +149,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchFeedbackData();
-  }, [
-    feedbackPage,
-    feedbackPageSize,
-    feedbackSortOn,
-    feedbackAscending,
-    feedbackFilter,
-    id,
-  ]);
+  }, [fetchFeedbackData]);
 
   useEffect(() => {
     if (pathname === "/eval/feedback") {

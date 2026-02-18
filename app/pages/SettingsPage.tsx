@@ -229,7 +229,7 @@ export default function Home() {
 
   useEffect(() => {
     updateUnsavedChanges(changedConfig);
-  }, [changedConfig]);
+  }, [changedConfig, updateUnsavedChanges]);
 
   return (
     <div className="flex flex-col w-full h-screen">

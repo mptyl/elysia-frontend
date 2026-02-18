@@ -79,7 +79,9 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
     localSocket.onmessage = (event) => {
       try {
-        const message: Message = JSON.parse(event.data);
+        const parsed = JSON.parse(event.data);
+        if (parsed.type === "heartbeat") return;
+        const message: Message = parsed;
         handleWebsocketMessage(message);
       } catch (error) {
         if (process.env.NODE_ENV === "development") {
