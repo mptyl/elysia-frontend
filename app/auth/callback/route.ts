@@ -6,9 +6,9 @@ import { getSupabaseCookieOptions } from "@/lib/supabase/cookies";
 /**
  * Handles the OAuth callback from Supabase GoTrue.
  * GoTrue redirects here with tokens in the URL hash fragment (implicit flow).
- * Since hash fragments aren't sent to the server, this page serves as 
+ * Since hash fragments aren't sent to the server, this page serves as
  * a landing point where the client-side Supabase SDK can process the tokens.
- * 
+ *
  * If using PKCE flow (code in query params), this route exchanges the code.
  */
 export async function GET(request: NextRequest) {
