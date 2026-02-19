@@ -14,13 +14,18 @@ export const RouterContext = createContext<{
     replace?: boolean,
     guarded?: boolean
   ) => void;
+  prefillPrompt: string;
+  setPrefillPrompt: (prompt: string) => void;
 }>({
   currentPage: "chat",
   changePage: () => { },
+  prefillPrompt: "",
+  setPrefillPrompt: () => { },
 });
 
 export const RouterProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentPage, setCurrentPage] = useState<string>("chat");
+  const [prefillPrompt, setPrefillPrompt] = useState<string>("");
 
   const { showConfirmModal } = useContext(ToastContext);
 
@@ -106,6 +111,7 @@ export const RouterProvider = ({ children }: { children: React.ReactNode }) => {
       "elysia",
       "display",
       "reportistica",
+      "prompt-enhancer",
     ];
     const validatedPage = validPages.includes(pageParam) ? pageParam : "chat";
 
@@ -130,6 +136,8 @@ export const RouterProvider = ({ children }: { children: React.ReactNode }) => {
       value={{
         currentPage,
         changePage,
+        prefillPrompt,
+        setPrefillPrompt,
       }}
     >
       {children}
