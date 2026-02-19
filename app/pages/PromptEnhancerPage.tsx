@@ -58,7 +58,7 @@ export default function PromptEnhancerPage() {
 
   const handleUsa = useCallback(() => {
     if (!upperText.trim()) return;
-    setPrefillPrompt(upperText);
+    setPrefillPrompt(upperText, true);
     changePage("chat", {}, true);
   }, [upperText, setPrefillPrompt, changePage]);
 
@@ -105,22 +105,32 @@ export default function PromptEnhancerPage() {
 
   return (
     <div
-      className="flex flex-col w-full h-full gap-3 items-start justify-start fade-in"
+      className="flex flex-col w-full self-stretch gap-3 fade-in"
+      style={{ height: "calc(100vh - 6rem)" }}
       tabIndex={0}
     >
       {/* Header */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 shrink-0">
         <MdAutoFixHigh className="text-xl text-primary" />
         <p className="text-primary text-xl font-heading font-bold">
           Prompt Enhancer
         </p>
       </div>
 
-      {/* Upper section — enhanced prompt (flex-[4] ≈ 80%) */}
-      <div className="flex flex-col flex-[4] min-h-0 w-full">
+      {/* Upper section — enhanced prompt (fills all available height) */}
+      <div className="flex flex-col flex-1 min-h-0 w-full">
         <div className="flex justify-between items-center mb-2">
           <Button
-            variant="outline"
+            size="sm"
+            className="text-primary"
+            onClick={handleUsa}
+            disabled={!upperText.trim()}
+          >
+            <MdSend className="mr-1" />
+            Usa
+          </Button>
+          <Button
+            variant="ghost"
             size="sm"
             onClick={handlePulisci}
             disabled={!upperText && history.length === 0}
@@ -128,20 +138,18 @@ export default function PromptEnhancerPage() {
             <MdCleaningServices className="mr-1" />
             Pulisci
           </Button>
-          <Button
-            size="sm"
-            onClick={handleUsa}
-            disabled={!upperText.trim()}
-          >
-            <MdSend className="mr-1" />
-            Usa
-          </Button>
         </div>
         <textarea
           className="flex-1 w-full resize-none bg-background_alt border border-foreground_alt rounded-xl p-4 text-primary text-sm outline-none placeholder:text-secondary leading-relaxed"
           value={upperText}
           onChange={handleUpperTextChange}
           placeholder="Il prompt migliorato apparirà qui..."
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              handleUsa();
+            }
+          }}
         />
         {history.length >= 2 && (
           <div className="flex justify-center items-center gap-3 mt-2">
@@ -168,24 +176,36 @@ export default function PromptEnhancerPage() {
         )}
       </div>
 
-      {/* Lower section — suggestion/raw prompt (flex-1 ≈ 20%) */}
-      <div className="flex flex-col flex-1 min-h-0 w-full">
+      {/* Lower section — suggestion/raw prompt (anchored to bottom) */}
+      <div className="flex flex-col shrink-0 w-full h-[200px]">
         <div className="flex justify-between items-center mb-2">
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              className="text-primary"
+              onClick={handleMigliora}
+              disabled={!lowerText.trim() || isLoading}
+            >
+              <MdAutoFixHigh className="mr-1" />
+              {isLoading ? "Elaborazione..." : "Migliora"}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleAbbandona}
+            >
+              <MdArrowBack className="mr-1" />
+              Abbandona
+            </Button>
+          </div>
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
-            onClick={handleAbbandona}
+            onClick={() => setLowerText("")}
+            disabled={!lowerText}
           >
-            <MdArrowBack className="mr-1" />
-            Abbandona
-          </Button>
-          <Button
-            size="sm"
-            onClick={handleMigliora}
-            disabled={!lowerText.trim() || isLoading}
-          >
-            <MdAutoFixHigh className="mr-1" />
-            {isLoading ? "Elaborazione..." : "Migliora"}
+            <MdCleaningServices className="mr-1" />
+            Pulisci
           </Button>
         </div>
         <textarea
@@ -194,7 +214,7 @@ export default function PromptEnhancerPage() {
           onChange={(e) => setLowerText(e.target.value)}
           placeholder="Scrivi qui il tuo prompt o i suggerimenti di modifica..."
           onKeyDown={(e) => {
-            if (e.key === "Enter" && e.ctrlKey) {
+            if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
               handleMigliora();
             }

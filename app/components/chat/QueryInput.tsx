@@ -36,7 +36,7 @@ const QueryInput: React.FC<QueryInputProps> = ({
   defaultRagEnabled = false,
   conversationId,
 }) => {
-  const { prefillPrompt, setPrefillPrompt } = useContext(RouterContext);
+  const { prefillPrompt, setPrefillPrompt, autoSendPrefill } = useContext(RouterContext);
   const [query, setQuery] = useState("");
 
   const [route, setRoute] = useState<string>("");
@@ -85,10 +85,14 @@ const QueryInput: React.FC<QueryInputProps> = ({
 
   useEffect(() => {
     if (prefillPrompt) {
-      setQuery(prefillPrompt);
+      if (autoSendPrefill) {
+        triggerQuery(prefillPrompt);
+      } else {
+        setQuery(prefillPrompt);
+      }
       setPrefillPrompt("");
     }
-  }, [prefillPrompt, setPrefillPrompt]);
+  }, [prefillPrompt, setPrefillPrompt, autoSendPrefill]);
 
   useEffect(() => {
     addDisplacement(0.035);

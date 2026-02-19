@@ -15,17 +15,25 @@ export const RouterContext = createContext<{
     guarded?: boolean
   ) => void;
   prefillPrompt: string;
-  setPrefillPrompt: (prompt: string) => void;
+  setPrefillPrompt: (prompt: string, autoSend?: boolean) => void;
+  autoSendPrefill: boolean;
 }>({
   currentPage: "chat",
   changePage: () => { },
   prefillPrompt: "",
   setPrefillPrompt: () => { },
+  autoSendPrefill: false,
 });
 
 export const RouterProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentPage, setCurrentPage] = useState<string>("chat");
-  const [prefillPrompt, setPrefillPrompt] = useState<string>("");
+  const [prefillPrompt, _setPrefillPrompt] = useState<string>("");
+  const [autoSendPrefill, setAutoSendPrefill] = useState<boolean>(false);
+
+  const setPrefillPrompt = (prompt: string, autoSend: boolean = false) => {
+    _setPrefillPrompt(prompt);
+    setAutoSendPrefill(autoSend);
+  };
 
   const { showConfirmModal } = useContext(ToastContext);
 
@@ -138,6 +146,7 @@ export const RouterProvider = ({ children }: { children: React.ReactNode }) => {
         changePage,
         prefillPrompt,
         setPrefillPrompt,
+        autoSendPrefill,
       }}
     >
       {children}

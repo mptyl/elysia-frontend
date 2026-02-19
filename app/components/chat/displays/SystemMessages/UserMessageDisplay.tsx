@@ -113,13 +113,13 @@ const UserMessageDisplay: React.FC<UserMessageDisplayProps> = ({
         <div className="flex font-heading flex-grow justify-start items-start chat-animation gap-4">
           {!collapsed ? (
             <div className="flex gap-3 items-center">
-              <p className="text-primary text-3xl text-left flex-grow">
+              <p className="text-primary text-lg text-left flex-grow">
                 {renderTextWithHighlights(text)}
               </p>
               <CopyToClipboardButton copyText={text} />
             </div>
           ) : (
-            <p className="text-secondary hover:text-primary text-xl transition-all duration-300 text-left">
+            <p className="text-secondary hover:text-primary text-base transition-all duration-300 text-left">
               {text}
             </p>
           )}
