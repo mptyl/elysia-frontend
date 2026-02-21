@@ -157,6 +157,23 @@ tmux kill-session -t frontend
 | `Ctrl+B, D` | Esci dalla sessione senza fermarla |
 | `tmux kill-session -t frontend` | Distrugge la sessione (e il processo) |
 
+## 4. Esecuzione da Build (Minor consumo di memoria)
+
+Se il `dev:server` consuma troppa memoria e non hai bisogno dell'Ricaricamento Rapido (HMR) per lo sviluppo attivo, puoi compilare prima l'applicazione ed eseguirla in modalità produzione. Questo riduce significativamente l'impronta di memoria.
+
+1. **Compila l'applicazione:**
+   ```bash
+   cd /opt/athena/elysia-frontend
+   npm run build
+   ```
+
+2. **Avvia la build salvata (ascolterà sempre su 0.0.0.0 e porta 3090):**
+   ```bash
+   npm run start:server
+   ```
+
+Puoi combinare questa modalità con `nohup` o `tmux` (ad esempio `nohup npm run start:server > prod.log 2>&1 &`).
+
 ---
 
 ## Riepilogo
