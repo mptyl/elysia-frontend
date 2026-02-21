@@ -2,6 +2,8 @@ import { createServerClient } from "@supabase/ssr";
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseCookieOptions } from "@/lib/supabase/cookies";
 
+export const dynamic = "force-static";
+
 export async function POST(request: NextRequest) {
     const response = NextResponse.json({ ok: true });
 

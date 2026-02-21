@@ -91,7 +91,7 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   const { toast } = useToast();
 
   const [currentToasts, setCurrentToasts] = useState<Toast[]>([]);
-  const timerIntervalRef = useRef<NodeJS.Timeout>();
+  const timerIntervalRef = useRef<NodeJS.Timeout>(undefined);
 
   // Confirmation Modal State
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);

@@ -49,7 +49,7 @@ const UserMessageDisplay: React.FC<UserMessageDisplayProps> = ({
     // Sort events by index
     events.sort((a, b) => a.index - b.index || (a.isStart ? -1 : 1));
 
-    const segments: JSX.Element[] = [];
+    const segments: React.JSX.Element[] = [];
     let lastIndex = 0;
     const activeTypes = new Set<string>();
 

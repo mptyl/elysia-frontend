@@ -1,0 +1,23 @@
+nohup: ignoring input
+
+> elysia@0.2.5 dev:server
+> next dev -H ${APP_BIND_HOST:-0.0.0.0} -p ${APP_BIND_PORT:-3090}
+
+  ▲ Next.js 14.2.25
+  - Local:        http://localhost:3090
+  - Network:      http://0.0.0.0:3090
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1706ms
+ ✓ Compiled /middleware in 157ms (124 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 11.9s (7477 modules)
+ GET / 200 in 4553ms
+ ✓ Compiled in 1877ms (3715 modules)
+ ○ Compiling /icon.svg ...
+ ✓ Compiled /icon.svg in 834ms (3793 modules)
+ GET /icon.svg?d6c34577c7161f78 200 in 895ms
+ GET / 200 in 1503ms
+(node:1515586) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)

@@ -3,6 +3,8 @@ import { type NextRequest, NextResponse } from "next/server";
 import { getSupabaseCookieOptions } from "@/lib/supabase/cookies";
 import { fetchDirectoryUser } from "@/lib/directory/client";
 
+export const dynamic = "force-static";
+
 /**
  * POST /api/auth/sync-profile
  *

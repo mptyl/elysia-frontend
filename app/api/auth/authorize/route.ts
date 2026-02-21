@@ -4,6 +4,8 @@ import {
     getOAuthRedirectPath,
 } from "@/lib/auth/provider";
 
+export const dynamic = "force-static";
+
 /**
  * Proxies the Supabase OAuth authorize call (emulator mode only).
  * Intercepts the 302 to the Entra emulator (Docker-internal host)

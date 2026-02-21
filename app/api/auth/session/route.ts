@@ -2,6 +2,8 @@ import { createServerClient } from "@supabase/ssr";
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseCookieOptions } from "@/lib/supabase/cookies";
 
+export const dynamic = "force-static";
+
 interface SessionPayload {
     access_token?: string;
     refresh_token?: string;

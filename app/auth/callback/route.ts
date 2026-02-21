@@ -3,6 +3,8 @@ import { getOAuthRedirectPath } from "@/lib/auth/provider";
 import { type NextRequest, NextResponse } from "next/server";
 import { getSupabaseCookieOptions } from "@/lib/supabase/cookies";
 
+export const dynamic = "force-static";
+
 /**
  * Handles the OAuth callback from Supabase GoTrue.
  * GoTrue redirects here with tokens in the URL hash fragment (implicit flow).
