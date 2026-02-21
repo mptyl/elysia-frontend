@@ -4,7 +4,9 @@ import {
     getOAuthRedirectPath,
 } from "@/lib/auth/provider";
 
-export const dynamic = "force-static";
+// Patched by scripts/set-route-dynamic.js before each build:
+// "force-static" for static export, "force-dynamic" for server mode.
+export const dynamic = "force-dynamic";
 
 /**
  * Proxies the Supabase OAuth authorize call (emulator mode only).

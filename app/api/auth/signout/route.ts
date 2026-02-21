@@ -2,7 +2,9 @@ import { createServerClient } from "@supabase/ssr";
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseCookieOptions } from "@/lib/supabase/cookies";
 
-export const dynamic = "force-static";
+// Patched by scripts/set-route-dynamic.js before each build:
+// "force-static" for static export, "force-dynamic" for server mode.
+export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
     const response = NextResponse.json({ ok: true });

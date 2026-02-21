@@ -3,7 +3,9 @@ import { type NextRequest, NextResponse } from "next/server";
 import { getSupabaseCookieOptions } from "@/lib/supabase/cookies";
 import { fetchDirectoryUser } from "@/lib/directory/client";
 
-export const dynamic = "force-static";
+// Patched by scripts/set-route-dynamic.js before each build:
+// "force-static" for static export, "force-dynamic" for server mode.
+export const dynamic = "force-dynamic";
 
 /**
  * POST /api/auth/sync-profile

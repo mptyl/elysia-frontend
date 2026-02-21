@@ -23,13 +23,14 @@ if [ ! -d "$(dirname "$DEST_DIR")" ]; then
     exit 1
 fi
 
-# Create destination directory if it doesn't exist
-if [ ! -d "$DEST_DIR" ]; then
-    echo "Creating destination directory..."
-    mkdir -p "$DEST_DIR"
+# Clean destination directory to remove stale chunks from previous builds
+if [ -d "$DEST_DIR" ]; then
+    echo "Cleaning destination directory..."
+    rm -rf "$DEST_DIR"
 fi
+mkdir -p "$DEST_DIR"
 
-# Copy files with replacement
+# Copy fresh build output
 echo "Copying files from '$SOURCE_DIR' to '$DEST_DIR'..."
 cp -r "$SOURCE_DIR"/* "$DEST_DIR"
 
