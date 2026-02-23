@@ -12,6 +12,7 @@ import FeedbackPage from "./pages/FeedbackPage";
 import ElysiaPage from "./pages/ElysiaPage";
 import DisplayPage from "./pages/DisplayPage";
 import ReportisticaPage from "./pages/ReportisticaPage";
+import PromptEnhancerPage from "./pages/PromptEnhancerPage";
 import { ToastContext } from "./components/contexts/ToastContext";
 import ConfirmationModal from "./components/dialog/ConfirmationModal";
 
@@ -30,6 +31,7 @@ export default function Home() {
       {currentPage === "elysia" && <ElysiaPage />}
       {currentPage === "display" && <DisplayPage />}
       {currentPage === "reportistica" && <ReportisticaPage />}
+      {currentPage === "prompt-enhancer" && <PromptEnhancerPage />}
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getAuthProviderMode, getOAuthRedirectPath, isEmulatorAuthProvider } from "@/lib/auth/provider";
 import { getSupabaseCookieOptions } from "@/lib/supabase/cookies";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
     const providerMode = getAuthProviderMode();
     const isEmulatorProvider = isEmulatorAuthProvider(providerMode);
 

@@ -14,6 +14,7 @@ const n8nInternal = process.env.N8N_INTERNAL_URL || "http://10.1.1.11:5678";
 const nextConfig = {
   ...(isStaticExport ? { output: "export" } : {}),
   trailingSlash: false,
+  allowedDevOrigins: ["10.1.1.11"],
   async rewrites() {
     if (isStaticExport) {
       return [];

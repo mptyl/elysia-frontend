@@ -25,6 +25,7 @@ import { FaYoutube } from "react-icons/fa";
 
 import { RiRobot2Line } from "react-icons/ri";
 import { TbReportAnalytics } from "react-icons/tb";
+import { MdAutoFixHigh } from "react-icons/md";
 
 import { public_path } from "@/app/components/host";
 
@@ -109,6 +110,12 @@ const SidebarComponent: React.FC = () => {
         mode: ["reportistica"],
         icon: <TbReportAnalytics />,
         onClick: () => changePage("reportistica", {}, true, unsavedChanges),
+      },
+      {
+        title: "Prompt Enhancer",
+        mode: ["prompt-enhancer"],
+        icon: <MdAutoFixHigh />,
+        onClick: () => changePage("prompt-enhancer", {}, true, unsavedChanges),
       },
     ];
     setItems(_items);

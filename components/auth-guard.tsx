@@ -11,22 +11,21 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     const nextPathname = usePathname();
 
     // In static mode, usePathname() may not reflect the real URL.
-    const loginPage = typeof window !== "undefined"
-        ? window.location.pathname === "/login"
-        : nextPathname === "/login";
+    const pathname = typeof window !== "undefined"
+        ? window.location.pathname
+        : nextPathname;
 
-    // Server mode: middleware already validated session, start authorized.
-    // Static mode: no middleware, start unauthorized until session is confirmed.
-    const [authorized, setAuthorized] = useState<boolean>(
-        isStaticMode ? loginPage : !loginPage
-    );
+    const loginPage = pathname === "/login";
+    const callbackPage = pathname === "/auth/callback";
+
+    // Public pages (login + callback) render immediately without auth check.
+    const publicPage = loginPage || callbackPage;
+
+    // Start unauthorized until session is confirmed (both modes).
+    // On public pages, start authorized so content renders immediately.
+    const [authorized, setAuthorized] = useState<boolean>(publicPage);
 
     useEffect(() => {
-        // In server mode, trust middleware — mark non-login pages as authorized immediately.
-        if (!isStaticMode && !loginPage) {
-            setAuthorized(true);
-        }
-
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
             console.log("AuthGuard: Auth state change:", event, "session:", !!session);
             if (event === "SIGNED_OUT") {
@@ -50,14 +49,17 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
                             router.replace("/");
                         }
                     }
-                } else if (event === "INITIAL_SESSION" && !loginPage && isStaticMode) {
-                    // Static mode only: no middleware to protect routes,
-                    // so redirect to login if there's no session.
+                } else if (event === "INITIAL_SESSION" && !publicPage) {
+                    // No session on a protected page — redirect to login.
                     // Skip if URL hash has access_token (Supabase is processing it).
                     const hash = typeof window !== "undefined" ? window.location.hash : "";
                     if (!hash.includes("access_token=")) {
                         setAuthorized(false);
-                        window.location.replace("/login");
+                        if (isStaticMode) {
+                            window.location.replace("/login");
+                        } else {
+                            router.replace("/login");
+                        }
                     }
                 }
             }
@@ -66,10 +68,10 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
         return () => {
             subscription.unsubscribe();
         };
-    }, [router, supabase.auth, loginPage]);
+    }, [router, supabase.auth, publicPage, loginPage]);
 
-    // On login page, render children directly without app shell
-    if (loginPage) {
+    // On public pages (login, callback), render children directly without app shell
+    if (publicPage) {
         return <>{children}</>;
     }
 
