@@ -1,17 +1,26 @@
 {
   "permissions": {
     "allow": [
-      "Bash(chmod:*)",
-      "Bash(sudo chmod:*)",
-      "Bash(npx next build:*)",
-      "Bash(curl:*)",
-      "Bash(python3:*)",
-      "Bash(kill:*)",
-      "Bash(fuser:*)",
-      "Bash(git push:*)",
-      "Bash(lsof:*)",
+      "Bash(grep:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git checkout:*)",
+      "Bash(source:*)",
+      "Bash(python:*)",
+      "Bash(npm run build:*)",
       "Bash(ss -tlnp:*)",
-      "Bash(node -e:*)"
+      "Bash(netstat:*)",
+      "Bash(sudo iptables:*)",
+      "Bash(curl:*)",
+      "WebFetch(domain:10.1.1.11)",
+      "Bash(lsof:*)",
+      "Bash(kill:*)",
+      "Bash(pm2 list:*)",
+      "Bash(systemctl list-units:*)",
+      "Bash(timeout 30 npm run dev:*)",
+      "Bash(git branch:*)",
+      "Bash(git push:*)",
+      "Bash(git:*)"
     ]
   }
 }
