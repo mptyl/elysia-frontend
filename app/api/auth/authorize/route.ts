@@ -4,6 +4,10 @@ import {
     getOAuthRedirectPath,
 } from "@/lib/auth/provider";
 
+// Patched by scripts/set-route-dynamic.js before each build:
+// "force-static" for static export, "force-dynamic" for server mode.
+export const dynamic = "force-dynamic";
+
 /**
  * Proxies the Supabase OAuth authorize call (emulator mode only).
  * Intercepts the 302 to the Entra emulator (Docker-internal host)

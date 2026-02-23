@@ -41,7 +41,7 @@ interface RenderChatProps {
   _collapsed: boolean;
   conversationID: string;
   queryID: string;
-  messagesEndRef: React.RefObject<HTMLDivElement>;
+  messagesEndRef: React.RefObject<HTMLDivElement | null>;
   finished: boolean;
   query_start: Date;
   query_end: Date | null;

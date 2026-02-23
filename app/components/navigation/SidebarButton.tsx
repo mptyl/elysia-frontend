@@ -25,7 +25,7 @@ const SidebarButton: React.FC<SidebarButtonProps> = ({
     onClick={onClick}
   >
     {icon &&
-      React.cloneElement(icon as React.ReactElement, {
+      React.cloneElement(icon as React.ReactElement<{ size: number }>, {
         size: isCollapsed ? 20 : 14,
       })}
     {!isCollapsed && (

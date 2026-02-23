@@ -1,10 +1,10 @@
 "use client";
 
+import React, { useState } from "react";
 import { DocumentPayload } from "@/app/types/displays";
 import MarkdownFormat from "../../components/MarkdownFormat";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
 import { IoDocumentText } from "react-icons/io5";
 import { FaBookmark } from "react-icons/fa6";
 import { FaArrowUp } from "react-icons/fa6";
@@ -41,8 +41,8 @@ const DocumentView: React.FC<DocumentViewProps> = ({
       return { doc: <MarkdownFormat text={docPayload.content} />, chunks: [] };
     }
 
-    const doc: JSX.Element[] = [];
-    const chunks: JSX.Element[] = [];
+    const doc: React.JSX.Element[] = [];
+    const chunks: React.JSX.Element[] = [];
     let lastIndex = 0;
 
     docPayload.chunk_spans.forEach(({ start, end }, index) => {

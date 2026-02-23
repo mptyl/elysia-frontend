@@ -314,15 +314,11 @@ export default function Globe({
         <bufferGeometry>
           <bufferAttribute
             attach="attributes-position"
-            count={geometryData.edgePositions.length / 3}
-            array={geometryData.edgePositions}
-            itemSize={3}
+            args={[geometryData.edgePositions, 3]}
           />
           <bufferAttribute
             attach="attributes-color"
-            count={geometryData.edgeColors.length / 3}
-            array={geometryData.edgeColors}
-            itemSize={3}
+            args={[geometryData.edgeColors, 3]}
           />
         </bufferGeometry>
         <lineBasicMaterial
@@ -341,15 +337,11 @@ export default function Globe({
         <bufferGeometry>
           <bufferAttribute
             attach="attributes-position"
-            count={geometryData.nodePositions.length / 3}
-            array={geometryData.nodePositions}
-            itemSize={3}
+            args={[geometryData.nodePositions, 3]}
           />
           <bufferAttribute
             attach="attributes-color"
-            count={geometryData.nodeColors.length / 3}
-            array={geometryData.nodeColors}
-            itemSize={3}
+            args={[geometryData.nodeColors, 3]}
           />
         </bufferGeometry>
         <pointsMaterial

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { FaCircle } from "react-icons/fa";
 import { IoArrowUpCircleSharp, IoClose } from "react-icons/io5";
 import { RiFlowChart } from "react-icons/ri";
@@ -8,6 +8,7 @@ import { FaTrash } from "react-icons/fa";
 import CollectionSelection from "./components/CollectionSelection";
 import { Button } from "@/components/ui/button";
 import { TbSettings } from "react-icons/tb";
+import { RouterContext } from "../contexts/RouterContext";
 
 interface QueryInputProps {
   handleSendQuery: (
@@ -35,6 +36,7 @@ const QueryInput: React.FC<QueryInputProps> = ({
   defaultRagEnabled = false,
   conversationId,
 }) => {
+  const { prefillPrompt, setPrefillPrompt, autoSendPrefill } = useContext(RouterContext);
   const [query, setQuery] = useState("");
 
   const [route, setRoute] = useState<string>("");
@@ -80,6 +82,17 @@ const QueryInput: React.FC<QueryInputProps> = ({
     userHasInteractedRef.current = true;
     setSkipRag(!skipRag);
   };
+
+  useEffect(() => {
+    if (prefillPrompt) {
+      if (autoSendPrefill) {
+        triggerQuery(prefillPrompt);
+      } else {
+        setQuery(prefillPrompt);
+      }
+      setPrefillPrompt("");
+    }
+  }, [prefillPrompt, setPrefillPrompt, autoSendPrefill]);
 
   useEffect(() => {
     addDisplacement(0.035);

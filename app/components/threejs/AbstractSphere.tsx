@@ -24,9 +24,9 @@ function BasicSphere({
   settings: GlobeSettings;
   /* eslint-disable @typescript-eslint/no-explicit-any */
 } & any) {
-  const meshRef = useRef<THREE.Mesh>();
+  const meshRef = useRef<THREE.Mesh>(null);
   /* eslint-disable @typescript-eslint/no-explicit-any */
-  const materialRef = useRef<any>();
+  const materialRef = useRef<any>(null);
 
   const uniformsRef = useRef({
     uTime: { value: 0 },
