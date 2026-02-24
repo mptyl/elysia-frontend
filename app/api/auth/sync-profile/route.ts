@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 import { getSupabaseCookieOptions } from "@/lib/supabase/cookies";
 import { fetchDirectoryUser } from "@/lib/directory/client";
+import { getGraphAccessToken } from "@/lib/directory/graph-token";
 
 // Patched by scripts/set-route-dynamic.js before each build:
 // "force-static" for static export, "force-dynamic" for server mode.
@@ -46,7 +47,8 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ ok: true, reason: "no user/email" });
         }
 
-        const dirUser = await fetchDirectoryUser(user.email);
+        const graphToken = await getGraphAccessToken();
+        const dirUser = await fetchDirectoryUser(user.email, graphToken ?? undefined);
 
         if (!dirUser) {
             console.warn("[sync-profile] Directory service returned no data for", user.email);
