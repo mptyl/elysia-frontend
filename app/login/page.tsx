@@ -10,9 +10,9 @@ import {
     isEmulatorAuthProvider,
 } from "@/lib/auth/provider";
 
+const supabase = createClient();
+
 export default function LoginPage() {
-    const supabase = createClient();
-    const emulatorAuthorizePath = "/api/auth/authorize?provider=azure&scopes=openid%20profile%20email";
 
     useEffect(() => {
         const handleHashTokens = async () => {
@@ -65,7 +65,8 @@ export default function LoginPage() {
         return () => undefined;
     }, [supabase.auth]);
 
-    const handleLogin = (event: MouseEvent<HTMLAnchorElement>) => {
+    const handleLogin = async (event: MouseEvent<HTMLAnchorElement>) => {
+        event.preventDefault();
         const appOrigin = window.location.origin;
 
         try {
@@ -73,14 +74,16 @@ export default function LoginPage() {
 
             if (!isEmulatorAuthProvider(providerMode)) {
                 // Standard Supabase OAuth (for real Entra ID)
-                event.preventDefault();
-                supabase.auth.signInWithOAuth({
+                const { data, error } = await supabase.auth.signInWithOAuth({
                     provider: "azure",
                     options: {
                         scopes: "openid profile email",
                         redirectTo: `${appOrigin}${getOAuthRedirectPath()}`,
                     },
                 });
+                if (error) {
+                    console.error("LoginPage: signInWithOAuth error", error);
+                }
                 return;
             }
 
@@ -90,11 +93,20 @@ export default function LoginPage() {
                 scopes: "openid profile email",
                 redirect_to: `${appOrigin}${getOAuthRedirectPath()}`,
             });
-            event.preventDefault();
             window.location.assign(`/api/auth/authorize?${params.toString()}`);
         } catch (error) {
-            // Fallback keeps login working even if client-side env resolution fails.
-            console.error("LoginPage: OAuth config error, using emulator authorize fallback", error);
+            console.error("LoginPage: OAuth config error, falling back to direct Supabase OAuth", error);
+            // Fallback: try standard Supabase OAuth regardless of provider mode
+            const { error: oauthError } = await supabase.auth.signInWithOAuth({
+                provider: "azure",
+                options: {
+                    scopes: "openid profile email",
+                    redirectTo: `${appOrigin}${getOAuthRedirectPath()}`,
+                },
+            });
+            if (oauthError) {
+                console.error("LoginPage: fallback signInWithOAuth error", oauthError);
+            }
         }
     };
 
@@ -130,7 +142,7 @@ export default function LoginPage() {
 
                 {/* Microsoft login button */}
                 <a
-                    href={emulatorAuthorizePath}
+                    href="#"
                     onClick={handleLogin}
                     className="w-full flex items-center justify-center gap-3 bg-[#0078D4] hover:bg-[#006cbd] text-white font-medium py-4 px-6 rounded-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-lg"
                 >

@@ -17,9 +17,10 @@ import { createClient } from "@/lib/supabase/client";
  * In static-export mode (served by FastAPI), the backend's own /auth/callback
  * route handles the callback before this page is ever reached.
  */
+const supabase = createClient();
+
 export default function AuthCallbackPage() {
     const [status, setStatus] = useState("Processing authentication...");
-    const supabase = createClient();
 
     useEffect(() => {
         const handleCallback = async () => {
