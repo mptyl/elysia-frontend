@@ -31,6 +31,9 @@ yarn-error.log*
 
 # env files (can opt-in for commiting if needed)
 .env.local
+.env.copy.local
+.env.local.backup
+.env.test.local
 
 # vercel
 .vercel
@@ -43,3 +46,4 @@ next-env.d.ts
 
 # Server-specific env profiles (contain instance keys)
 config/env/.env.*.server-vpn
+
