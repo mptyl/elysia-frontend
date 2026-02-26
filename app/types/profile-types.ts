@@ -26,6 +26,7 @@ export interface OrgUnit {
 
 export interface UserProfile {
     id: string;
+    display_name: string | null;
     org_unit: string | null;
     job_title: string | null;
     department: string | null;

@@ -58,6 +58,7 @@ export async function POST(request: NextRequest) {
         const { error } = await supabase.from("user_profiles").upsert(
             {
                 id: user.id,
+                display_name: dirUser.displayName,
                 job_title: dirUser.jobTitle,
                 department: dirUser.department,
             },

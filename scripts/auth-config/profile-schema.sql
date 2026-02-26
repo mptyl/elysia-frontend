@@ -139,8 +139,16 @@ on conflict (id) do nothing;
 
 -- New directory-service fields (read-only, synced from Entra/emulator)
 ALTER TABLE public.user_profiles
+    ADD COLUMN IF NOT EXISTS display_name TEXT,
     ADD COLUMN IF NOT EXISTS job_title TEXT,
     ADD COLUMN IF NOT EXISTS department TEXT;
+
+-- Backfill display_name from auth.users metadata for existing profiles
+UPDATE public.user_profiles p
+   SET display_name = COALESCE(u.raw_user_meta_data->>'Display Name', u.raw_user_meta_data->>'full_name')
+  FROM auth.users u
+ WHERE p.id = u.id
+   AND p.display_name IS NULL;
 
 -- New communication preference fields
 ALTER TABLE public.user_profiles
