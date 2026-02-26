@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, type MouseEvent } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { BRANDING } from "@/app/config/branding";
 import {
@@ -13,6 +13,8 @@ import {
 const supabase = createClient();
 
 export default function LoginPage() {
+    const [loginError, setLoginError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const handleHashTokens = async () => {
@@ -67,46 +69,54 @@ export default function LoginPage() {
 
     const handleLogin = async (event: MouseEvent<HTMLAnchorElement>) => {
         event.preventDefault();
+        setLoginError(null);
+        setLoading(true);
+
         const appOrigin = window.location.origin;
 
         try {
             const providerMode = getAuthProviderMode();
+            const redirectPath = getOAuthRedirectPath();
+            const redirectTo = `${appOrigin}${redirectPath}`;
 
-            if (!isEmulatorAuthProvider(providerMode)) {
-                // Standard Supabase OAuth (for real Entra ID)
-                const { data, error } = await supabase.auth.signInWithOAuth({
+            if (isEmulatorAuthProvider(providerMode)) {
+                // Emulator: route through proxy to rewrite Docker-internal URLs
+                const params = new URLSearchParams({
                     provider: "azure",
-                    options: {
-                        scopes: "openid profile email",
-                        redirectTo: `${appOrigin}${getOAuthRedirectPath()}`,
-                    },
+                    scopes: "openid profile email",
+                    redirect_to: redirectTo,
                 });
-                if (error) {
-                    console.error("LoginPage: signInWithOAuth error", error);
-                }
+                window.location.assign(`/api/auth/authorize?${params.toString()}`);
                 return;
             }
 
-            // Emulator: route through proxy to rewrite Docker-internal URLs
-            const params = new URLSearchParams({
-                provider: "azure",
-                scopes: "openid profile email",
-                redirect_to: `${appOrigin}${getOAuthRedirectPath()}`,
-            });
-            window.location.assign(`/api/auth/authorize?${params.toString()}`);
-        } catch (error) {
-            console.error("LoginPage: OAuth config error, falling back to direct Supabase OAuth", error);
-            // Fallback: try standard Supabase OAuth regardless of provider mode
-            const { error: oauthError } = await supabase.auth.signInWithOAuth({
+            // Entra ID: use signInWithOAuth which handles PKCE + redirect
+            const { data, error } = await supabase.auth.signInWithOAuth({
                 provider: "azure",
                 options: {
                     scopes: "openid profile email",
-                    redirectTo: `${appOrigin}${getOAuthRedirectPath()}`,
+                    redirectTo,
+                    skipBrowserRedirect: true,
                 },
             });
-            if (oauthError) {
-                console.error("LoginPage: fallback signInWithOAuth error", oauthError);
+            if (error) {
+                console.error("LoginPage: signInWithOAuth error", error);
+                setLoginError(`Errore OAuth: ${error.message}`);
+                setLoading(false);
+                return;
             }
+            if (data?.url) {
+                window.location.assign(data.url);
+            } else {
+                console.error("LoginPage: no URL returned from signInWithOAuth");
+                setLoginError("Nessun URL di redirect ricevuto");
+                setLoading(false);
+            }
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            console.error("LoginPage: OAuth error:", message, error);
+            setLoginError(`Errore di autenticazione: ${message}`);
+            setLoading(false);
         }
     };
 
@@ -140,23 +150,34 @@ export default function LoginPage() {
                     </p>
                 </div>
 
+                {/* Error display */}
+                {loginError && (
+                    <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+                        {loginError}
+                    </div>
+                )}
+
                 {/* Microsoft login button */}
                 <a
                     href="#"
                     onClick={handleLogin}
-                    className="w-full flex items-center justify-center gap-3 bg-[#0078D4] hover:bg-[#006cbd] text-white font-medium py-4 px-6 rounded-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-lg"
+                    className={`w-full flex items-center justify-center gap-3 bg-[#0078D4] hover:bg-[#006cbd] text-white font-medium py-4 px-6 rounded-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-lg ${loading ? "opacity-70 pointer-events-none" : ""}`}
                 >
-                    <svg
-                        className="w-6 h-6"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 21 21"
-                    >
-                        <rect x="1" y="1" width="9" height="9" fill="#f25022" />
-                        <rect x="1" y="11" width="9" height="9" fill="#00a4ef" />
-                        <rect x="11" y="1" width="9" height="9" fill="#7fba00" />
-                        <rect x="11" y="11" width="9" height="9" fill="#ffb900" />
-                    </svg>
-                    Accedi con Microsoft
+                    {loading ? (
+                        <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                        <svg
+                            className="w-6 h-6"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 21 21"
+                        >
+                            <rect x="1" y="1" width="9" height="9" fill="#f25022" />
+                            <rect x="1" y="11" width="9" height="9" fill="#00a4ef" />
+                            <rect x="11" y="1" width="9" height="9" fill="#7fba00" />
+                            <rect x="11" y="11" width="9" height="9" fill="#ffb900" />
+                        </svg>
+                    )}
+                    {loading ? "Reindirizzamento..." : "Accedi con Microsoft"}
                 </a>
 
                 {/* Footer hint */}

@@ -20,7 +20,9 @@ export function useAuthUserId() {
         try {
             const { data: { user }, error } = await supabase.auth.getUser();
             if (error) {
-                console.error("Error fetching user:", error.message);
+                // Expected on public pages (login, callback) where no session exists.
+                // Use console.warn to avoid triggering Next.js dev error overlay.
+                console.warn("useAuthUserId: no active session:", error.message);
                 setUser(null);
                 setId(null);
             } else if (user) {
