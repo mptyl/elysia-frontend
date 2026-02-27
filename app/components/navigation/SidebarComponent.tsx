@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 
 import { SocketContext } from "../contexts/SocketContext";
 
@@ -28,6 +28,7 @@ import { TbReportAnalytics } from "react-icons/tb";
 import { MdAutoFixHigh } from "react-icons/md";
 
 import { public_path } from "@/app/components/host";
+import { createClient } from "@/lib/supabase/client";
 
 import {
   Sidebar,
@@ -121,6 +122,35 @@ const SidebarComponent: React.FC = () => {
     setItems(_items);
   }, [collections, unsavedChanges]);
 
+  const thothWinRef = useRef<Window | null>(null);
+
+  const handleThothAIClick = async () => {
+    const thothUrl = process.env.NEXT_PUBLIC_THOTH_URL ?? 'http://localhost:3040';
+    const supabase = createClient();
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+
+    // Open ThothAI with clean URL — no token in URL
+    thothWinRef.current = window.open(`${thothUrl}/auth/supabase`, '_blank');
+
+    if (!token) return; // no session: ThothAI will handle redirect to /login
+
+    // Wait for the "ready" signal from ThothAI, then send token via postMessage
+    const handler = (event: MessageEvent) => {
+      if (event.origin !== thothUrl) return;
+      if (event.data !== 'ready') return;
+      window.removeEventListener('message', handler);
+      thothWinRef.current?.postMessage(
+        { type: 'supabase_token', token },
+        thothUrl
+      );
+    };
+    window.addEventListener('message', handler);
+
+    // Cleanup if ThothAI does not respond (6s > ThothAI internal 5s timeout)
+    setTimeout(() => window.removeEventListener('message', handler), 6000);
+  };
+
   const openNewTab = (url: string) => {
     window.open(url, "_blank");
   };
@@ -184,6 +214,21 @@ const SidebarComponent: React.FC = () => {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  variant="default"
+                  onClick={handleThothAIClick}
+                >
+                  <p
+                    className="flex items-center gap-2"
+                    title="Open ThothAI — Text-to-SQL"
+                  >
+                    <RiRobot2Line />
+                    <span>ThothAI</span>
+                  </p>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
