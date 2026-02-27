@@ -77,9 +77,20 @@ export default function AuthCallbackPage() {
                 const refreshToken = params.get("refresh_token");
 
                 if (accessToken && refreshToken) {
-                    // Try server-side session endpoint first (sets HttpOnly cookies)
-                    try {
-                        const res = await fetch("/api/auth/session", {
+                    // Set session in the browser client first — this ensures the
+                    // createBrowserClient (used by AuthGuard) has the session in its
+                    // cookie storage before we navigate away.
+                    const { error: setSessionError } = await supabase.auth.setSession({
+                        access_token: accessToken,
+                        refresh_token: refreshToken,
+                    });
+
+                    if (setSessionError) {
+                        console.error("[Callback] setSession error:", setSessionError);
+                        // fall through to the invalid-tokens redirect below
+                    } else {
+                        // Also set server-side session (fire-and-forget, for SSR routes)
+                        fetch("/api/auth/session", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             credentials: "include",
@@ -87,31 +98,10 @@ export default function AuthCallbackPage() {
                                 access_token: accessToken,
                                 refresh_token: refreshToken,
                             }),
-                        });
+                        }).catch((err) =>
+                            console.error("[Callback] /api/auth/session failed:", err),
+                        );
 
-                        if (res.ok) {
-                            fetch("/api/auth/sync-profile", {
-                                method: "POST",
-                                credentials: "include",
-                            }).catch((err) =>
-                                console.error("[Callback] sync-profile failed:", err),
-                            );
-
-                            window.history.replaceState(null, "", "/auth/callback");
-                            window.location.replace("/");
-                            return;
-                        }
-                    } catch (e) {
-                        console.error("[Callback] /api/auth/session failed:", e);
-                    }
-
-                    // Fallback: set session directly via Supabase browser client
-                    const { error: setSessionError } = await supabase.auth.setSession({
-                        access_token: accessToken,
-                        refresh_token: refreshToken,
-                    });
-
-                    if (!setSessionError) {
                         fetch("/api/auth/sync-profile", {
                             method: "POST",
                             credentials: "include",
@@ -123,8 +113,6 @@ export default function AuthCallbackPage() {
                         window.location.replace("/");
                         return;
                     }
-
-                    console.error("[Callback] setSession error:", setSessionError);
                 }
 
                 // Invalid or missing tokens
