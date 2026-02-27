@@ -16,6 +16,7 @@ import { RouterProvider } from "./components/contexts/RouterContext";
 import { ProcessingProvider } from "./components/contexts/ProcessingContext";
 import { AuthGuard } from "@/components/auth-guard";
 import { AppShell } from "@/components/app-shell";
+import { AuthProvider } from "./components/contexts/AuthContext";
 
 export const metadata: Metadata = {
   title: "Athena",
@@ -42,11 +43,13 @@ export default function RootLayout({
                     <SocketProvider>
                       <EvaluationProvider>
                         <ProcessingProvider>
-                          <AuthGuard>
-                            <AppShell>
-                              {children}
-                            </AppShell>
-                          </AuthGuard>
+                          <AuthProvider>
+                            <AuthGuard>
+                              <AppShell>
+                                {children}
+                              </AppShell>
+                            </AuthGuard>
+                          </AuthProvider>
                         </ProcessingProvider>
                         <Toaster />
                       </EvaluationProvider>

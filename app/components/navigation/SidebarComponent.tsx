@@ -28,7 +28,7 @@ import { TbReportAnalytics } from "react-icons/tb";
 import { MdAutoFixHigh } from "react-icons/md";
 
 import { public_path } from "@/app/components/host";
-import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/app/components/contexts/AuthContext";
 
 import {
   Sidebar,
@@ -62,6 +62,7 @@ const SidebarComponent: React.FC = () => {
   const { changePage, currentPage } = useContext(RouterContext);
   const { collections, loadingCollections } = useContext(CollectionContext);
   const { unsavedChanges } = useContext(SessionContext);
+  const { session } = useAuth();
 
   const [items, setItems] = useState<
     {
@@ -148,8 +149,6 @@ const SidebarComponent: React.FC = () => {
     let popup: Window | null = null;
 
     try {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
       token = session?.access_token;
       popup = window.open(`${thothUrl}/auth/supabase`, '_blank');
       thothWinRef.current = popup;
