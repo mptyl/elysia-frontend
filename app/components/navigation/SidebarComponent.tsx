@@ -123,32 +123,72 @@ const SidebarComponent: React.FC = () => {
   }, [collections, unsavedChanges]);
 
   const thothWinRef = useRef<Window | null>(null);
+  const thothHandlerRef = useRef<((event: MessageEvent) => void) | null>(null);
+  const thothTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [thothLoading, setThothLoading] = useState(false);
+
+  // Clean up ThothAI message listener and timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (thothHandlerRef.current) {
+        window.removeEventListener('message', thothHandlerRef.current);
+      }
+      if (thothTimeoutRef.current !== null) {
+        clearTimeout(thothTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleThothAIClick = async () => {
+    if (thothLoading) return;
+    setThothLoading(true);
+
     const thothUrl = process.env.NEXT_PUBLIC_THOTH_URL ?? 'http://localhost:3040';
-    const supabase = createClient();
-    const { data: { session } } = await supabase.auth.getSession();
-    const token = session?.access_token;
+    let token: string | undefined;
+    let popup: Window | null = null;
 
-    // Open ThothAI with clean URL — no token in URL
-    thothWinRef.current = window.open(`${thothUrl}/auth/supabase`, '_blank');
+    try {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      token = session?.access_token;
+      popup = window.open(`${thothUrl}/auth/supabase`, '_blank');
+      thothWinRef.current = popup;
+    } finally {
+      setThothLoading(false);
+    }
 
-    if (!token) return; // no session: ThothAI will handle redirect to /login
+    if (!popup) return; // popup blocked by browser
+    if (!token) return; // no session: ThothAI will redirect to /login
 
-    // Wait for the "ready" signal from ThothAI, then send token via postMessage
+    // Cancel any pending handshake from a previous click
+    if (thothHandlerRef.current) {
+      window.removeEventListener('message', thothHandlerRef.current);
+    }
+    if (thothTimeoutRef.current !== null) {
+      clearTimeout(thothTimeoutRef.current);
+    }
+
     const handler = (event: MessageEvent) => {
       if (event.origin !== thothUrl) return;
       if (event.data !== 'ready') return;
       window.removeEventListener('message', handler);
-      thothWinRef.current?.postMessage(
-        { type: 'supabase_token', token },
-        thothUrl
-      );
+      thothHandlerRef.current = null;
+      if (thothTimeoutRef.current !== null) {
+        clearTimeout(thothTimeoutRef.current);
+        thothTimeoutRef.current = null;
+      }
+      popup?.postMessage({ type: 'supabase_token', token }, thothUrl);
     };
+
+    thothHandlerRef.current = handler;
     window.addEventListener('message', handler);
 
-    // Cleanup if ThothAI does not respond (6s > ThothAI internal 5s timeout)
-    setTimeout(() => window.removeEventListener('message', handler), 6000);
+    // Cleanup if ThothAI does not respond (6 s > ThothAI internal 5 s timeout)
+    thothTimeoutRef.current = setTimeout(() => {
+      window.removeEventListener('message', handler);
+      thothHandlerRef.current = null;
+      thothTimeoutRef.current = null;
+    }, 6000);
   };
 
   const openNewTab = (url: string) => {
@@ -216,17 +256,14 @@ const SidebarComponent: React.FC = () => {
               ))}
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  asChild
                   variant="default"
                   onClick={handleThothAIClick}
+                  disabled={thothLoading}
+                  title="Open ThothAI — Text-to-SQL"
+                  className="flex items-center gap-2"
                 >
-                  <p
-                    className="flex items-center gap-2"
-                    title="Open ThothAI — Text-to-SQL"
-                  >
-                    <RiRobot2Line />
-                    <span>ThothAI</span>
-                  </p>
+                  <RiRobot2Line />
+                  <span>ThothAI</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
