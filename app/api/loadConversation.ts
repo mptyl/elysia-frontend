@@ -15,9 +15,6 @@ export async function loadConversation(
     );
 
     if (!response.ok) {
-      console.error(
-        `Error fetching saved conversation ${conversation_id}! status: ${response.status} ${response.statusText}`,
-      );
       return {
         rebuild: [],
         error: `Error fetching saved conversation ${conversation_id}`,
@@ -26,8 +23,7 @@ export async function loadConversation(
 
     const data: ConversationPayload = await response.json();
     return data;
-  } catch (error) {
-    console.error(error instanceof Error ? error.message : String(error));
+  } catch {
     return {
       rebuild: [],
       error: `Error fetching saved conversation ${conversation_id}`,
