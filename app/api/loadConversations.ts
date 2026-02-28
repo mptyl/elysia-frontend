@@ -9,9 +9,6 @@ export async function loadConversations(user_id: string) {
     });
 
     if (!response.ok) {
-      console.error(
-        `Error fetching saved trees! status: ${response.status} ${response.statusText}`,
-      );
       return {
         trees: {},
         error: "Error fetching saved conversations",
@@ -20,8 +17,7 @@ export async function loadConversations(user_id: string) {
 
     const data: SavedConversationPayload = await response.json();
     return data;
-  } catch (error) {
-    console.error(error instanceof Error ? error.message : String(error));
+  } catch {
     return {
       trees: {},
       error: "Error fetching saved conversations",

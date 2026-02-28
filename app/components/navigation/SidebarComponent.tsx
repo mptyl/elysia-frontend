@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 
 import { SocketContext } from "../contexts/SocketContext";
 
@@ -28,6 +28,7 @@ import { TbReportAnalytics } from "react-icons/tb";
 import { MdAutoFixHigh } from "react-icons/md";
 
 import { public_path } from "@/app/components/host";
+import { useAuth } from "@/app/components/contexts/AuthContext";
 
 import {
   Sidebar,
@@ -61,6 +62,7 @@ const SidebarComponent: React.FC = () => {
   const { changePage, currentPage } = useContext(RouterContext);
   const { collections, loadingCollections } = useContext(CollectionContext);
   const { unsavedChanges } = useContext(SessionContext);
+  const { session } = useAuth();
 
   const [items, setItems] = useState<
     {
@@ -120,6 +122,73 @@ const SidebarComponent: React.FC = () => {
     ];
     setItems(_items);
   }, [collections, unsavedChanges]);
+
+  const thothWinRef = useRef<Window | null>(null);
+  const thothHandlerRef = useRef<((event: MessageEvent) => void) | null>(null);
+  const thothTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [thothLoading, setThothLoading] = useState(false);
+
+  // Clean up ThothAI message listener and timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (thothHandlerRef.current) {
+        window.removeEventListener('message', thothHandlerRef.current);
+      }
+      if (thothTimeoutRef.current !== null) {
+        clearTimeout(thothTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleThothAIClick = async () => {
+    if (thothLoading) return;
+    setThothLoading(true);
+
+    const thothUrl = process.env.NEXT_PUBLIC_THOTH_URL ?? 'http://localhost:3040';
+    let token: string | undefined;
+    let popup: Window | null = null;
+
+    try {
+      token = session?.access_token;
+      popup = window.open(`${thothUrl}/auth/supabase`, '_blank');
+      thothWinRef.current = popup;
+    } finally {
+      setThothLoading(false);
+    }
+
+    if (!popup) return; // popup blocked by browser
+    if (!token) return; // no session: ThothAI will redirect to /login
+
+    // Cancel any pending handshake from a previous click
+    if (thothHandlerRef.current) {
+      window.removeEventListener('message', thothHandlerRef.current);
+    }
+    if (thothTimeoutRef.current !== null) {
+      clearTimeout(thothTimeoutRef.current);
+    }
+
+    const handler = (event: MessageEvent) => {
+      if (event.origin !== thothUrl) return;
+      if (event.data !== 'ready') return;
+      window.removeEventListener('message', handler);
+      thothHandlerRef.current = null;
+      if (thothTimeoutRef.current !== null) {
+        clearTimeout(thothTimeoutRef.current);
+        thothTimeoutRef.current = null;
+      }
+      popup?.postMessage({ type: 'supabase_token', token }, thothUrl);
+    };
+
+    thothHandlerRef.current = handler;
+    window.addEventListener('message', handler);
+
+    // Cleanup if ThothAI does not respond (6 s > ThothAI internal 5 s timeout)
+    thothTimeoutRef.current = setTimeout(() => {
+      window.removeEventListener('message', handler);
+      thothHandlerRef.current = null;
+      thothTimeoutRef.current = null;
+    }, 6000);
+  };
 
   const openNewTab = (url: string) => {
     window.open(url, "_blank");
@@ -184,6 +253,18 @@ const SidebarComponent: React.FC = () => {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  variant="default"
+                  onClick={handleThothAIClick}
+                  disabled={thothLoading}
+                  title="Open ThothAI — Text-to-SQL"
+                  className="flex items-center gap-2"
+                >
+                  <RiRobot2Line />
+                  <span>ThothAI</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
