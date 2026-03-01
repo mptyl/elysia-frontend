@@ -142,6 +142,13 @@ const SidebarComponent: React.FC = () => {
 
   const handleThothAIClick = async () => {
     if (thothLoading) return;
+
+    // If ThothAI tab is already open, just focus it
+    if (thothWinRef.current && !thothWinRef.current.closed) {
+      thothWinRef.current.focus();
+      return;
+    }
+
     setThothLoading(true);
 
     const thothUrl = process.env.NEXT_PUBLIC_THOTH_URL ?? 'http://localhost:3040';
@@ -150,7 +157,7 @@ const SidebarComponent: React.FC = () => {
 
     try {
       token = session?.access_token;
-      popup = window.open(`${thothUrl}/auth/supabase`, '_blank');
+      popup = window.open(`${thothUrl}/auth/supabase?athena_origin=${encodeURIComponent(window.location.origin)}`, '_blank');
       thothWinRef.current = popup;
     } finally {
       setThothLoading(false);
