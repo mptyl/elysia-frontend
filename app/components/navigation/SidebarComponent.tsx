@@ -291,6 +291,7 @@ const SidebarComponent: React.FC = () => {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
+          {/* Documentation link — hidden for Athena branding
           <SidebarMenuItem>
             <SidebarMenuButton
               className="w-full justify-start items-center"
@@ -300,7 +301,9 @@ const SidebarComponent: React.FC = () => {
               <span>Documentation</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
+          */}
 
+          {/* GitHub link — hidden for Athena branding
           {BRANDING.sidebar.showGithub && (
             <SidebarMenuItem>
               <SidebarMenuButton
@@ -312,7 +315,9 @@ const SidebarComponent: React.FC = () => {
               </SidebarMenuButton>
             </SidebarMenuItem>
           )}
+          */}
 
+          {/* Powered by Weaviate — hidden for Athena branding
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -384,6 +389,7 @@ const SidebarComponent: React.FC = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
+          */}
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
