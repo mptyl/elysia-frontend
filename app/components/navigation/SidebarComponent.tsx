@@ -56,6 +56,7 @@ import { CollectionContext } from "../contexts/CollectionContext";
 import { SessionContext } from "../contexts/SessionContext";
 import packageJson from "../../../package.json";
 import { BRANDING } from "@/app/config/branding";
+import { useThemeLogo } from "@/hooks/useThemeLogo";
 
 const SidebarComponent: React.FC = () => {
   const { socketOnline } = useContext(SocketContext);
@@ -63,6 +64,7 @@ const SidebarComponent: React.FC = () => {
   const { collections, loadingCollections } = useContext(CollectionContext);
   const { unsavedChanges } = useContext(SessionContext);
   const { session } = useAuth();
+  const themeLogo = useThemeLogo();
 
   const [items, setItems] = useState<
     {
@@ -207,9 +209,9 @@ const SidebarComponent: React.FC = () => {
         <div className={`flex items-center gap-2 w-full justify-between p-2`}>
           <div className="flex items-center gap-2">
             <img
-              src={BRANDING.logoPath}
+              src={themeLogo}
               alt={BRANDING.appName}
-              className="w-5 h-5 stext-primary"
+              className="w-5 h-5"
             />
             <p className="text-sm font-bold text-primary">{BRANDING.appName}</p>
           </div>

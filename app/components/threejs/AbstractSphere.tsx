@@ -263,6 +263,8 @@ function BasicSphere({
         vertexShader={vertex}
         fragmentShader={fragment}
         uniforms={uniformsRef.current}
+        transparent={true}
+        depthWrite={false}
         defines={{
           USE_TANGENT: "",
         }}
@@ -340,7 +342,11 @@ export default function AbstractSphereScene({
         style={{ background: "transparent" }}
         gl={{
           alpha: true,
+          premultipliedAlpha: false,
           antialias: true,
+        }}
+        onCreated={({ gl }) => {
+          gl.setClearColor(0x000000, 0);
         }}
       >
         {!debug && <CameraRotation />}

@@ -9,12 +9,14 @@ import {
     getOAuthRedirectPath,
     isEmulatorAuthProvider,
 } from "@/lib/auth/provider";
+import { useThemeLogo } from "@/hooks/useThemeLogo";
 
 const supabase = createClient();
 
 export default function LoginPage() {
     const [loginError, setLoginError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const themeLogo = useThemeLogo();
 
     useEffect(() => {
         const handleHashTokens = async () => {
@@ -126,7 +128,7 @@ export default function LoginPage() {
             <div className="mb-8 flex flex-col items-center gap-4">
                 <div className="w-20 h-20 rounded-2xl bg-background_alt flex items-center justify-center border border-border">
                     <Image
-                        src={BRANDING.logoPath}
+                        src={themeLogo}
                         alt={BRANDING.appName}
                         width={48}
                         height={48}

@@ -16,6 +16,7 @@ import { IoSettingsOutline } from "react-icons/io5";
 
 import { RouterContext } from "../contexts/RouterContext";
 import { SessionContext } from "../contexts/SessionContext";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const SettingsSubMenu: React.FC = () => {
   const { changePage, currentPage } = useContext(RouterContext);
@@ -42,10 +43,7 @@ const SettingsSubMenu: React.FC = () => {
             <GiAbstract053 />
             <p>Blob</p>
           </SidebarMenuButton>
-          <SidebarMenuButton>
-            <IoSettingsOutline />
-            <p>Theme (Coming Soon)</p>
-          </SidebarMenuButton>
+          <ThemeToggle />
         </SidebarMenuItem>
       </SidebarGroupContent>
     </SidebarGroup>

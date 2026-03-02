@@ -3,6 +3,7 @@
 import { ResultPayload } from "@/app/types/chat";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { Button } from "@/components/ui/button";
 import CopyToClipboardButton from "@/app/components/navigation/CopyButton";
 import { IoClose } from "react-icons/io5";
@@ -10,6 +11,7 @@ import { FaTable } from "react-icons/fa";
 import { useContext } from "react";
 import { RouterContext } from "@/app/components/contexts/RouterContext";
 import { FaCode } from "react-icons/fa6";
+import { useTheme } from "next-themes";
 
 interface CodeDisplayProps {
   /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -25,6 +27,8 @@ const CodeView: React.FC<CodeDisplayProps> = ({
   handleViewChange,
 }) => {
   const { changePage } = useContext(RouterContext);
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme !== "light";
 
   if (!payload) return null;
 
@@ -79,10 +83,14 @@ const CodeView: React.FC<CodeDisplayProps> = ({
                 language={item.metadata.code.language}
                 wrapLongLines={true}
                 showLineNumbers={true}
-                style={oneDark}
+                style={isDark ? oneDark : oneLight}
                 customStyle={{
-                  backgroundColor: "#202020",
-                  color: "#f2f2f2",
+                  backgroundColor: isDark
+                    ? "hsl(0 0% 12%)"
+                    : "hsl(210 30% 96%)",
+                  color: isDark
+                    ? "hsl(0 0% 95%)"
+                    : "hsl(210 11% 15%)",
                   width: "100%",
                   maxHeight: "calc(70vh - 2rem)",
                 }}

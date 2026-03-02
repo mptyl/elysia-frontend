@@ -17,6 +17,7 @@ import { ProcessingProvider } from "./components/contexts/ProcessingContext";
 import { AuthGuard } from "@/components/auth-guard";
 import { AppShell } from "@/components/app-shell";
 import { AuthProvider } from "./components/contexts/AuthContext";
+import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
   title: "Athena",
@@ -29,11 +30,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_G_KEY || ""} />
       <body
         className="bg-background h-screen w-screen overflow-hidden font-text antialiased flex"
       >
+        <ThemeProvider>
         <Suspense fallback={<div>Loading...</div>}>
           <ToastProvider>
             <RouterProvider>
@@ -60,6 +62,7 @@ export default function RootLayout({
             </RouterProvider>
           </ToastProvider>
         </Suspense>
+        </ThemeProvider>
       </body>
     </html>
   );

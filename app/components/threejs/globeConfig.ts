@@ -30,8 +30,8 @@ export const DEFAULT_GLOBE_SETTINGS: GlobeSettings = {
   distortionStrength: 0.3,
   displacementFrequency: 2.4,
   displacementStrength: 0.15,
-  lightAColor: "#7eff86",
-  lightBColor: "#0c79f2",
+  lightAColor: "#00cccc",
+  lightBColor: "#3d82c2",
   lightAIntensity: 6,
   lightBIntensity: 6,
   lightAPosition: [1.0, -2.0, 1],
@@ -39,9 +39,9 @@ export const DEFAULT_GLOBE_SETTINGS: GlobeSettings = {
   subdivisionX: 512,
   subdivisionY: 512,
   fresnelOffset: 0.01,
-  fresnelMultiplier: 0.95,
+  fresnelMultiplier: 1.112,
   fresnelPower: 9.0,
-  noiseStrength: 1.5,
+  noiseStrength: 0,
   noiseFrequency: 1,
 };
 

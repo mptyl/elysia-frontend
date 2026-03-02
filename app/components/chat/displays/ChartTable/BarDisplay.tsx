@@ -14,7 +14,7 @@ import {
 import { ResultPayload } from "@/app/types/chat";
 import { BarPayload } from "@/app/types/displays";
 import { Separator } from "@/components/ui/separator";
-import { getColor } from "./util";
+import { getColor, getAxisColor } from "./util";
 
 interface BarDisplayProps {
   result: ResultPayload;
@@ -112,21 +112,21 @@ const BarDisplay: React.FC<BarDisplayProps> = ({ result }) => {
                   <CartesianGrid
                     horizontal={true}
                     vertical={false}
-                    stroke="#E5E7EB"
+                    stroke={getAxisColor("--border")}
                     strokeOpacity={0.3}
                   />
                   <XAxis
                     dataKey={xAxisKey}
-                    stroke="#6B7280"
+                    stroke={getAxisColor("--secondary")}
                     fontSize={12}
-                    tick={{ fill: "#6B7280" }}
-                    axisLine={{ stroke: "#D1D5DB" }}
+                    tick={{ fill: getAxisColor("--secondary") }}
+                    axisLine={{ stroke: getAxisColor("--border") }}
                   />
                   <YAxis
-                    stroke="#6B7280"
+                    stroke={getAxisColor("--secondary")}
                     fontSize={12}
-                    tick={{ fill: "#6B7280" }}
-                    axisLine={{ stroke: "#D1D5DB" }}
+                    tick={{ fill: getAxisColor("--secondary") }}
+                    axisLine={{ stroke: getAxisColor("--border") }}
                   />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend

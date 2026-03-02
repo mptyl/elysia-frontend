@@ -67,10 +67,7 @@ div, section, main, aside, article {
   }
 }
 
-/* For browsers that support color-scheme */
-:root {
-  color-scheme: dark;
-}
+/* color-scheme is set via @layer base below */
 
 /* Ensure iframe scrollbars are also dark */
 iframe {
@@ -78,11 +75,7 @@ iframe {
   scrollbar-color: hsl(var(--secondary) / 0.35) hsl(var(--background));
 }
 
-/* Ensure the overall dark mode aesthetics for the scrollbars */
-body {
-  background-color: #121212; /* Optional: ensure the rest of the page is dark-themed */
-  color: #ffffff; /* Optional: set text color for dark mode */
-}
+/* body colors handled by @layer base below */
 
 .btn {
   @apply flex items-center cursor-pointer gap-2 hover:bg-foreground_alt hover:text-primary hover:scale-105 active:scale-95 transition-all duration-300 p-3 rounded-lg;
@@ -112,7 +105,7 @@ body {
 }
 
 .shine {
-  background: linear-gradient(90deg, #4e4e4e 35%, #fff 50%, #4e4e4e 65%);
+  background: linear-gradient(90deg, hsl(var(--secondary)) 35%, hsl(var(--primary)) 50%, hsl(var(--secondary)) 65%);
   background-size: 200% 200%;
   background-clip: text;
   -webkit-background-clip: text;
@@ -132,30 +125,30 @@ body {
 @keyframes pulsing {
   0% {
     scale: 0.2;
-    color: #4e4e4e;
+    color: hsl(var(--secondary));
   }
   50% {
     scale: 0.4;
-    color: #fff;
+    color: hsl(var(--primary));
   }
   100% {
     scale: 0.2;
-    color: #4e4e4e;
+    color: hsl(var(--secondary));
   }
 }
 
 @keyframes pulsing_color {
   0% {
     scale: 0.2;
-    color: #a5ff90;
+    color: hsl(var(--alt_color_a));
   }
   50% {
     scale: 0.4;
-    color: #74d7ff;
+    color: hsl(var(--highlight));
   }
   100% {
     scale: 0.2;
-    color: #a5ff90;
+    color: hsl(var(--alt_color_a));
   }
 }
 
@@ -199,8 +192,80 @@ body {
 
 @layer base {
   :root {
+    color-scheme: light;
     --font-text: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     --font-heading: "Trebuchet MS", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+
+    /* Core — Light UNI */
+    --background: 0 0% 100%;
+    --background_alt: 210 30% 96%;
+    --foreground: 210 20% 90%;
+    --foreground_alt: 210 20% 85%;
+    --primary: 210 11% 15%;
+    --secondary: 210 7% 46%;
+    --accent: 209 52% 32%;
+    --background_accent: 209 52% 92%;
+    --highlight: 180 100% 30%;
+    --error: 354 71% 54%;
+    --background_error: 354 71% 93%;
+    --warning: 38 87% 38%;
+    --accent-foreground: 0 0% 100%;
+    --alt_color_a: 180 100% 30%;
+    --alt_color_b: 236 35% 47%;
+
+    /* shadcn tokens — light */
+    --card: 0 0% 100%;
+    --card-foreground: 210 11% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 11% 15%;
+    --muted: 210 30% 93%;
+    --muted-foreground: 210 7% 46%;
+    --destructive: 354 71% 54%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 210 20% 82%;
+    --input: 210 20% 82%;
+    --ring: 209 52% 32%;
+    --primary-foreground: 0 0% 98%;
+    --sidebar-ring: 209 52% 32%;
+    --radius: 0.5rem;
+
+    /* Chart — 32 UNI dataColors */
+    --chart-1: 209 52% 32%;
+    --chart-2: 180 100% 30%;
+    --chart-3: 2 73% 62%;
+    --chart-4: 236 35% 47%;
+    --chart-5: 202 51% 39%;
+    --chart-6: 206 73% 76%;
+    --chart-7: 210 52% 24%;
+    --chart-8: 208 52% 61%;
+    --chart-9: 191 33% 63%;
+    --chart-10: 38 87% 38%;
+    --chart-11: 175 49% 52%;
+    --chart-12: 187 7% 40%;
+    --chart-13: 1 94% 74%;
+    --chart-14: 45 87% 65%;
+    --chart-15: 186 5% 52%;
+    --chart-16: 196 63% 79%;
+    --chart-17: 22 96% 76%;
+    --chart-18: 307 23% 62%;
+    --chart-19: 193 55% 35%;
+    --chart-20: 0 10% 61%;
+    --chart-21: 176 79% 30%;
+    --chart-22: 186 14% 19%;
+    --chart-23: 0 42% 51%;
+    --chart-24: 42 65% 42%;
+    --chart-25: 192 7% 30%;
+    --chart-26: 196 27% 55%;
+    --chart-27: 19 42% 53%;
+    --chart-28: 311 21% 39%;
+    --chart-29: 193 55% 23%;
+    --chart-30: 0 8% 41%;
+    --chart-31: 175 74% 21%;
+    --chart-32: 192 14% 12%;
+  }
+
+  .dark {
+    color-scheme: dark;
 
     --background: 0 0% 9%;
     --background_alt: 0 0% 14%;
@@ -208,33 +273,64 @@ body {
     --foreground_alt: 0 0% 20%;
     --primary: 0 0% 95%;
     --secondary: 0 0% 50%;
-    --accent: 151 46% 51%;
-    --background_accent: 151 52% 28%;
-    --highlight: 202 54% 59%;
-    --error: 353 49% 44%;
-    --background_error: 340 52% 25%;
-    --warning: 18 72% 49%;
-    --accent-foreground: 134 80% 32%;
-    --alt_color_a: 172 83% 55%;
-    --alt_color_b: 71 61% 64%;
+    --accent: 209 52% 50%;
+    --background_accent: 209 52% 18%;
+    --highlight: 180 100% 40%;
+    --error: 354 71% 54%;
+    --background_error: 354 52% 20%;
+    --warning: 38 87% 50%;
+    --accent-foreground: 0 0% 95%;
+    --alt_color_a: 180 100% 45%;
+    --alt_color_b: 236 45% 65%;
 
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --destructive: 0 84.2% 60.2%;
+    /* shadcn — dark */
+    --card: 0 0% 12%;
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 12%;
+    --popover-foreground: 0 0% 95%;
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 60%;
+    --destructive: 354 49% 44%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 31%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
+    --input: 0 0% 22%;
+    --ring: 209 52% 50%;
+    --primary-foreground: 0 0% 9%;
+    --sidebar-ring: 209 52% 50%;
+
+    /* Chart — 32 UNI colors lightened for dark backgrounds */
+    --chart-1: 209 52% 55%;
+    --chart-2: 180 100% 40%;
+    --chart-3: 2 73% 65%;
+    --chart-4: 236 45% 65%;
+    --chart-5: 202 51% 55%;
+    --chart-6: 206 73% 76%;
+    --chart-7: 210 52% 45%;
+    --chart-8: 208 52% 65%;
+    --chart-9: 191 33% 65%;
+    --chart-10: 38 87% 55%;
+    --chart-11: 175 49% 55%;
+    --chart-12: 187 15% 60%;
+    --chart-13: 1 90% 75%;
+    --chart-14: 45 87% 68%;
+    --chart-15: 186 10% 65%;
+    --chart-16: 196 63% 79%;
+    --chart-17: 22 96% 78%;
+    --chart-18: 307 30% 68%;
+    --chart-19: 193 55% 50%;
+    --chart-20: 0 15% 70%;
+    --chart-21: 176 79% 45%;
+    --chart-22: 186 14% 45%;
+    --chart-23: 0 42% 60%;
+    --chart-24: 42 65% 58%;
+    --chart-25: 192 10% 50%;
+    --chart-26: 196 27% 62%;
+    --chart-27: 19 42% 60%;
+    --chart-28: 311 25% 55%;
+    --chart-29: 193 55% 40%;
+    --chart-30: 0 12% 58%;
+    --chart-31: 175 74% 35%;
+    --chart-32: 192 20% 35%;
   }
 }
 

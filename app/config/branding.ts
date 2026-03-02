@@ -11,6 +11,8 @@ import { public_path } from "@/app/components/host";
 export const BRANDING = {
   appName: "Athena",
   logoPath: `${public_path}mondo-uni-neg.png`,
+  logoPathDark: `${public_path}mondo-uni-neg.png`,
+  logoPathLight: `${public_path}mondo-uni.png`,
   sidebar: {
     showGithub: false, // Upstream shows it, we hide it or move it
     showWeaviatePowered: true,

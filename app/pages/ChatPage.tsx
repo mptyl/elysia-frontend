@@ -363,9 +363,9 @@ export default function ChatPage() {
             </div>
           )}
           {Object.keys(currentQuery).length === 0 && (
-            <div className="absolute flex flex-col justify-center items-center w-full h-full gap-3 fade-in">
+            <div className="absolute flex flex-col justify-center items-center w-full h-full gap-3 fade-in z-10">
               <div className="flex items-center gap-4">
-                <p className="text-primary text-3xl font-semibold">
+                <p className="text-primary text-3xl font-semibold drop-shadow-sm">
                   Ask Athena
                 </p>
                 <Button
@@ -392,7 +392,7 @@ export default function ChatPage() {
                   <motion.button
                     key={index + "prompt"}
                     onClick={() => handleSendQuery(prompt)}
-                    className="whitespace-normal px-4 pt-2 text-left h-auto hover:bg-foreground text-sm rounded-lg transition-all duration-200 ease-in-out flex flex-col items-start justify-start overflow-hidden relative group"
+                    className="whitespace-normal px-4 pt-2 text-left h-auto bg-background/70 backdrop-blur-sm hover:bg-foreground text-sm rounded-lg transition-all duration-200 ease-in-out flex flex-col items-start justify-start overflow-hidden relative group border border-border/30"
                     initial={{ opacity: 0, y: 20, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     transition={{
