@@ -25,7 +25,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 const CATEGORIES_URL = "/n8n/webhook/get-categories";
-const FETCH_TIMEOUT_MS = 10_000;
+const FETCH_TIMEOUT_MS = 30_000;
 
 export default function ReportisticaPage() {
   const [categories, setCategories] = useState<string[]>([]);
@@ -65,7 +65,7 @@ export default function ReportisticaPage() {
       .catch((err) => {
         if (!cancelled) {
           if (err.name === "AbortError") {
-            setCategoriesError("Timeout: il server non ha risposto entro 10 secondi");
+            setCategoriesError("Timeout: il server non ha risposto entro 30 secondi");
           } else {
             setCategoriesError(err.message);
           }
