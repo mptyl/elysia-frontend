@@ -23,10 +23,28 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const CATEGORIES_URL = "/n8n/webhook/get-categories";
 const REPORTS_URL = "/n8n/webhook/get-reports";
+const PARAMS_URL = "/n8n/webhook/get-params";
 const FETCH_TIMEOUT_MS = 30_000;
+
+interface ParamOption {
+  value: string;
+  label: string;
+}
+
+interface ReportParam {
+  name: string;
+  label: string;
+  type: "select" | "text" | "date" | "number";
+  required: boolean;
+  default: string | null;
+  order: number;
+  options: ParamOption[] | null;
+}
 
 export default function ReportisticaPage() {
   const [categories, setCategories] = useState<string[]>([]);
@@ -40,12 +58,25 @@ export default function ReportisticaPage() {
   const [reportsError, setReportsError] = useState<string | null>(null);
   const [reportsFetchKey, setReportsFetchKey] = useState(0);
 
+  const [selectedReport, setSelectedReport] = useState<string | null>(null);
+  const [params, setParams] = useState<ReportParam[]>([]);
+  const [outputOptions, setOutputOptions] = useState<ReportParam[]>([]);
+  const [selectedOutput, setSelectedOutput] = useState<string | undefined>(undefined);
+  const [paramsLoading, setParamsLoading] = useState(false);
+  const [paramsError, setParamsError] = useState<string | null>(null);
+  const [paramsFetchKey, setParamsFetchKey] = useState(0);
+  const [formValues, setFormValues] = useState<Record<string, string>>({});
+
   const retryCategories = useCallback(() => {
     setFetchKey((k) => k + 1);
   }, []);
 
   const retryReports = useCallback(() => {
     setReportsFetchKey((k) => k + 1);
+  }, []);
+
+  const retryParams = useCallback(() => {
+    setParamsFetchKey((k) => k + 1);
   }, []);
 
   useEffect(() => {
@@ -144,6 +175,126 @@ export default function ReportisticaPage() {
     };
   }, [selectedCategory, reportsFetchKey]);
 
+  useEffect(() => {
+    if (!selectedReport) {
+      setParams([]);
+      setOutputOptions([]);
+      setSelectedOutput(undefined);
+      setFormValues({});
+      return;
+    }
+
+    let cancelled = false;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
+    setParamsLoading(true);
+    setParamsError(null);
+
+    const url = `${PARAMS_URL}?reportId=${encodeURIComponent(selectedReport)}`;
+
+    fetch(url, { signal: controller.signal })
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.text();
+      })
+      .then((text) => {
+        if (!text) throw new Error("Risposta vuota dal server");
+        const parsed = JSON.parse(text);
+        return (Array.isArray(parsed) ? parsed[0] : parsed) as {
+          report_id: number;
+          parameters: ReportParam[];
+          output_options: ReportParam[];
+        };
+      })
+      .then((data) => {
+        if (!cancelled) {
+          const p = data?.parameters ?? [];
+          const o = data?.output_options ?? [];
+          setParams(p);
+          setOutputOptions(o);
+          const defaults: Record<string, string> = {};
+          p.forEach((param) => {
+            if (param.default) defaults[param.name] = param.default;
+          });
+          setFormValues(defaults);
+          // Default output to "Visualizza" if present, else first
+          const vizIdx = o.findIndex((opt) => /visualizza/i.test(opt.label) || /visualizza/i.test(opt.name));
+          setSelectedOutput(String(vizIdx >= 0 ? vizIdx : 0));
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          if (err.name === "AbortError") {
+            setParamsError("Timeout: il server non ha risposto entro 30 secondi");
+          } else {
+            setParamsError(err.message);
+          }
+        }
+      })
+      .finally(() => {
+        clearTimeout(timeout);
+        if (!cancelled) setParamsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+      clearTimeout(timeout);
+    };
+  }, [selectedReport, paramsFetchKey]);
+
+  const updateFormValue = useCallback((name: string, value: string) => {
+    setFormValues((prev) => ({ ...prev, [name]: value }));
+  }, []);
+
+  const renderParam = (param: ReportParam) => {
+    switch (param.type) {
+      case "select":
+        return (
+          <Select
+            value={formValues[param.name] || undefined}
+            onValueChange={(v) => updateFormValue(param.name, v)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Seleziona..." />
+            </SelectTrigger>
+            <SelectContent>
+              {(param.options ?? []).map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        );
+      case "date":
+        return (
+          <Input
+            type="date"
+            value={formValues[param.name] ?? ""}
+            onChange={(e) => updateFormValue(param.name, e.target.value)}
+          />
+        );
+      case "number":
+        return (
+          <Input
+            type="number"
+            value={formValues[param.name] ?? ""}
+            onChange={(e) => updateFormValue(param.name, e.target.value)}
+          />
+        );
+      default:
+        return (
+          <Input
+            type="text"
+            value={formValues[param.name] ?? ""}
+            onChange={(e) => updateFormValue(param.name, e.target.value)}
+          />
+        );
+    }
+  };
+
   return (
     <div
       className="flex flex-col w-full gap-4 items-start justify-start"
@@ -196,7 +347,7 @@ export default function ReportisticaPage() {
             <CardTitle className="text-sm">Nome Report</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
-            <Select disabled={!selectedCategory || reportsLoading || !!reportsError}>
+            <Select disabled={!selectedCategory || reportsLoading || !!reportsError} onValueChange={setSelectedReport}>
               <SelectTrigger>
                 <SelectValue
                   placeholder={
@@ -231,12 +382,63 @@ export default function ReportisticaPage() {
 
         <Card className="flex-1">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Form dinamica</CardTitle>
+            <CardTitle className="text-sm">Parametri</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-secondary text-sm">
-              Form dinamica &mdash; in attesa di configurazione JSON
-            </p>
+            {!selectedReport ? (
+              <p className="text-secondary text-sm">
+                Seleziona un report per visualizzare i parametri
+              </p>
+            ) : paramsLoading ? (
+              <p className="text-secondary text-sm">Caricamento parametri...</p>
+            ) : paramsError ? (
+              <div className="flex flex-col gap-1">
+                <p className="text-destructive text-xs">{paramsError}</p>
+                <Button variant="outline" size="sm" onClick={retryParams}>
+                  Riprova
+                </Button>
+              </div>
+            ) : params.length === 0 && outputOptions.length === 0 ? (
+              <p className="text-secondary text-sm">
+                Nessun parametro configurato per questo report
+              </p>
+            ) : (
+              <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+                {params.map((param) => (
+                  <div key={param.name} className="flex flex-col gap-1.5">
+                    <Label>
+                      {param.label}
+                      {!!param.required && <span className="text-destructive ml-0.5">*</span>}
+                    </Label>
+                    {renderParam(param)}
+                  </div>
+                ))}
+                {outputOptions.length > 0 && (
+                  <div className="flex flex-col gap-1.5">
+                    <Label>Output</Label>
+                    <Select
+                      value={selectedOutput}
+                      onValueChange={setSelectedOutput}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleziona output..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {outputOptions.map((opt, i) => {
+                          const raw = opt.label || opt.name || `Opzione ${i + 1}`;
+                          const display = raw.trim();
+                          return (
+                            <SelectItem key={i} value={String(i)}>
+                              {display}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
