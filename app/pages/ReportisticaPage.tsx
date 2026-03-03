@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -22,25 +22,39 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 
 const CATEGORIES_URL = "/n8n/webhook/get-categories";
+const FETCH_TIMEOUT_MS = 10_000;
 
 export default function ReportisticaPage() {
   const [categories, setCategories] = useState<string[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoriesError, setCategoriesError] = useState<string | null>(null);
+  const [fetchKey, setFetchKey] = useState(0);
+
+  const retryCategories = useCallback(() => {
+    setFetchKey((k) => k + 1);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
     setCategoriesLoading(true);
     setCategoriesError(null);
 
-    fetch(CATEGORIES_URL)
+    fetch(CATEGORIES_URL, { signal: controller.signal })
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
+        return res.text();
       })
-      .then((data: { categories: string[] } | { categories: string[] }[]) => {
+      .then((text) => {
+        if (!text) throw new Error("Risposta vuota dal server");
+        return JSON.parse(text) as { categories: string[] } | { categories: string[] }[];
+      })
+      .then((data) => {
         if (!cancelled) {
           const cats = Array.isArray(data)
             ? data?.[0]?.categories ?? []
@@ -49,14 +63,25 @@ export default function ReportisticaPage() {
         }
       })
       .catch((err) => {
-        if (!cancelled) setCategoriesError(err.message);
+        if (!cancelled) {
+          if (err.name === "AbortError") {
+            setCategoriesError("Timeout: il server non ha risposto entro 10 secondi");
+          } else {
+            setCategoriesError(err.message);
+          }
+        }
       })
       .finally(() => {
+        clearTimeout(timeout);
         if (!cancelled) setCategoriesLoading(false);
       });
 
-    return () => { cancelled = true; };
-  }, []);
+    return () => {
+      cancelled = true;
+      controller.abort();
+      clearTimeout(timeout);
+    };
+  }, [fetchKey]);
 
   return (
     <div
@@ -73,9 +98,9 @@ export default function ReportisticaPage() {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">Filtro 1</CardTitle>
           </CardHeader>
-          <CardContent>
-            <Select>
-              <SelectTrigger disabled={categoriesLoading}>
+          <CardContent className="flex flex-col gap-2">
+            <Select disabled={categoriesLoading || !!categoriesError}>
+              <SelectTrigger>
                 <SelectValue
                   placeholder={
                     categoriesLoading
@@ -94,6 +119,14 @@ export default function ReportisticaPage() {
                 ))}
               </SelectContent>
             </Select>
+            {categoriesError && (
+              <div className="flex flex-col gap-1">
+                <p className="text-destructive text-xs">{categoriesError}</p>
+                <Button variant="outline" size="sm" onClick={retryCategories}>
+                  Riprova
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
 
