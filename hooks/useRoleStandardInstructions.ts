@@ -20,7 +20,7 @@ export function useRoleStandardInstructions(
 
     const fetch = useCallback(async () => {
         if (!department || !jobTitle) {
-            setInstructions(null);
+            setInstructions("N/A");
             setLoading(false);
             return;
         }
@@ -38,7 +38,7 @@ export function useRoleStandardInstructions(
 
             if (fetchError) throw fetchError;
 
-            setInstructions(data?.instructions ?? null);
+            setInstructions(data?.instructions ?? "N/A");
         } catch (err) {
             const msg =
                 typeof err === "object" && err !== null && "message" in err

@@ -55,12 +55,24 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ ok: true, reason: "directory_unavailable" });
         }
 
+        // Resolve department_id from the departments table
+        let departmentId: string | null = null;
+        if (dirUser.department) {
+            const { data: deptRow } = await supabase
+                .from("departments")
+                .select("id")
+                .eq("code", dirUser.department)
+                .maybeSingle();
+            departmentId = deptRow?.id ?? null;
+        }
+
         const { error } = await supabase.from("user_profiles").upsert(
             {
                 id: user.id,
                 display_name: dirUser.displayName,
                 job_title: dirUser.jobTitle,
                 department: dirUser.department,
+                department_id: departmentId,
             },
             { onConflict: "id", ignoreDuplicates: false },
         );

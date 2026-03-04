@@ -3,20 +3,20 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type {
-    UserProfileWithOrgUnit,
+    UserProfileWithDepartment,
     UserProfile,
-    OrgUnit,
+    Department,
 } from "@/app/types/profile-types";
 
 interface UseUserProfileResult {
-    profile: UserProfileWithOrgUnit | null;
+    profile: UserProfileWithDepartment | null;
     loading: boolean;
     error: string | null;
     refetch: () => Promise<void>;
 }
 
 export function useUserProfile(userId: string | undefined): UseUserProfileResult {
-    const [profile, setProfile] = useState<UserProfileWithOrgUnit | null>(null);
+    const [profile, setProfile] = useState<UserProfileWithDepartment | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const supabase = useMemo(() => createClient(), []);
@@ -46,7 +46,7 @@ export function useUserProfile(userId: string | undefined): UseUserProfileResult
             if (!resolvedProfile) {
                 const newProfile = {
                     id: userId,
-                    org_unit: null,
+                    department_id: null,
                     app_role: "user",
                     response_detail_level: "balanced",
                     communication_tone: "professional",
@@ -69,25 +69,25 @@ export function useUserProfile(userId: string | undefined): UseUserProfileResult
                 resolvedProfile = createdProfile as UserProfile;
             }
 
-            let orgUnit: OrgUnit | null = null;
-            if (resolvedProfile.org_unit) {
-                const { data: orgUnitRow, error: orgUnitError } = await supabase
-                    .from("org_units")
-                    .select("id, name, ai_identity_base, created_at")
-                    .eq("id", resolvedProfile.org_unit)
+            let dept: Department | null = null;
+            if (resolvedProfile.department_id) {
+                const { data: deptRow, error: deptError } = await supabase
+                    .from("departments")
+                    .select("id, code, name, created_at")
+                    .eq("id", resolvedProfile.department_id)
                     .maybeSingle();
 
-                if (orgUnitError) {
-                    throw orgUnitError;
+                if (deptError) {
+                    throw deptError;
                 }
 
-                orgUnit = (orgUnitRow as OrgUnit | null) ?? null;
+                dept = (deptRow as Department | null) ?? null;
             }
 
             setProfile({
                 ...resolvedProfile,
-                org_units: orgUnit,
-            } as UserProfileWithOrgUnit);
+                departments: dept,
+            } as UserProfileWithDepartment);
         } catch (err) {
             const errorMessage =
                 typeof err === "object" &&

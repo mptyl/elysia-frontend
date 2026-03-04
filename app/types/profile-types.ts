@@ -17,17 +17,17 @@ export interface RoleStandardInstructions {
     updated_at?: string;
 }
 
-export interface OrgUnit {
+export interface Department {
     id: string;
+    code: string;
     name: string;
-    ai_identity_base: string;
     created_at?: string;
 }
 
 export interface UserProfile {
     id: string;
     display_name: string | null;
-    org_unit: string | null;
+    department_id: string | null;
     job_title: string | null;
     department: string | null;
     app_role: string;
@@ -41,6 +41,6 @@ export interface UserProfile {
     updated_at?: string;
 }
 
-export interface UserProfileWithOrgUnit extends UserProfile {
-    org_units: OrgUnit | null;
+export interface UserProfileWithDepartment extends UserProfile {
+    departments: Department | null;
 }

@@ -291,7 +291,7 @@ export default function ProfilePage() {
                                         <Loader2 className="w-4 h-4 animate-spin" />
                                         Caricamento...
                                     </span>
-                                ) : standardInstructions ? (
+                                ) : standardInstructions && standardInstructions !== "N/A" ? (
                                     standardInstructions
                                 ) : (
                                     <span className="italic text-secondary/50">

@@ -39,7 +39,8 @@ export async function fetchDirectoryUser(
     const response = await fetch(url, { headers });
 
     if (!response.ok) {
-        console.error(`[DirectoryService] Failed to fetch user ${userUpn}: ${response.status}`);
+        const errorBody = await response.text();
+        console.error(`[DirectoryService] Failed to fetch user ${userUpn}: ${response.status} — ${errorBody}`);
         return null;
     }
 

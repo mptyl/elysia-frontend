@@ -54,8 +54,8 @@ export default function AuthCallbackPage() {
                         return;
                     }
 
-                    // Sync profile (fire-and-forget)
-                    fetch("/api/auth/sync-profile", {
+                    // Sync profile before redirecting (avoids browser aborting the request)
+                    await fetch("/api/auth/sync-profile", {
                         method: "POST",
                         credentials: "include",
                     }).catch((err) =>
@@ -102,7 +102,7 @@ export default function AuthCallbackPage() {
                             console.error("[Callback] /api/auth/session failed:", err),
                         );
 
-                        fetch("/api/auth/sync-profile", {
+                        await fetch("/api/auth/sync-profile", {
                             method: "POST",
                             credentials: "include",
                         }).catch((err) =>
