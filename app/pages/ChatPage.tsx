@@ -363,8 +363,8 @@ export default function ChatPage() {
             </div>
           )}
           {Object.keys(currentQuery).length === 0 && (
-            <div className="absolute flex flex-col justify-center items-center w-full h-full gap-3 fade-in z-10">
-              <div className="flex items-center gap-4">
+            <div className="absolute flex flex-col justify-center items-center w-full h-full gap-3 fade-in z-10 pointer-events-none">
+              <div className="flex items-center gap-4 pointer-events-auto">
                 <p className="text-primary text-3xl font-semibold drop-shadow-sm">
                   Ask Athena
                 </p>
@@ -380,7 +380,7 @@ export default function ChatPage() {
               </div>
 
               <motion.div
-                className="flex flex-col w-full md:w-[60vw] lg:w-[40vw] gap-3"
+                className="flex flex-col w-full md:w-[60vw] lg:w-[40vw] gap-3 pointer-events-auto"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{
