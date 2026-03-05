@@ -21,7 +21,7 @@ export default function Home() {
   const { currentPage } = useContext(RouterContext);
   const { isConfirmModalOpen } = useContext(ToastContext);
   return (
-    <div className="flex flex-1 min-w-0 flex-col md:flex-row w-full gap-2 md:gap-6 items-start justify-start p-2 md:p-6 overflow-hidden">
+    <div className="flex flex-1 min-w-0 min-h-0 flex-col md:flex-row w-full gap-2 md:gap-6 items-start justify-start p-2 md:p-6 overflow-hidden">
       {isConfirmModalOpen && <ConfirmationModal />}
       {currentPage === "chat" && <ChatPage />}
       {currentPage === "data" && <DataPage />}

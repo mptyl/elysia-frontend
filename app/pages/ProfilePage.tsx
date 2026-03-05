@@ -113,12 +113,12 @@ export default function ProfilePage() {
     const hasError = profileError;
 
     return (
-        <div className="flex flex-col items-center h-full w-full gap-6 p-6 overflow-hidden">
-            <h1 className="text-2xl font-bold font-heading text-primary">
+        <div className="flex flex-col items-center flex-1 self-stretch h-[calc(100vh-120px)] min-h-0 gap-6 p-6 pb-12 overflow-y-auto">
+            <h1 className="text-2xl font-bold font-heading text-primary shrink-0">
                 Profilo Utente
             </h1>
 
-            <div className="flex-1 w-full max-w-4xl bg-background_alt rounded-xl border border-border p-8 shadow-sm overflow-y-auto">
+            <div className="w-full max-w-4xl bg-background_alt rounded-xl border border-border p-8 shadow-sm flex-shrink-0 mb-8">
                 {isLoading ? (
                     <div className="flex items-center justify-center py-12">
                         <Loader2 className="w-8 h-8 animate-spin text-primary" />
