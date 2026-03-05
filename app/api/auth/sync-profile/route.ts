@@ -18,9 +18,11 @@ export const dynamic = "force-dynamic";
  * and returns 200 so the user can still use the app.
  */
 export async function POST(request: NextRequest) {
-    try {
-        const response = NextResponse.json({ ok: true });
+    // Create the response upfront so Supabase cookie refresh is preserved
+    // on ALL code paths (including early returns).
+    const response = NextResponse.json({ ok: true });
 
+    try {
         const supabase = createServerClient(
             process.env.SUPABASE_INTERNAL_URL || process.env.NEXT_PUBLIC_SUPABASE_URL!,
             process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
@@ -44,7 +46,8 @@ export async function POST(request: NextRequest) {
         } = await supabase.auth.getUser();
 
         if (!user?.email) {
-            return NextResponse.json({ ok: true, reason: "no user/email" });
+            console.warn("[sync-profile] No authenticated user or missing email");
+            return response;
         }
 
         const graphToken = await getGraphAccessToken();
@@ -52,7 +55,7 @@ export async function POST(request: NextRequest) {
 
         if (!dirUser) {
             console.warn("[sync-profile] Directory service returned no data for", user.email);
-            return NextResponse.json({ ok: true, reason: "directory_unavailable" });
+            return response;
         }
 
         // Resolve department_id from the departments table
@@ -84,6 +87,6 @@ export async function POST(request: NextRequest) {
         return response;
     } catch (err) {
         console.error("[sync-profile] Unexpected error:", err);
-        return NextResponse.json({ ok: true, reason: "error" });
+        return response;
     }
 }

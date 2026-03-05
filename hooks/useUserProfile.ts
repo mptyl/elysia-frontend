@@ -69,6 +69,29 @@ export function useUserProfile(userId: string | undefined): UseUserProfileResult
                 resolvedProfile = createdProfile as UserProfile;
             }
 
+            // If display_name is missing, the initial sync-profile at login
+            // likely failed. Retry it now and refetch the profile afterwards.
+            if (!resolvedProfile.display_name) {
+                try {
+                    const syncRes = await fetch("/api/auth/sync-profile", {
+                        method: "POST",
+                        credentials: "include",
+                    });
+                    if (syncRes.ok) {
+                        const { data: refreshed } = await supabase
+                            .from("user_profiles")
+                            .select("*")
+                            .eq("id", userId)
+                            .maybeSingle();
+                        if (refreshed?.display_name) {
+                            resolvedProfile = refreshed as UserProfile;
+                        }
+                    }
+                } catch {
+                    // sync failed — continue with what we have
+                }
+            }
+
             let dept: Department | null = null;
             if (resolvedProfile.department_id) {
                 const { data: deptRow, error: deptError } = await supabase
