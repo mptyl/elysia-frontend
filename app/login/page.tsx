@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useState, type MouseEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { BRANDING } from "@/app/config/branding";
@@ -127,7 +126,7 @@ export default function LoginPage() {
             {/* Logo with shine animation */}
             <div className="mb-8 flex flex-col items-center gap-4">
                 <div className="w-20 h-20 rounded-2xl bg-background_alt flex items-center justify-center border border-border">
-                    <Image
+                    <img
                         src={themeLogo}
                         alt={BRANDING.appName}
                         width={48}

@@ -45,7 +45,8 @@ export const RouterProvider = ({ children }: { children: React.ReactNode }) => {
     replace: boolean = false,
     guarded: boolean = false
   ) => {
-    if (guarded) {
+    const isOutsideSPA = typeof window !== 'undefined' && window.location.pathname !== '/';
+    if (guarded && !isOutsideSPA) {
       showConfirmModal(
         "Unsaved Changes",
         "You have unsaved changes. Are you sure you want to leave this page? You will lose your changes.",
@@ -76,12 +77,18 @@ export const RouterProvider = ({ children }: { children: React.ReactNode }) => {
 
     const url = `/?${new URLSearchParams(finalParams).toString()}`;
 
+    if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+      window.location.assign(url);
+      return;
+    }
+
     if (replace) {
       window.history.replaceState(null, "", url);
     } else {
       window.history.pushState(null, "", url);
     }
-    //showSuccessToast("Page changed to " + url);
+
+    setCurrentPage(page);
   };
 
   useEffect(() => {
