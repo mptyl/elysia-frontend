@@ -94,13 +94,18 @@ export default function ReportisticaPage() {
       })
       .then((text) => {
         if (!text) throw new Error("Risposta vuota dal server");
-        return JSON.parse(text) as { categories: string[] } | { categories: string[] }[];
+        const parsed = JSON.parse(text);
+        // Normalizza: accetta sia { categories: [...] } / [{ categories: [...] }]
+        // sia il formato n8n con chiavi numeriche: [{ "1": "Cat A", "2": "Cat B" }]
+        const raw = Array.isArray(parsed) ? parsed[0] : parsed;
+        if (raw?.categories && Array.isArray(raw.categories)) {
+          return raw.categories as string[];
+        }
+        // Formato n8n: oggetto con chiavi numeriche → estrai i valori
+        return Object.values(raw ?? {}) as string[];
       })
-      .then((data) => {
+      .then((cats) => {
         if (!cancelled) {
-          const cats = Array.isArray(data)
-            ? data?.[0]?.categories ?? []
-            : data?.categories ?? [];
           setCategories(cats);
         }
       })
