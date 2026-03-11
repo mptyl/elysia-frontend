@@ -47,7 +47,7 @@ interface ReportParam {
 }
 
 export default function ReportisticaPage() {
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoriesError, setCategoriesError] = useState<string | null>(null);
   const [fetchKey, setFetchKey] = useState(0);
@@ -99,10 +99,10 @@ export default function ReportisticaPage() {
         // sia il formato n8n con chiavi numeriche: [{ "1": "Cat A", "2": "Cat B" }]
         const raw = Array.isArray(parsed) ? parsed[0] : parsed;
         if (raw?.categories && Array.isArray(raw.categories)) {
-          return raw.categories as string[];
+          return (raw.categories as string[]).map((c) => ({ id: c, name: c }));
         }
-        // Formato n8n: oggetto con chiavi numeriche → estrai i valori
-        return Object.values(raw ?? {}) as string[];
+        // Formato n8n: chiavi numeriche = ID categoria → preserva la mappatura
+        return Object.entries(raw ?? {}).map(([id, name]) => ({ id, name: name as string }));
       })
       .then((cats) => {
         if (!cancelled) {
@@ -330,8 +330,8 @@ export default function ReportisticaPage() {
               </SelectTrigger>
               <SelectContent>
                 {categories.map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    {cat}
+                  <SelectItem key={cat.id} value={cat.id}>
+                    {cat.name}
                   </SelectItem>
                 ))}
               </SelectContent>
