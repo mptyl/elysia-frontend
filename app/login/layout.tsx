@@ -1,6 +1,6 @@
 export const metadata = {
-    title: "Login - Athena",
-    description: "Sign in to Athena AI Platform",
+    title: "Login - Atena",
+    description: "Sign in to Atena AI Platform",
 };
 
 export default function LoginLayout({

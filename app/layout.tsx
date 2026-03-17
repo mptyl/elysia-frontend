@@ -20,7 +20,7 @@ import { AuthProvider } from "./components/contexts/AuthContext";
 import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
-  title: "Athena",
+  title: "Atena",
   description: "Your AI Platform",
 };
 

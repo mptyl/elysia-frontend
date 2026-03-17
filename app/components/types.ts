@@ -117,8 +117,8 @@ export const initialConversation: Conversation = {
 // Example Objects
 
 export const example_prompts: string[] = [
-  "What is Athena?",
-  "What data sources are available in Athena?",
+  "What is Atena?",
+  "What data sources are available in Atena?",
   "What's the average price per fashion collection?",
   "Summarize the last 10 Github issues",
   "Aggregate all usernames that wrote issues",

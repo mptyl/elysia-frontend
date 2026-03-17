@@ -14,7 +14,6 @@ import {
 
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 
-import { HiMiniSparkles } from "react-icons/hi2";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FaDatabase } from "react-icons/fa";
 import { useEffect } from "react";
@@ -69,10 +68,6 @@ const StartDialog: React.FC = () => {
     setOpen(false);
   };
 
-  const handleElysiaDocs = () => {
-    window.open("https://weaviate.github.io/elysia/", "_blank");
-  };
-
   const handleWeaviateCloud = () => {
     window.open("https://console.weaviate.cloud/", "_blank");
   };
@@ -84,7 +79,7 @@ const StartDialog: React.FC = () => {
           <DialogHeader>
             <DialogTitle className="flex gap-3 items-center justify-start">
               <p className="text-primary text-3xl font-bold">
-                Welcome to Athena!
+                Welcome to Atena!
               </p>
             </DialogTitle>
             <DialogDescription className="flex justify-start">
@@ -94,7 +89,7 @@ const StartDialog: React.FC = () => {
           <div className="flex flex-col gap-4">
             <div className="flex flex-col items-center gap-4">
               <p>
-                Athena is your newest open-source agentic AI platform powered by
+                Atena is your newest open-source agentic AI platform powered by
                 <strong> Weaviate </strong>. Import your own data and start
                 exploring them with the power of agentic AI.
               </p>
@@ -114,8 +109,8 @@ const StartDialog: React.FC = () => {
               ) : (
                 <p>
                   Good job! Seems like you already got all the settings ready.
-                  You can start by adding existing data to Athena via the
-                  Weaviate console. Athena will analyze your data and create an
+                  You can start by adding existing data to Atena via the
+                  Weaviate console. Atena will analyze your data and create an
                   agentic chain-of-thought reasoning process to navigate your
                   data.
                 </p>
@@ -138,27 +133,6 @@ const StartDialog: React.FC = () => {
                 animate={{ opacity: 1 }}
                 transition={{ staggerChildren: 0.1, delayChildren: 0.2 }}
               >
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  whileHover={{
-                    scale: 1.05,
-                    rotate: [-1, 1, -1, 0],
-                    transition: { duration: 0.3 },
-                  }}
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                  className="w-full"
-                >
-                  <Button
-                    variant="default"
-                    className="w-full "
-                    onClick={handleElysiaDocs}
-                  >
-                    <HiMiniSparkles />
-                    Athena Docs
-                  </Button>
-                </motion.div>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -245,7 +219,7 @@ const StartDialog: React.FC = () => {
                           }}
                           className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-[length:200%_100%] bg-clip-text text-transparent font-semibold"
                         >
-                          Setup Athena
+                          Setup Atena
                         </motion.span>
                       </Button>
                     </motion.div>
@@ -268,7 +242,7 @@ const StartDialog: React.FC = () => {
                       onClick={handleClose}
                     >
                       <IoIosCheckmarkCircleOutline />
-                      Start Athena
+                      Start Atena
                     </Button>
                   </motion.div>
                 )}

@@ -118,7 +118,7 @@ const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({
           >
             <GrInfo size={16} className="text-primary" />
             <p className="text-sm text-primary">
-              Rate this response and help Athena improve!
+              Rate this response and help Atena improve!
             </p>
           </div>
         </div>

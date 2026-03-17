@@ -213,7 +213,7 @@ export default function ChatPage() {
             />
           </div>
         </div>
-        <p className="text-primary text-xl shine">Loading Athena...</p>
+        <p className="text-primary text-xl shine">Loading Atena...</p>
       </div>
     );
   }
@@ -366,7 +366,7 @@ export default function ChatPage() {
             <div className="absolute flex flex-col justify-center items-center w-full h-full gap-3 fade-in z-10 pointer-events-none">
               <div className="flex items-center gap-4 pointer-events-auto">
                 <p className="text-primary text-3xl font-semibold drop-shadow-sm">
-                  Ask Athena
+                  Ask Atena
                 </p>
                 <Button
                   variant="default"

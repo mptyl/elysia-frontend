@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const AggregationResponse: any = {
   id: "12345",
-  query: "What is Athena?",
+  query: "What is Atena?",
   messages: [
     {
       type: "User",
@@ -198,7 +198,7 @@ export const AggregationResponse: any = {
   query_start: new Date(),
   query_end: new Date(new Date().getTime() + 1000),
   NER: {
-    text: "What is Athena?",
+    text: "What is Atena?",
     noun_spans: [],
     entity_spans: [[8, 14]],
   },
