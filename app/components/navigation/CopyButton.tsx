@@ -10,10 +10,27 @@ interface CopyToClipboardProps {
 const CopyToClipboardButton: React.FC<CopyToClipboardProps> = ({
   copyText,
 }) => {
-  const handleCopy = (e: React.MouseEvent) => {
+  const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigator.clipboard.writeText(copyText);
-    setCopied(true);
+    try {
+      await navigator.clipboard.writeText(copyText);
+      setCopied(true);
+    } catch (err) {
+      // Fallback for non-secure contexts (HTTP non-localhost)
+      try {
+        const textArea = document.createElement("textarea");
+        textArea.value = copyText;
+        textArea.style.position = "fixed";
+        textArea.style.opacity = "0";
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+        setCopied(true);
+      } catch (fallbackErr) {
+        console.error("Failed to copy text:", fallbackErr);
+      }
+    }
   };
 
   const [copied, setCopied] = useState(false);

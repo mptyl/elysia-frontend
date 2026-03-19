@@ -449,7 +449,7 @@ export default function ReportisticaPage() {
       </div>
 
       {/* Riga inferiore: Tabella grande */}
-      <Card className="min-h-[70vh] w-[80%]">
+      <Card className="min-h-[70vh] w-full">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm">Tabella dati</CardTitle>
         </CardHeader>
