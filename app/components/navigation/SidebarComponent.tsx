@@ -161,8 +161,39 @@ const SidebarComponent: React.FC = () => {
 
     try {
       token = session?.access_token;
-      popup = window.open(`${thothUrl}/auth/supabase?athena_origin=${encodeURIComponent(window.location.origin)}`, '_blank');
+
+      // ThothAI runs on the same host (different port). The browser sends ALL
+      // cookies to the same host — the large Supabase JWT causes ThothAI to
+      // reject with "400 Request Header Or Cookie Too Large".
+      //
+      // Fix: remove Supabase cookies, open a blank popup (instant, no HTTP),
+      // navigate it to ThothAI (request dispatched without cookies), then
+      // restore cookies after a short delay to ensure the request was sent.
+      const cookieName = "sb-athena-auth-token";
+      const savedCookies: string[] = [];
+      document.cookie.split(";").forEach((c) => {
+        const trimmed = c.trim();
+        if (trimmed.startsWith(cookieName)) {
+          savedCookies.push(trimmed);
+          const name = trimmed.split("=")[0];
+          document.cookie = `${name}=; path=/; max-age=0`;
+        }
+      });
+
+      // Open blank popup first (no HTTP request), then navigate it
+      popup = window.open("about:blank", "_blank");
       thothWinRef.current = popup;
+      if (popup) {
+        popup.location.href = `${thothUrl}/auth/supabase?athena_origin=${encodeURIComponent(window.location.origin)}`;
+      }
+
+      // Restore cookies after the popup request has been dispatched.
+      // 500ms is enough for the browser to send the initial request.
+      setTimeout(() => {
+        savedCookies.forEach((c) => {
+          document.cookie = c + "; path=/";
+        });
+      }, 500);
     } finally {
       setThothLoading(false);
     }
