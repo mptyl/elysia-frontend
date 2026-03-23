@@ -1,3 +1,6 @@
+const createNextIntlPlugin = require("next-intl/plugin");
+const withNextIntl = createNextIntlPlugin();
+
 const isStaticExport = process.env.NEXT_PUBLIC_IS_STATIC === "true";
 const authProvider = process.env.NEXT_PUBLIC_AUTH_PROVIDER || process.env.AUTH_PROVIDER_MODE;
 if (!["emulator", "entra"].includes(authProvider)) {
@@ -86,4 +89,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+module.exports = withNextIntl(nextConfig);
