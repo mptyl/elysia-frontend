@@ -278,7 +278,7 @@ export default function ChatPage() {
           </DropdownMenu>
           <div className="flex gap-2 items-center justify-center fade-in">
             <p className="text-primary text-sm">
-              {currentTitle && currentTitle != t('newConversation')
+              {currentTitle && currentTitle !== "New Conversation" && currentTitle !== t('newConversation')
                 ? currentTitle
                 : ""}
             </p>
