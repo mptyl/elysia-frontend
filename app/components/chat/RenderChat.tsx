@@ -57,6 +57,7 @@ interface RenderChatProps {
   handleSendQuery: (query: string, route?: string, mimick?: boolean) => void;
   isLastQuery: boolean;
   onExpand?: (queryId: string) => void;
+  relatedQuestionsLabel?: string;
 }
 
 const RenderChat: React.FC<RenderChatProps> = ({
@@ -76,6 +77,7 @@ const RenderChat: React.FC<RenderChatProps> = ({
   handleSendQuery,
   isLastQuery,
   onExpand,
+  relatedQuestionsLabel,
 }) => {
   const [displayMessages, setDisplayMessages] = useState<Message[]>([]);
   const [collapsed, setCollapsed] = useState<boolean>(_collapsed);
@@ -471,6 +473,7 @@ const RenderChat: React.FC<RenderChatProps> = ({
                         key={`${index}-${message.id}-suggestion`}
                         payload={message.payload as SuggestionPayload}
                         handleSendQuery={handleSendQuery}
+                        relatedQuestionsLabel={relatedQuestionsLabel}
                       />
                     )}
                   </div>

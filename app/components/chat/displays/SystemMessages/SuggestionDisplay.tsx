@@ -9,11 +9,13 @@ import { Separator } from "@/components/ui/separator";
 interface SuggestionDisplayProps {
   payload: SuggestionPayload;
   handleSendQuery: (query: string, route?: string, mimick?: boolean) => void;
+  relatedQuestionsLabel?: string;
 }
 
 const SuggestionDisplay: React.FC<SuggestionDisplayProps> = ({
   payload,
   handleSendQuery,
+  relatedQuestionsLabel = "Related Questions",
 }) => {
   const [clickedSuggestion, setClickedSuggestion] = useState<string | null>(
     null,
@@ -25,7 +27,7 @@ const SuggestionDisplay: React.FC<SuggestionDisplayProps> = ({
     <div className="w-full flex flex-col items-start justify-start gap-3 fade-in">
       <div className="flex items-center gap-2">
         <MdFormatListBulletedAdd className="text-lg" />
-        <p className="text-lg">Related Questions</p>
+        <p className="text-lg">{relatedQuestionsLabel}</p>
       </div>
       <Separator />
       <div className="w-full flex flex-col items-start justify-start gap-3">

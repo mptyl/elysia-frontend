@@ -324,6 +324,7 @@ export default function ChatPage() {
                       handleSendQuery={handleSendQuery}
                       isLastQuery={index === array.length - 1}
                       onExpand={(queryId) => setExpandedQueryId(queryId)}
+                      relatedQuestionsLabel={t.relatedQuestions}
                     />
                   </ChatProvider>
                 ))}
