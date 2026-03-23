@@ -53,6 +53,7 @@ export async function proxy(request: NextRequest) {
     // These bypass Next.js middleware auth checks (Elysia handles its own auth or was previously accessed directly)
     const isProxyRoute =
         request.nextUrl.pathname.startsWith("/supabase") ||
+        request.nextUrl.pathname.startsWith("/n8n") ||
         (isEmulatorProvider && request.nextUrl.pathname.startsWith("/entra")) ||
         (isEmulatorProvider && request.nextUrl.pathname.startsWith("/common")) ||
         // Elysia backend routes

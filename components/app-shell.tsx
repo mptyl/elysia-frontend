@@ -31,7 +31,7 @@ export function AppShell({ children }: AppShellProps) {
     return (
         <SidebarProvider>
             <SidebarComponent />
-            <main className="relative flex flex-1 min-w-0 flex-col md:flex-row w-full gap-2 md:gap-6 items-start justify-start p-2 md:p-6 overflow-hidden">
+            <main className="relative flex flex-1 min-w-0 min-h-0 flex-col md:flex-row w-full gap-2 md:gap-6 items-start justify-start p-2 md:p-6 overflow-hidden">
                 <SidebarTrigger className="lg:hidden flex text-secondary hover:text-primary hover:bg-foreground_alt z-50" />
                 <StartDialog />
                 {children}

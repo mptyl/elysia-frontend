@@ -34,6 +34,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { Button } from "@/components/ui/button";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { CHAT_I18N } from "@/app/config/branding";
+import type { PreferredLanguage } from "@/app/types/profile-types";
 
 import dynamic from "next/dynamic";
 import { Separator } from "@/components/ui/separator";
@@ -62,6 +65,10 @@ export default function ChatPage() {
   } = useContext(ConversationContext);
 
   const { getRandomPrompts, collections } = useContext(CollectionContext);
+
+  const { profile } = useUserProfile(id || undefined);
+  const lang: PreferredLanguage = profile?.preferred_language ?? "it";
+  const t = CHAT_I18N[lang];
 
   const { fetchDebug } = useDebug(id || "");
 
@@ -213,7 +220,7 @@ export default function ChatPage() {
             />
           </div>
         </div>
-        <p className="text-primary text-xl shine">Loading Athena...</p>
+        <p className="text-primary text-xl shine">Loading Atena...</p>
       </div>
     );
   }
@@ -326,7 +333,7 @@ export default function ChatPage() {
               </div>
             )}
           </div>
-          <div className="w-full justify-center items-center flex z-10">
+          <div className="w-full justify-center items-center flex z-30">
             <QueryInput
               query_length={Object.keys(currentQuery).length}
               currentStatus={currentStatus}
@@ -335,6 +342,7 @@ export default function ChatPage() {
               addDistortion={addDistortion}
               selectSettings={selectSettings}
               conversationId={currentConversation}
+              preferredLanguage={lang}
               defaultRagEnabled={(() => {
                 const queries = Object.values(currentQuery);
                 // If a query is expanded, use its RAG state; otherwise use last query
@@ -363,10 +371,10 @@ export default function ChatPage() {
             </div>
           )}
           {Object.keys(currentQuery).length === 0 && (
-            <div className="absolute flex flex-col justify-center items-center w-full h-full gap-3 fade-in z-10 pointer-events-none">
+            <div className="absolute flex flex-col justify-center items-center w-full h-full gap-3 fade-in z-10 pointer-events-none pb-32">
               <div className="flex items-center gap-4 pointer-events-auto">
                 <p className="text-primary text-3xl font-semibold drop-shadow-sm">
-                  Ask Athena
+                  {t.askTitle}
                 </p>
                 <Button
                   variant="default"

@@ -15,12 +15,14 @@ import { navigateTo } from "@/app/components/host";
 import { User } from "@supabase/supabase-js";
 import { LogOut, User as UserIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { RouterContext } from "@/app/components/contexts/RouterContext";
 
 export function UserNav() {
     const [user, setUser] = useState<User | null>(null);
     const router = useRouter();
     const supabase = createClient();
+    const { changePage } = useContext(RouterContext);
 
     useEffect(() => {
         const getUser = async () => {
@@ -106,7 +108,7 @@ export function UserNav() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    <DropdownMenuItem onClick={() => navigateTo("/profile")}>
+                    <DropdownMenuItem onClick={() => changePage("profile", {}, true)}>
                         <UserIcon className="mr-2 h-4 w-4" />
                         <span>Profile</span>
                     </DropdownMenuItem>

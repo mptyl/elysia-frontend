@@ -71,7 +71,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
     localSocket.onopen = () => {
       setSocketOnline(true);
-      showSuccessToast("Connected to Athena");
+      showSuccessToast("Connected to Atena");
       if (process.env.NODE_ENV === "development") {
         console.log("Socket opened");
       }
@@ -96,7 +96,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       setSocket(undefined);
       setAllConversationStatuses("");
       handleAllConversationsError();
-      showErrorToast("Connection to Athena lost");
+      showErrorToast("Connection to Atena lost");
     };
 
     localSocket.onclose = () => {
@@ -104,7 +104,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       setAllConversationStatuses("");
       setSocket(undefined);
       handleAllConversationsError();
-      showErrorToast("Connection to Athena lost");
+      showErrorToast("Connection to Atena lost");
       if (process.env.NODE_ENV === "development") {
         console.log("Socket closed");
       }

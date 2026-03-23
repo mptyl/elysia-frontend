@@ -271,7 +271,7 @@ export default function ModelsSection({
             <p className="font-bold text-alt_color_b">Recommendation</p>
           </div>
           <p>
-            Athena is optimized for Gemini models. We recommend using Gemini
+            Atena is optimized for Gemini models. We recommend using Gemini
             models over OpenAI models for the best performance if possible.
           </p>
         </div>

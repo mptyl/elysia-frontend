@@ -54,7 +54,7 @@ export default function AuthCallbackPage() {
                         return;
                     }
 
-                    // Sync profile before redirecting (avoids browser aborting the request)
+                    // Sync profile before navigating away
                     await fetch("/api/auth/sync-profile", {
                         method: "POST",
                         credentials: "include",

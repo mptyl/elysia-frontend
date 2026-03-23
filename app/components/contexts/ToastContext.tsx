@@ -229,7 +229,7 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
           } else {
             showErrorToast(
               "Error analyzing " + collection.name + "...",
-              "Connection to Athena lost (Socket: " +
+              "Connection to Atena lost (Socket: " +
               socket +
               ") (ID: " +
               user_id +

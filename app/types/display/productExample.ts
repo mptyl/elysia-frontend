@@ -89,7 +89,7 @@ export const productResponse: any = {
             price: 299.99,
             rating: 4.8,
             brand: "Nova Nest",
-            name: "Athena's Gown",
+            name: "Atena's Gown",
             subcategory: "Formal Dresses",
             reviews:
               "['Absolutely stunning and feels like it was made just for me!', 'The subtle gold accents add such a classical beauty to the dress.']",
@@ -317,7 +317,7 @@ export const productResponse: any = {
             ref_ids: ["query_Ecommerce_0_0", "query_Ecommerce_0_3"],
           },
           {
-            text: 'For formal occasions, consider "Athena\'s Gown", an ivory silk gown with gold accents, or the "Ivory Parchment Gown", featuring lace detailing and a flowing skirt. The "Eloquence Gown" is another elegant, ivory-colored option suitable for cultured gatherings.\n',
+            text: 'For formal occasions, consider "Atena\'s Gown", an ivory silk gown with gold accents, or the "Ivory Parchment Gown", featuring lace detailing and a flowing skirt. The "Eloquence Gown" is another elegant, ivory-colored option suitable for cultured gatherings.\n',
             ref_ids: [
               "query_Ecommerce_0_1",
               "query_Ecommerce_0_2",

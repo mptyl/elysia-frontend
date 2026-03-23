@@ -8,8 +8,21 @@
 
 import { public_path } from "@/app/components/host";
 
+export const CHAT_I18N = {
+  it: {
+    askTitle: "Chiedi ad Atena",
+    placeholderInitial: "Cosa vuoi chiedere oggi?",
+    placeholderFollowUp: "Fai una domanda di approfondimento...",
+  },
+  en: {
+    askTitle: "Ask Atena",
+    placeholderInitial: "What will you ask today?",
+    placeholderFollowUp: "Ask a follow up question...",
+  },
+} as const;
+
 export const BRANDING = {
-  appName: "Athena",
+  appName: "Atena",
   logoPath: `${public_path}mondo-uni-neg.png`,
   logoPathDark: `${public_path}mondo-uni-neg.png`,
   logoPathLight: `${public_path}mondo-uni.png`,
@@ -18,7 +31,6 @@ export const BRANDING = {
     showWeaviatePowered: true,
   },
   links: {
-    documentation: "https://weaviate.github.io/elysia/",
     // Add other Athena-specific links here if needed
   }
 };
