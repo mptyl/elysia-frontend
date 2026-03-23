@@ -85,7 +85,7 @@ const HomeSubMenu: React.FC = () => {
                 variant={currentConversation === key ? "active" : "default"}
                 onClick={() => selectConversation(key)}
               >
-                <p className="truncate max-w-[13rem]">{value.title}</p>
+                <p className="truncate max-w-[13rem]">{value.title === "New Conversation" ? t('addConversation') : value.title}</p>
               </SidebarMenuButton>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { TicketPayload } from "@/app/types/displays";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ interface TicketViewProps {
 }
 
 const TicketView: React.FC<TicketViewProps> = ({ ticket }) => {
+  const t = useTranslations("chat");
   const formatDate = (date: string) => {
     const options: Intl.DateTimeFormatOptions = {
       year: "numeric",
@@ -36,13 +38,13 @@ const TicketView: React.FC<TicketViewProps> = ({ ticket }) => {
             {ticket.status === "open" && (
               <Badge className="bg-accent">
                 <GoIssueOpened />
-                Open
+                {t('open')}
               </Badge>
             )}
             {ticket.status === "closed" && (
               <Badge className="bg-error">
                 <GoIssueClosed />
-                Closed
+                {t('closed')}
               </Badge>
             )}
             {ticket.status !== "open" && ticket.status !== "closed" && (
@@ -95,7 +97,7 @@ const TicketView: React.FC<TicketViewProps> = ({ ticket }) => {
           </div>
           {ticket.ELYSIA_SUMMARY && (
             <div className="flex flex-col gap-2 w-full p-4 pt-0">
-              <p className="text-sm font-bold text-secondary">Summary</p>
+              <p className="text-sm font-bold text-secondary">{t('summary')}</p>
               <p className="text-xs text-primary font-normal">
                 {ticket.ELYSIA_SUMMARY}
               </p>
@@ -107,7 +109,7 @@ const TicketView: React.FC<TicketViewProps> = ({ ticket }) => {
         {ticket.updated_at && (
           <div className="lg:w-1/5 w-full flex flex-col gap-2 p-2">
             <div className="flex flex-col gap-2 w-full">
-              <p className="text-sm  text-secondary">Last updated</p>
+              <p className="text-sm  text-secondary">{t('lastUpdated')}</p>
               <p className="text-xs text-primary font-normal">
                 {formatDate(ticket.updated_at)}
               </p>
@@ -118,7 +120,7 @@ const TicketView: React.FC<TicketViewProps> = ({ ticket }) => {
 
       {ticket.comments && (
         <div className="w-full flex flex-col gap-2 bg-highlight/10 text-highlight rounded-md p-4">
-          <p className="text-sm font-bold">Comments</p>
+          <p className="text-sm font-bold">{t('comments')}</p>
           {Array.isArray(ticket.comments) ? (
             <div className="flex flex-col gap-2">
               {ticket.comments.map((comment, idx) => (

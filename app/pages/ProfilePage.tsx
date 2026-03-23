@@ -1,7 +1,7 @@
 "use client";
 
 import { Save, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { navigateTo } from "@/app/components/host";
 import { User } from "@supabase/supabase-js";
@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useTranslations } from "next-intl";
+import { useRefetchLocale } from "@/app/components/contexts/I18nContext";
+import { CollectionContext } from "@/app/components/contexts/CollectionContext";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useRoleStandardInstructions } from "@/hooks/useRoleStandardInstructions";
 import type {
@@ -29,6 +31,8 @@ import type {
 export default function ProfilePage() {
     const t = useTranslations("profile");
     const tc = useTranslations("common");
+    const refetchLocale = useRefetchLocale();
+    const { fetchCollections } = useContext(CollectionContext);
     const supabase = createClient();
     const [user, setUser] = useState<User | null>(null);
 
@@ -101,6 +105,8 @@ export default function ProfilePage() {
 
             setSaveSuccess(true);
             await refetch();
+            await refetchLocale();
+            fetchCollections();
 
             setTimeout(() => setSaveSuccess(false), 3000);
         } catch (err) {

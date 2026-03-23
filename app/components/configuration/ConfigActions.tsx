@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { motion } from "framer-motion";
@@ -49,6 +50,9 @@ export default function ConfigActions({
   onCancelConfig,
   onDeleteConfig,
 }: ConfigActionsProps) {
+  const t = useTranslations("config");
+  const tc = useTranslations("common");
+
   const showSaveButton =
     (!matchingConfig || isNewConfig) && !loadingConfig && isConfigValid;
   const showSetDefaultButton =
@@ -68,7 +72,7 @@ export default function ConfigActions({
             onSaveAsDefaultChange(checked as boolean);
           }}
         />
-        <p className="text-sm text-secondary">Save as default</p>
+        <p className="text-sm text-secondary">{t('saveAsDefault')}</p>
       </div>
 
       {/* Action buttons */}
@@ -101,7 +105,7 @@ export default function ConfigActions({
               }}
             >
               <FaSave />
-              Save
+              {tc('save')}
             </Button>
           )}
 
@@ -112,7 +116,7 @@ export default function ConfigActions({
               className="bg-accent/10 text-accent hover:bg-accent/20 w-full sm:w-auto"
             >
               <FaCircle scale={0.2} className="text-lg pulsing_color" />
-              Saving...
+              {t('saving')}
             </Button>
           )}
 
@@ -126,7 +130,7 @@ export default function ConfigActions({
               }}
             >
               <FaStar />
-              Set as default
+              {t('setAsDefault')}
             </Button>
           )}
         </motion.div>
@@ -138,7 +142,7 @@ export default function ConfigActions({
           disabled={matchingConfig}
           className="w-full sm:w-auto"
         >
-          Cancel
+          {tc('cancel')}
         </Button>
 
         {/* Delete Button */}
@@ -148,8 +152,8 @@ export default function ConfigActions({
           classNameConfirm="w-full sm:w-auto text-secondary hover:text-error border border-foreground "
           icon={<TiDelete />}
           disabled={isNewConfig || !userConfigId}
-          text="Delete"
-          confirmText="Are you sure?"
+          text={tc('delete')}
+          confirmText={t('areYouSure')}
           onClick={onDeleteConfig}
         />
       </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { TaskCompleted } from "@/app/components/types";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
@@ -10,12 +11,13 @@ interface TaskDisplayProps {
 }
 
 const TaskDisplay: React.FC<TaskDisplayProps> = ({ tasks_completed }) => {
+  const t = useTranslations("chat");
   if (!tasks_completed || tasks_completed.length === 0) {
     return (
       <div className="flex items-center justify-center w-full p-8 bg-background_alt rounded-md border border-foreground">
         <div className="flex flex-col items-center gap-3 text-secondary">
           <MdTask size={32} className="opacity-50" />
-          <p className="text-sm">No tasks completed</p>
+          <p className="text-sm">{t('noTasksCompleted')}</p>
         </div>
       </div>
     );
@@ -40,7 +42,7 @@ const TaskDisplay: React.FC<TaskDisplayProps> = ({ tasks_completed }) => {
                 </span>
               </div>
               <p className="text-secondary text-sm font-medium">
-                Task {groupIndex + 1}
+                {t('task')} {groupIndex + 1}
               </p>
             </div>
             <div className="p-3 bg-background rounded-md border border-foreground">
@@ -74,13 +76,13 @@ const TaskDisplay: React.FC<TaskDisplayProps> = ({ tasks_completed }) => {
                       </p>
                       {task.reasoning && (
                         <p className="text-secondary text-xs leading-relaxed">
-                          <span className="font-medium">Reasoning:</span>{" "}
+                          <span className="font-medium">{t('reasoning')}</span>{" "}
                           {task.reasoning}
                         </p>
                       )}
                       {task.extra_string && (
                         <p className="text-secondary text-xs leading-relaxed">
-                          <span className="font-medium">Details:</span>{" "}
+                          <span className="font-medium">{t('details')}</span>{" "}
                           {task.extra_string}
                         </p>
                       )}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { ProductPayload } from "@/app/types/displays";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,6 +11,7 @@ interface ProductViewProps {
 }
 
 const ProductView: React.FC<ProductViewProps> = ({ product }) => {
+  const t = useTranslations("chat");
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -81,7 +83,7 @@ const ProductView: React.FC<ProductViewProps> = ({ product }) => {
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-secondary/30 text-center p-8">
                 <div className="text-6xl mb-4 opacity-50">📷</div>
-                <div className="text-sm opacity-60">Image unavailable</div>
+                <div className="text-sm opacity-60">{t('imageUnavailable')}</div>
               </div>
             </div>
           )}

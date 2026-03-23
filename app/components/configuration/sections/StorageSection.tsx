@@ -58,7 +58,7 @@ export default function StorageSection({
           <div className="h-7 w-7 bg-background rounded-md flex items-center justify-center">
             <MdStorage />
           </div>
-          <p className="text-primary text-lg">Atena Storage</p>
+          <p className="text-primary text-lg">{t('atenaStorage')}</p>
         </div>
         <div className="flex items-center justify-end w-full sm:w-auto">
           <div>
@@ -71,7 +71,7 @@ export default function StorageSection({
                 }`}
             >
               <IoCopy />
-              <span className="text-sm font-base">Use Same Cluster</span>
+              <span className="text-sm font-base">{t('useSameCluster')}</span>
             </Button>
           </div>
         </div>
@@ -122,7 +122,7 @@ export default function StorageSection({
         {!isCustom && (
           <SettingItem>
             <SettingTitle
-              title="URL"
+              title={t('url')}
               description="The URL of your Weaviate cluster to save configs and conversations to."
             />
             <SettingInput
@@ -145,7 +145,7 @@ export default function StorageSection({
           <>
             <SettingItem>
               <SettingTitle
-                title="HTTP Host"
+                title={t('httpHost')}
                 description="The HTTP host of your custom Weaviate instance."
               />
               <SettingInput
@@ -161,7 +161,7 @@ export default function StorageSection({
             </SettingItem>
             <SettingItem>
               <SettingTitle
-                title="HTTP Port"
+                title={t('httpPort')}
                 description="The HTTP port of your custom Weaviate instance."
               />
               <SettingInput
@@ -176,7 +176,7 @@ export default function StorageSection({
             </SettingItem>
             <SettingItem>
               <SettingTitle
-                title="HTTP Secure"
+                title={t('httpSecure')}
                 description="Whether the HTTP connection is secure."
               />
               <SettingCheckbox
@@ -191,7 +191,7 @@ export default function StorageSection({
             </SettingItem>
             <SettingItem>
               <SettingTitle
-                title="GRPC Host"
+                title={t('grpcHost')}
                 description="The GRPC host of your custom Weaviate instance."
               />
               <SettingInput
@@ -207,7 +207,7 @@ export default function StorageSection({
             </SettingItem>
             <SettingItem>
               <SettingTitle
-                title="GRPC Port"
+                title={t('grpcPort')}
                 description="The GRPC port of your custom Weaviate instance."
               />
               <SettingInput
@@ -222,7 +222,7 @@ export default function StorageSection({
             </SettingItem>
             <SettingItem>
               <SettingTitle
-                title="GRPC Secure"
+                title={t('grpcSecure')}
                 description="Whether the GRPC connection is secure."
               />
               <SettingCheckbox
@@ -242,7 +242,7 @@ export default function StorageSection({
           <>
             <SettingItem>
               <SettingTitle
-                title="GRPC Port"
+                title={t('grpcPort')}
                 description="The GRPCport of the local Weaviate cluster."
               />
               <SettingInput
@@ -278,7 +278,7 @@ export default function StorageSection({
 
         <SettingItem>
           <SettingTitle
-            title="API Key"
+            title={t('apiKey')}
             description={
               isLocal
                 ? "The API key of your local Weaviate cluster. Needs to be configured in the local Weaviate cluster."

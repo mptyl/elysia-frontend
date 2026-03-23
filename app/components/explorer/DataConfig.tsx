@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useContext } from "react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { CollectionContext } from "../contexts/CollectionContext";
@@ -31,6 +32,7 @@ const DataConfig: React.FC<DataConfigProps> = ({
   metadataEditor,
   globalVectorizer,
 }) => {
+  const t = useTranslations("data");
   const { deleteCollection } = useContext(CollectionContext);
   const { id } = useContext(SessionContext);
   const { triggerAnalysis } = useContext(ProcessingContext);
@@ -64,7 +66,7 @@ const DataConfig: React.FC<DataConfigProps> = ({
             <div className="bg-primary/10 border border-primary rounded-md p-1">
               <PiVectorThreeFill className="text-primary" />
             </div>
-            <p className="font-bold">Global Vectorizer</p>
+            <p className="font-bold">{t('globalVectorizer')}</p>
           </div>
 
           <div className="flex flex-col gap-3 p-4 bg-background_alt rounded-lg border border-border shadow-sm">
@@ -110,7 +112,7 @@ const DataConfig: React.FC<DataConfigProps> = ({
                 <div className="bg-highlight/10 border border-highlight rounded-md p-1">
                   <PiVectorThreeFill className="text-highlight" />
                 </div>
-                <p className="font-bold">Named Vectors</p>
+                <p className="font-bold">{t('namedVectors')}</p>
                 <div className="bg-secondary/10 border border-secondary/20 rounded-full px-2 py-1">
                   <p className="text-xs text-secondary font-medium">
                     {collectionMetadata.metadata.named_vectors.length}{" "}
@@ -127,7 +129,7 @@ const DataConfig: React.FC<DataConfigProps> = ({
                   className=""
                 >
                   <FaEdit className="text-secondary" />
-                  <p className="text-secondary">Edit</p>
+                  <p className="text-secondary">{t('edit')}</p>
                 </Button>
               )}
             </div>
@@ -174,7 +176,7 @@ const DataConfig: React.FC<DataConfigProps> = ({
 
                         <div className="flex flex-col gap-2">
                           <p className="text-sm font-medium text-primary">
-                            Description:
+                            {t('descriptionLabel')}
                           </p>
                           <textarea
                             className="w-full border rounded p-2 bg-background text-sm"
@@ -192,7 +194,7 @@ const DataConfig: React.FC<DataConfigProps> = ({
                               )
                             }
                             disabled={metadataEditor.savingNamedVectors}
-                            placeholder="Enter description..."
+                            placeholder={t('enterDescription')}
                           />
                         </div>
 
@@ -306,7 +308,7 @@ const DataConfig: React.FC<DataConfigProps> = ({
             onClick={() => triggerAnalysis(collection, id ?? "")}
           >
             <PiMagicWandFill className="text-primary" />
-            <p className="text-primary">Re-Analyze Collection</p>
+            <p className="text-primary">{t('reAnalyzeCollection')}</p>
           </Button>
         </motion.div>
         <motion.div
@@ -323,7 +325,7 @@ const DataConfig: React.FC<DataConfigProps> = ({
             onClick={() => clearAnalysis()}
           >
             <GoTrash className="text-error" />
-            <p className="text-error">Clear Analysis</p>
+            <p className="text-error">{t('clearAnalysis')}</p>
           </Button>
         </motion.div>
       </div>

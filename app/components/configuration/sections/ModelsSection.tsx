@@ -237,7 +237,7 @@ export default function ModelsSection({
 
         <SettingItem>
           <SettingTitle
-            title="API Base URL"
+            title={t('apiBaseUrl')}
             description={t('customEndpoints')}
           />
           <SettingInput

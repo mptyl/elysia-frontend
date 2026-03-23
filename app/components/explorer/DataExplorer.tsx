@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useContext, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { CollectionContext } from "../contexts/CollectionContext";
@@ -28,6 +29,7 @@ import DataMetadata from "./DataMetadata";
 import { motion } from "framer-motion";
 
 const DataExplorer = () => {
+  const t = useTranslations("data");
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
@@ -294,7 +296,7 @@ const DataExplorer = () => {
                 >
                   <Input
                     type="text"
-                    placeholder={"Search " + (collection?.name || "collection")}
+                    placeholder={t('searchCollection', { collection: collection?.name || "collection" })}
                     value={query}
                     className="text-sm placeholder:text-secondary placeholder:text-sm"
                     onChange={(e) => setQuery(e.target.value)}

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { motion, useSpring } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
@@ -72,6 +73,7 @@ const DashboardButton: React.FC<DashboardButtonProps> = ({
   unprocessed,
   deleteCollection,
 }) => {
+  const t = useTranslations("data");
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [hasAnimated, setHasAnimated] = useState(false);
@@ -213,7 +215,7 @@ const DashboardButton: React.FC<DashboardButtonProps> = ({
                 className="text-secondary hover:text-error"
               >
                 <GoTrash />
-                <span>Clear Analysis</span>
+                <span>{t('clearAnalysis')}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

@@ -16,21 +16,29 @@ const messages: Record<PreferredLanguage, typeof enMessages> = {
 
 interface I18nContextValue {
   locale: PreferredLanguage;
+  refetchLocale: () => Promise<void>;
 }
 
-const I18nContext = createContext<I18nContextValue>({ locale: "it" });
+const I18nContext = createContext<I18nContextValue>({
+  locale: "it",
+  refetchLocale: async () => {},
+});
 
 export function useLocale(): PreferredLanguage {
   return useContext(I18nContext).locale;
 }
 
+export function useRefetchLocale(): () => Promise<void> {
+  return useContext(I18nContext).refetchLocale;
+}
+
 export function I18nProvider({ children }: { children: React.ReactNode }) {
   const { id: userId } = useAuthUserId();
-  const { profile } = useUserProfile(userId ?? undefined);
+  const { profile, refetch } = useUserProfile(userId ?? undefined);
 
   const locale: PreferredLanguage = profile?.preferred_language ?? "it";
 
-  const contextValue = useMemo(() => ({ locale }), [locale]);
+  const contextValue = useMemo(() => ({ locale, refetchLocale: refetch }), [locale, refetch]);
 
   return (
     <I18nContext.Provider value={contextValue}>

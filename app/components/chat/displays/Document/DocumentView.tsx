@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import { DocumentPayload } from "@/app/types/displays";
 import MarkdownFormat from "../../components/MarkdownFormat";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +17,7 @@ interface DocumentViewProps {
 const DocumentView: React.FC<DocumentViewProps> = ({
   document: docPayload,
 }) => {
+  const t = useTranslations("chat");
   const [showChunksOnly, setShowChunksOnly] = useState(false);
 
   const scrollToChunk = (index: number) => {
@@ -144,16 +146,16 @@ const DocumentView: React.FC<DocumentViewProps> = ({
                 {showChunksOnly ? (
                   <>
                     <IoDocumentText className="mr-1" />
-                    <span className="hidden xs:inline">Show Full Document</span>
-                    <span className="xs:hidden">Full Doc</span>
+                    <span className="hidden xs:inline">{t('showFullDocument')}</span>
+                    <span className="xs:hidden">{t('fullDoc')}</span>
                   </>
                 ) : (
                   <>
                     <FaBookmark className="mr-1" />
                     <span className="hidden xs:inline">
-                      Only Relevant Parts
+                      {t('onlyRelevantParts')}
                     </span>
-                    <span className="xs:hidden">Relevant</span>
+                    <span className="xs:hidden">{t('relevant')}</span>
                   </>
                 )}
               </Button>
