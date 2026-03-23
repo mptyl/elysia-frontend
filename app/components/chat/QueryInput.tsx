@@ -9,6 +9,8 @@ import CollectionSelection from "./components/CollectionSelection";
 import { Button } from "@/components/ui/button";
 import { TbSettings } from "react-icons/tb";
 import { RouterContext } from "../contexts/RouterContext";
+import { CHAT_I18N } from "@/app/config/branding";
+import type { PreferredLanguage } from "@/app/types/profile-types";
 
 interface QueryInputProps {
   handleSendQuery: (
@@ -24,6 +26,7 @@ interface QueryInputProps {
   selectSettings: () => void;
   defaultRagEnabled?: boolean;
   conversationId?: string | null;
+  preferredLanguage?: PreferredLanguage;
 }
 
 const QueryInput: React.FC<QueryInputProps> = ({
@@ -35,9 +38,12 @@ const QueryInput: React.FC<QueryInputProps> = ({
   selectSettings,
   defaultRagEnabled = false,
   conversationId,
+  preferredLanguage = "it",
 }) => {
+  const t = CHAT_I18N[preferredLanguage];
   const { prefillPrompt, setPrefillPrompt, autoSendPrefill } = useContext(RouterContext);
   const [query, setQuery] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const [route, setRoute] = useState<string>("");
   const [mimick, setMimick] = useState<boolean>(false);
@@ -99,9 +105,19 @@ const QueryInput: React.FC<QueryInputProps> = ({
     addDistortion(0.02);
   }, [query]);
 
+  // Auto-resize textarea: grow up to max-h-[20vh], then scroll
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.style.height = "auto";
+    const maxHeight = window.innerHeight * 0.2;
+    textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`;
+    textarea.style.overflowY = textarea.scrollHeight > maxHeight ? "auto" : "hidden";
+  }, [query]);
+
   return (
     <div
-      className={`fixed bottom-8 gap-1 flex items-center justify-center flex-col transition-all duration-300 "md:w-[60vw] lg:w-[40vw] w-full p-2 md:p-0 lg:p-0" `}
+      className={`fixed bottom-8 z-30 gap-1 flex items-center justify-center flex-col transition-all duration-300 "md:w-[60vw] lg:w-[40vw] w-full p-2 md:p-0 lg:p-0" `}
     >
       <div className="w-full flex justify-between items-center gap-2 mb-2">
         {currentStatus != "" ? (
@@ -159,13 +175,13 @@ const QueryInput: React.FC<QueryInputProps> = ({
           className={`flex w-full bg-background_alt border border-foreground_alt p-2 rounded-xl items-center flex-col`}
         >
           <textarea
+            ref={textareaRef}
             placeholder={
               query_length != 0
-                ? "Ask a follow up question..."
-                : "What will you ask today?"
+                ? t.placeholderFollowUp
+                : t.placeholderInitial
             }
-            className={`w-full p-2 bg-transparent placeholder:text-secondary outline-none text-sm leading-tight min-h-[5vh] max-h-[10vh] rounded-xl flex items-center justify-center"
-            }`}
+            className={`w-full p-2 bg-transparent placeholder:text-secondary outline-none text-sm leading-tight min-h-[5vh] max-h-[20vh] rounded-xl`}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => {
@@ -176,8 +192,6 @@ const QueryInput: React.FC<QueryInputProps> = ({
             }}
             style={{
               paddingTop: query_length === 0 ? "8px" : "6px",
-              display: "flex",
-              alignItems: "center",
               resize: "none",
             }}
           />

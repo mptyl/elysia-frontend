@@ -8,6 +8,19 @@
 
 import { public_path } from "@/app/components/host";
 
+export const CHAT_I18N = {
+  it: {
+    askTitle: "Chiedi ad Atena",
+    placeholderInitial: "Cosa vuoi chiedere oggi?",
+    placeholderFollowUp: "Fai una domanda di approfondimento...",
+  },
+  en: {
+    askTitle: "Ask Atena",
+    placeholderInitial: "What will you ask today?",
+    placeholderFollowUp: "Ask a follow up question...",
+  },
+} as const;
+
 export const BRANDING = {
   appName: "Atena",
   logoPath: `${public_path}mondo-uni-neg.png`,
