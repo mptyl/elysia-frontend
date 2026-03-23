@@ -17,15 +17,17 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { RouterContext } from "../contexts/RouterContext";
 import { SessionContext } from "../contexts/SessionContext";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { useTranslations } from "next-intl";
 
 const SettingsSubMenu: React.FC = () => {
+  const t = useTranslations('config');
   const { changePage, currentPage } = useContext(RouterContext);
   const { unsavedChanges } = useContext(SessionContext);
 
   return (
     <SidebarGroup>
       <SidebarGroupLabel>
-        <p>Settings</p>
+        <p>{t('configuration')}</p>
       </SidebarGroupLabel>
       <SidebarGroupContent>
         <SidebarMenuItem className="list-none" key={"settings"}>
@@ -34,14 +36,14 @@ const SettingsSubMenu: React.FC = () => {
             onClick={() => changePage("settings", {}, true, unsavedChanges)}
           >
             <IoSettingsOutline />
-            <p>Configuration</p>
+            <p>{t('configuration')}</p>
           </SidebarMenuButton>
           <SidebarMenuButton
             variant={currentPage === "elysia" ? "active" : "default"}
             onClick={() => changePage("elysia", {}, true, unsavedChanges)}
           >
             <GiAbstract053 />
-            <p>Blob</p>
+            <p>{t('blob')}</p>
           </SidebarMenuButton>
           <ThemeToggle />
         </SidebarMenuItem>

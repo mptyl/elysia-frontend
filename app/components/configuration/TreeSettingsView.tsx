@@ -5,6 +5,7 @@ import { getModels } from "@/app/api/getModels";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { TbArrowBackUp } from "react-icons/tb";
+import { useTranslations } from "next-intl";
 
 // Custom hooks
 import { useTreeConfigState } from "./hooks/useTreeConfigState";
@@ -28,6 +29,9 @@ export default function TreeSettingsView({
   conversation_id: string | null | undefined;
   selectChat: () => void;
 }) {
+  const t = useTranslations("config");
+  const tc = useTranslations("common");
+
   // Tree configuration state management
   const {
     currentConfig,
@@ -78,7 +82,7 @@ export default function TreeSettingsView({
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full w-full">
-        <p className="text-primary shine">Loading chat config...</p>
+        <p className="text-primary shine">{t('loadingChatConfig')}</p>
       </div>
     );
   }
@@ -87,14 +91,14 @@ export default function TreeSettingsView({
     return (
       <div className="flex flex-col items-center justify-center h-full w-full gap-4">
         <p className="text-secondary">
-          {!conversation_id ? "No conversation selected" : "No chat configuration found"}
+          {!conversation_id ? t('noConversation') : t('noChatConfig')}
         </p>
         <button
           onClick={selectChat}
           className="flex items-center gap-2 px-4 py-2 border border-foreground_alt rounded-md hover:bg-foreground_alt/10 transition-colors"
         >
           <TbArrowBackUp size={16} />
-          Back
+          {tc('back')}
         </button>
       </div>
     );
@@ -128,7 +132,7 @@ export default function TreeSettingsView({
             currentUserConfig={currentConfig}
             onUpdateFields={updateFields}
             onUpdateSettings={updateSettingsFields}
-            title="Agent Configuration"
+            title={t('agentConfiguration')}
             showDocumentation={false}
             showFeedbackSetting={false}
           />

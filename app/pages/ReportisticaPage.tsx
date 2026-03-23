@@ -25,6 +25,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useTranslations } from "next-intl";
 
 const CATEGORIES_URL = "/n8n/webhook/get-categories";
 const REPORTS_URL = "/n8n/webhook/get-reports";
@@ -47,6 +48,8 @@ interface ReportParam {
 }
 
 export default function ReportisticaPage() {
+  const t = useTranslations("reportistica");
+  const tc = useTranslations("common");
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoriesError, setCategoriesError] = useState<string | null>(null);
@@ -93,7 +96,7 @@ export default function ReportisticaPage() {
         return res.text();
       })
       .then((text) => {
-        if (!text) throw new Error("Risposta vuota dal server");
+        if (!text) throw new Error(t('emptyResponse'));
         const parsed = JSON.parse(text);
         // Normalizza: accetta sia { categories: [...] } / [{ categories: [...] }]
         // sia il formato n8n con chiavi numeriche: [{ "1": "Cat A", "2": "Cat B" }]
@@ -112,7 +115,7 @@ export default function ReportisticaPage() {
       .catch((err) => {
         if (!cancelled) {
           if (err.name === "AbortError") {
-            setCategoriesError("Timeout: il server non ha risposto entro 30 secondi");
+            setCategoriesError(t('timeout'));
           } else {
             setCategoriesError(err.message);
           }
@@ -151,7 +154,7 @@ export default function ReportisticaPage() {
         return res.text();
       })
       .then((text) => {
-        if (!text) throw new Error("Risposta vuota dal server");
+        if (!text) throw new Error(t('emptyResponse'));
         return JSON.parse(text) as { reports: Array<{ id: number; report_name: string; report_description: string }> };
       })
       .then((data) => {
@@ -162,7 +165,7 @@ export default function ReportisticaPage() {
       .catch((err) => {
         if (!cancelled) {
           if (err.name === "AbortError") {
-            setReportsError("Timeout: il server non ha risposto entro 30 secondi");
+            setReportsError(t('timeout'));
           } else {
             setReportsError(err.message);
           }
@@ -204,7 +207,7 @@ export default function ReportisticaPage() {
         return res.text();
       })
       .then((text) => {
-        if (!text) throw new Error("Risposta vuota dal server");
+        if (!text) throw new Error(t('emptyResponse'));
         const parsed = JSON.parse(text);
         return (Array.isArray(parsed) ? parsed[0] : parsed) as {
           report_id: number;
@@ -231,7 +234,7 @@ export default function ReportisticaPage() {
       .catch((err) => {
         if (!cancelled) {
           if (err.name === "AbortError") {
-            setParamsError("Timeout: il server non ha risposto entro 30 secondi");
+            setParamsError(t('timeout'));
           } else {
             setParamsError(err.message);
           }
@@ -262,7 +265,7 @@ export default function ReportisticaPage() {
             onValueChange={(v) => updateFormValue(param.name, v)}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Seleziona..." />
+              <SelectValue placeholder={t('select')} />
             </SelectTrigger>
             <SelectContent>
               {(param.options ?? []).map((opt) => (
@@ -306,14 +309,14 @@ export default function ReportisticaPage() {
       tabIndex={0}
     >
       <p className="text-primary text-xl font-heading font-bold">
-        Reportistica
+        {t('title')}
       </p>
 
       {/* Riga superiore: 2 Select + Form dinamica */}
       <div className="flex flex-row gap-4 w-full">
         <Card className="w-[220px] shrink-0">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Categoria Report</CardTitle>
+            <CardTitle className="text-sm">{t('reportCategory')}</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
             <Select disabled={categoriesLoading || !!categoriesError} onValueChange={setSelectedCategory}>
@@ -321,10 +324,10 @@ export default function ReportisticaPage() {
                 <SelectValue
                   placeholder={
                     categoriesLoading
-                      ? "Caricamento..."
+                      ? t('loading')
                       : categoriesError
-                        ? "Errore caricamento"
-                        : "Seleziona..."
+                        ? t('loadError')
+                        : t('select')
                   }
                 />
               </SelectTrigger>
@@ -340,7 +343,7 @@ export default function ReportisticaPage() {
               <div className="flex flex-col gap-1">
                 <p className="text-destructive text-xs">{categoriesError}</p>
                 <Button variant="outline" size="sm" onClick={retryCategories}>
-                  Riprova
+                  {tc('retry')}
                 </Button>
               </div>
             )}
@@ -349,7 +352,7 @@ export default function ReportisticaPage() {
 
         <Card className="w-[220px] shrink-0">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Nome Report</CardTitle>
+            <CardTitle className="text-sm">{t('reportName')}</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
             <Select disabled={!selectedCategory || reportsLoading || !!reportsError} onValueChange={setSelectedReport}>
@@ -357,12 +360,12 @@ export default function ReportisticaPage() {
                 <SelectValue
                   placeholder={
                     !selectedCategory
-                      ? "Seleziona categoria..."
+                      ? t('selectCategory')
                       : reportsLoading
-                        ? "Caricamento..."
+                        ? t('loading')
                         : reportsError
-                          ? "Errore caricamento"
-                          : "Seleziona..."
+                          ? t('loadError')
+                          : t('select')
                   }
                 />
               </SelectTrigger>
@@ -378,7 +381,7 @@ export default function ReportisticaPage() {
               <div className="flex flex-col gap-1">
                 <p className="text-destructive text-xs">{reportsError}</p>
                 <Button variant="outline" size="sm" onClick={retryReports}>
-                  Riprova
+                  {tc('retry')}
                 </Button>
               </div>
             )}
@@ -387,25 +390,25 @@ export default function ReportisticaPage() {
 
         <Card className="flex-1">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Parametri</CardTitle>
+            <CardTitle className="text-sm">{t('parameters')}</CardTitle>
           </CardHeader>
           <CardContent>
             {!selectedReport ? (
               <p className="text-secondary text-sm">
-                Seleziona un report per visualizzare i parametri
+                {t('selectReport')}
               </p>
             ) : paramsLoading ? (
-              <p className="text-secondary text-sm">Caricamento parametri...</p>
+              <p className="text-secondary text-sm">{t('loadingParams')}</p>
             ) : paramsError ? (
               <div className="flex flex-col gap-1">
                 <p className="text-destructive text-xs">{paramsError}</p>
                 <Button variant="outline" size="sm" onClick={retryParams}>
-                  Riprova
+                  {tc('retry')}
                 </Button>
               </div>
             ) : params.length === 0 && outputOptions.length === 0 ? (
               <p className="text-secondary text-sm">
-                Nessun parametro configurato per questo report
+                {t('noParams')}
               </p>
             ) : (
               <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
@@ -420,17 +423,17 @@ export default function ReportisticaPage() {
                 ))}
                 {outputOptions.length > 0 && (
                   <div className="flex flex-col gap-1.5">
-                    <Label>Output</Label>
+                    <Label>{t('output')}</Label>
                     <Select
                       value={selectedOutput}
                       onValueChange={setSelectedOutput}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Seleziona output..." />
+                        <SelectValue placeholder={t('selectOutput')} />
                       </SelectTrigger>
                       <SelectContent>
                         {outputOptions.map((opt, i) => {
-                          const raw = opt.label || opt.name || `Opzione ${i + 1}`;
+                          const raw = opt.label || opt.name || `${t('option')} ${i + 1}`;
                           const display = raw.trim();
                           return (
                             <SelectItem key={i} value={String(i)}>
@@ -451,7 +454,7 @@ export default function ReportisticaPage() {
       {/* Riga inferiore: Tabella grande */}
       <Card className="min-h-[70vh] w-full">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm">Tabella dati</CardTitle>
+          <CardTitle className="text-sm">{t('dataTable')}</CardTitle>
         </CardHeader>
         <CardContent className="flex-1">
           <Table>
@@ -463,7 +466,7 @@ export default function ReportisticaPage() {
             <TableBody>
               <TableRow>
                 <TableCell className="text-secondary text-sm">
-                  Tabella &mdash; in attesa di configurazione JSON
+                  {t('awaitingConfig')}
                 </TableCell>
               </TableRow>
             </TableBody>

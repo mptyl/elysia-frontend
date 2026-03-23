@@ -6,6 +6,7 @@ import { getWebsocketHost } from "../host";
 import { useContext, useRef } from "react";
 import { ConversationContext } from "./ConversationContext";
 import { ToastContext } from "./ToastContext";
+import { useTranslations } from "next-intl";
 
 export const SocketContext = createContext<{
   socketOnline: boolean;
@@ -33,6 +34,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   } = useContext(ConversationContext);
 
   const { showErrorToast, showSuccessToast } = useContext(ToastContext);
+  const tSocket = useTranslations("socket");
+  const tStatus = useTranslations("status");
 
   const [socketOnline, setSocketOnline] = useState(false);
   const [socket, setSocket] = useState<WebSocket>();
@@ -71,7 +74,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
     localSocket.onopen = () => {
       setSocketOnline(true);
-      showSuccessToast("Connected to Atena");
+      showSuccessToast(tSocket("connected"));
       if (process.env.NODE_ENV === "development") {
         console.log("Socket opened");
       }
@@ -96,7 +99,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       setSocket(undefined);
       setAllConversationStatuses("");
       handleAllConversationsError();
-      showErrorToast("Connection to Atena lost");
+      showErrorToast(tSocket("connectionLost"));
     };
 
     localSocket.onclose = () => {
@@ -104,7 +107,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       setAllConversationStatuses("");
       setSocket(undefined);
       handleAllConversationsError();
-      showErrorToast("Connection to Atena lost");
+      showErrorToast(tSocket("connectionLost"));
       if (process.env.NODE_ENV === "development") {
         console.log("Socket closed");
       }
@@ -124,7 +127,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     mimick: boolean = false,
     disable_rag: boolean = false
   ) => {
-    setConversationStatus("Thinking...", conversation_id);
+    setConversationStatus(tStatus("thinking"), conversation_id);
     const enabled_collections = getAllEnabledCollections();
 
     if (process.env.NODE_ENV === "development") {

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { IoKeyOutline, IoWarning, IoAdd } from "react-icons/io5";
 import { FaFileImport } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
@@ -38,11 +39,13 @@ export default function ApiKeysSection({
   onRemoveAPIKey,
   onOpenEnvModal,
 }: ApiKeysSectionProps) {
+  const t = useTranslations("config");
+
   return (
     <SettingCard>
       <SettingHeader
         icon={<IoKeyOutline />}
-        buttonText="Import .env"
+        buttonText={t('importEnv')}
         buttonIcon={<FaFileImport />}
         className="bg-alt_color_b"
         header="API Keys"

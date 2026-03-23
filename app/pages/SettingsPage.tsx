@@ -30,6 +30,7 @@ import {
   copyWeaviateValuesToStorage,
 } from "../components/configuration/utils/configUtils";
 import { ToastContext } from "../components/contexts/ToastContext";
+import { useTranslations } from "next-intl";
 
 /**
  * Main Settings Page Component - Refactored for better maintainability
@@ -45,6 +46,8 @@ import { ToastContext } from "../components/contexts/ToastContext";
  * and breaks down the UI into focused, reusable components.
  */
 export default function Home() {
+  const tc = useTranslations("common");
+  const tconfig = useTranslations("config");
   const {
     id,
     userConfig,
@@ -163,8 +166,8 @@ export default function Home() {
     if (id) {
       if (changedConfig) {
         showConfirmModal(
-          "Unsaved Changes",
-          "You have unsaved changes. Are you sure you want to load a new config?",
+          tc('unsavedChanges'),
+          tc('unsavedChangesLoadConfig'),
           () => selectConfigFunction(configId)
         );
       } else {
@@ -196,8 +199,8 @@ export default function Home() {
   const handleCreateConfigWithUniqueName = async () => {
     if (changedConfig) {
       showConfirmModal(
-        "Unsaved Changes",
-        "You have unsaved changes. Are you sure you want to create a new config?",
+        tc('unsavedChanges'),
+        tc('unsavedChangesNewConfig'),
         () => handleCreateConfigFunction()
       );
     } else {
@@ -398,7 +401,7 @@ export default function Home() {
             ) : initError ? (
               <div className="flex flex-col items-center justify-center h-full w-full gap-4">
                 <p className="text-error text-lg font-semibold">
-                  Initialization Failed
+                  {tc('initFailed')}
                 </p>
                 <p className="text-secondary text-center max-w-md">
                   {initError}
@@ -407,12 +410,12 @@ export default function Home() {
                   onClick={() => window.location.reload()}
                   className="px-4 py-2 bg-primary text-background rounded-md hover:bg-primary/90 transition-colors"
                 >
-                  Retry
+                  {tc('retry')}
                 </button>
               </div>
             ) : (
               <div className="flex items-center justify-center h-full w-full">
-                <p className="text-primary shine">Loading config...</p>
+                <p className="text-primary shine">{tconfig('loadingConfig')}</p>
               </div>
             )}
           </div>

@@ -6,6 +6,7 @@ import { Button } from "../../components/ui/button";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import { ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { MdOutlineFeedback } from "react-icons/md";
+import { useTranslations } from "next-intl";
 
 import { SessionContext } from "../components/contexts/SessionContext";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
@@ -36,6 +37,7 @@ type ChartData = {
 };
 
 export default function Home() {
+  const t = useTranslations("eval");
   const { id } = useContext(SessionContext);
   const loading = useRef(false);
   const [feedbackMetadata, setFeedbackMetadata] =
@@ -123,7 +125,7 @@ export default function Home() {
       <div className="flex flex-col gap-8 items-start justify-start w-full">
         <div className="flex items-center justify-start gap-2">
           <p className="text-primary text-xl font-heading font-bold">
-            Evaluation Dashboard
+            {t('dashboard')}
           </p>
         </div>
         {loading.current && (
@@ -137,18 +139,18 @@ export default function Home() {
               <CardHeader>
                 <CardTitle>
                   <div className="w-full flex items-start justify-between">
-                    <p>Feedback Evaluation</p>
+                    <p>{t('feedbackEvaluation')}</p>
                     <Button
                       onClick={handleBrowseFeedback}
                       className="text-primary"
                     >
                       <MdOutlineFeedback />
-                      Browse Feedback
+                      {t('browseFeedback')}
                     </Button>
                   </div>
                 </CardTitle>
                 <CardDescription>
-                  Feedback received over the last 30 days
+                  {t('feedbackDescription')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex lg:flex-row flex-col gap-2">
@@ -173,26 +175,26 @@ export default function Home() {
                 </ChartContainer>
                 <div className="w-full lg:w-1/3 flex flex-col border border-secondary rounded-md h-full">
                   <div className="flex flex-col flex-1 items-start justify-start gap-2 p-4 w-full border-b border-secondary">
-                    <p className="text-secondary text-sm">Total Feedback</p>
+                    <p className="text-secondary text-sm">{t('totalFeedback')}</p>
                     <p className="text-primary text-3xl font-bold">
                       {feedbackMetadata.total_feedback}
                     </p>
                   </div>
                   <div className="flex items-start justify-start w-full flex-1">
                     <div className="flex flex-col items-start justify-start border-r border-secondary gap-2 w-1/3 p-2">
-                      <p className="text-secondary text-sm">Very Positive</p>
+                      <p className="text-secondary text-sm">{t('veryPositive')}</p>
                       <p className="text-highlight text-3xl font-bold">
                         {feedbackMetadata.feedback_by_value.superpositive}
                       </p>
                     </div>
                     <div className="flex flex-col items-start justify-start border-r border-secondary gap-2 w-1/3 p-2">
-                      <p className="text-secondary text-sm">Positive</p>
+                      <p className="text-secondary text-sm">{t('positive')}</p>
                       <p className="text-accent text-3xl font-bold">
                         {feedbackMetadata.feedback_by_value.positive}
                       </p>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-2 w-1/3 p-2">
-                      <p className="text-secondary text-sm">Negative</p>
+                      <p className="text-secondary text-sm">{t('negative')}</p>
                       <p className="text-error text-3xl font-bold">
                         {feedbackMetadata.feedback_by_value.negative}
                       </p>

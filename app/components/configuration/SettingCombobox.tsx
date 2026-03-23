@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -33,12 +34,17 @@ const SettingCombobox: React.FC<SettingComboboxProps> = ({
   value,
   values,
   onChange,
-  placeholder = "Select...",
-  searchPlaceholder = "Search...",
-  emptyText = "No items found.",
+  placeholder: placeholderProp,
+  searchPlaceholder: searchPlaceholderProp,
+  emptyText: emptyTextProp,
   allowCustom = true,
   isInvalid = false,
 }) => {
+  const tc = useTranslations("common");
+  const placeholder = placeholderProp ?? tc('select');
+  const searchPlaceholder = searchPlaceholderProp ?? tc('search');
+  const emptyText = emptyTextProp ?? tc('noItemsFound');
+
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 

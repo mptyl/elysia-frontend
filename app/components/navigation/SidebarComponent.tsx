@@ -57,6 +57,7 @@ import { SessionContext } from "../contexts/SessionContext";
 import packageJson from "../../../package.json";
 import { BRANDING } from "@/app/config/branding";
 import { useThemeLogo } from "@/hooks/useThemeLogo";
+import { useTranslations } from "next-intl";
 
 const SidebarComponent: React.FC = () => {
   const { socketOnline } = useContext(SocketContext);
@@ -65,6 +66,7 @@ const SidebarComponent: React.FC = () => {
   const { unsavedChanges } = useContext(SessionContext);
   const { session } = useAuth();
   const themeLogo = useThemeLogo();
+  const t = useTranslations('sidebar');
 
   const [items, setItems] = useState<
     {
@@ -80,13 +82,13 @@ const SidebarComponent: React.FC = () => {
   useEffect(() => {
     const _items = [
       {
-        title: "Chat",
+        title: t('chat'),
         mode: ["chat"],
         icon: <MdChatBubbleOutline />,
         onClick: () => changePage("chat", {}, true, unsavedChanges),
       },
       {
-        title: "Data",
+        title: t('data'),
         mode: ["data", "collection"],
         icon: !collections?.some((c) => c.processed === true) ? (
           <IoIosWarning className="text-warning" />
@@ -98,32 +100,32 @@ const SidebarComponent: React.FC = () => {
         onClick: () => changePage("data", {}, true, unsavedChanges),
       },
       {
-        title: "Settings",
+        title: t('settings'),
         mode: ["settings", "elysia"],
         icon: <MdOutlineSettingsInputComponent />,
         onClick: () => changePage("settings", {}, true, unsavedChanges),
       },
       {
-        title: "Evaluation",
+        title: t('evaluation'),
         mode: ["eval", "feedback", "display"],
         icon: <AiOutlineExperiment />,
         onClick: () => changePage("eval", {}, true, unsavedChanges),
       },
       {
-        title: "Reportistica",
+        title: t('reportistica'),
         mode: ["reportistica"],
         icon: <TbReportAnalytics />,
         onClick: () => changePage("reportistica", {}, true, unsavedChanges),
       },
       {
-        title: "Prompt Enhancer",
+        title: t('promptEnhancer'),
         mode: ["prompt-enhancer"],
         icon: <MdAutoFixHigh />,
         onClick: () => changePage("prompt-enhancer", {}, true, unsavedChanges),
       },
     ];
     setItems(_items);
-  }, [collections, unsavedChanges]);
+  }, [collections, unsavedChanges, t]);
 
   const thothWinRef = useRef<Window | null>(null);
   const thothHandlerRef = useRef<((event: MessageEvent) => void) | null>(null);
@@ -267,11 +269,11 @@ const SidebarComponent: React.FC = () => {
                   variant="default"
                   onClick={handleThothAIClick}
                   disabled={thothLoading}
-                  title="Open ThothAI — Text-to-SQL"
+                  title={t('openThothAI')}
                   className="flex items-center gap-2"
                 >
                   <RiRobot2Line />
-                  <span>ThothAI</span>
+                  <span>{t('thothAI')}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

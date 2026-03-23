@@ -16,9 +16,11 @@ import { User } from "@supabase/supabase-js";
 import { LogOut, User as UserIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { RouterContext } from "@/app/components/contexts/RouterContext";
 
 export function UserNav() {
+    const t = useTranslations("userNav");
     const [user, setUser] = useState<User | null>(null);
     const router = useRouter();
     const supabase = createClient();
@@ -77,7 +79,7 @@ export function UserNav() {
                 onClick={() => navigateTo("/login")}
             >
                 <UserIcon className="h-5 w-5" />
-                <span className="text-sm">Guest (Login)</span>
+                <span className="text-sm">{t('guest')}</span>
             </Button>
         );
     }
@@ -110,13 +112,13 @@ export function UserNav() {
                 <DropdownMenuGroup>
                     <DropdownMenuItem onClick={() => changePage("profile", {}, true)}>
                         <UserIcon className="mr-2 h-4 w-4" />
-                        <span>Profile</span>
+                        <span>{t('profile')}</span>
                     </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut} className="text-red-600 focus:text-red-600">
                     <LogOut className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
+                    <span>{t('logOut')}</span>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

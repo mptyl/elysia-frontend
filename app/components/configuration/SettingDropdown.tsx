@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -29,6 +30,7 @@ const SettingDropdown: React.FC<SettingDropdownProps> = ({
   onChange,
   isInvalid = false,
 }) => {
+  const tc = useTranslations("common");
   const [editable, setEditable] = useState(false);
 
   const toggleEditable = () => {
@@ -67,7 +69,7 @@ const SettingDropdown: React.FC<SettingDropdownProps> = ({
               )}
               variant="outline"
             >
-              <span className="truncate">{value || "Select..."}</span>
+              <span className="truncate">{value || tc('select')}</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-full">

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { MdStorage } from "react-icons/md";
 import { IoCopy } from "react-icons/io5";
 import { FaCloud, FaServer, FaDatabase } from "react-icons/fa";
@@ -45,6 +46,8 @@ export default function StorageSection({
   customStorageHttpHostValid,
   customStorageGrpcHostValid,
 }: StorageSectionProps) {
+  const t = useTranslations("config");
+
   const isLocal = currentFrontendConfig?.save_location_weaviate_is_local;
   const isCustom = currentFrontendConfig?.save_location_weaviate_is_custom;
 
@@ -77,7 +80,7 @@ export default function StorageSection({
       {/* Warning Card for Storage Issues */}
       {storageIssues.length > 0 && (
         <WarningCard
-          title="Storage Configuration Required"
+          title={t('storageConfigRequired')}
           issues={storageIssues}
         />
       )}
@@ -85,21 +88,21 @@ export default function StorageSection({
       <SettingGroup>
         <SettingItem>
           <SettingTitle
-            title="Storage Type"
-            description="Choose between local or remote Weaviate storage."
+            title={t('storageType')}
+            description={t('storageTypeDescription')}
           />
           <SettingToggle
-            value={isLocal ? "Local" : isCustom ? "Custom" : "Cloud"}
+            value={isLocal ? t('local') : isCustom ? t('custom') : t('cloud')}
             onChange={(value) => {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const updates: Record<string, any> = {
-                save_location_weaviate_is_local: value === "Local",
-                save_location_weaviate_is_custom: value === "Custom",
+                save_location_weaviate_is_local: value === t('local'),
+                save_location_weaviate_is_custom: value === t('custom'),
               };
 
               // Auto-populate URL when switching to local if it's empty
               if (
-                value === "Local" &&
+                value === t('local') &&
                 (!currentFrontendConfig?.save_location_wcd_url ||
                   currentFrontendConfig.save_location_wcd_url.trim() === "")
               ) {
@@ -107,7 +110,7 @@ export default function StorageSection({
               }
               onUpdateFrontend(updates);
             }}
-            labels={["Cloud", "Local", "Custom"]}
+            labels={[t('cloud'), t('local'), t('custom')]}
             icons={[
               <FaCloud key="cloud" />,
               <FaServer key="server" />,
@@ -256,7 +259,7 @@ export default function StorageSection({
             </SettingItem>
             <SettingItem>
               <SettingTitle
-                title="Port"
+                title={t('port')}
                 description="The port of the local Weaviate cluster."
               />
               <SettingInput
@@ -301,8 +304,8 @@ export default function StorageSection({
 
         <SettingItem>
           <SettingTitle
-            title="Save Conversations"
-            description="Save conversations to Weaviate."
+            title={t('saveConversations')}
+            description={t('saveConversationsDescription')}
           />
           <SettingCheckbox
             value={currentFrontendConfig?.save_trees_to_weaviate || false}
@@ -314,8 +317,8 @@ export default function StorageSection({
 
         <SettingItem>
           <SettingTitle
-            title="Save Configs"
-            description="Save configs to Weaviate."
+            title={t('saveConfigs')}
+            description={t('saveConfigsDescription')}
           />
           <SettingCheckbox
             value={currentFrontendConfig?.save_configs_to_weaviate || false}

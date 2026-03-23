@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import {
   Tooltip,
@@ -40,6 +41,8 @@ export default function ConfigNameEditor({
   onEditStart,
   onEditEnd,
 }: ConfigNameEditorProps) {
+  const t = useTranslations("config");
+
   return (
     <div className="border-foreground_alt w-full lg:w-auto">
       <div className="flex flex-row sm:items-center gap-2">
@@ -56,7 +59,7 @@ export default function ConfigNameEditor({
                   value={currentUserConfig?.name || ""}
                   onChange={(e) => onNameChange(e.target.value)}
                   onBlur={onEditEnd}
-                  placeholder="Config name"
+                  placeholder={t('configName')}
                   autoFocus
                 />
               ) : (
@@ -68,12 +71,12 @@ export default function ConfigNameEditor({
                   }`}
                   onDoubleClick={onEditStart}
                 >
-                  {currentUserConfig?.name || "Loading config..."}
+                  {currentUserConfig?.name || t('loadingConfig')}
                 </span>
               )}
             </TooltipTrigger>
             <TooltipContent>
-              <p>Double click to edit name</p>
+              <p>{t('doubleClickEdit')}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -83,23 +86,23 @@ export default function ConfigNameEditor({
           {nameExists && (
             <div className="flex flex-row fade-in items-center gap-2 bg-destructive text-destructive-foreground rounded-md px-2 py-1">
               <IoWarning size={12} />
-              <p className="text-xs">Name exists</p>
+              <p className="text-xs">{t('nameExists')}</p>
             </div>
           )}
           {nameIsEmpty && (
             <div className="flex flex-row fade-in items-center gap-2 bg-destructive text-destructive-foreground rounded-md px-2 py-1">
               <IoWarning size={12} />
-              <p className="text-xs">Name required</p>
+              <p className="text-xs">{t('nameRequired')}</p>
             </div>
           )}
           {isNewConfig && !loadingConfigs && (
             <div className="flex flex-row fade-in items-center gap-2 bg-primary/10 rounded-md px-2 py-1">
-              <p className="text-xs text-primary">New Config</p>
+              <p className="text-xs text-primary">{t('newConfig')}</p>
             </div>
           )}
           {isDefaultConfig && !loadingConfigs && (
             <div className="flex flex-row fade-in items-center gap-2 bg-highlight/10 rounded-md px-2 py-1">
-              <p className="text-xs text-highlight">Default</p>
+              <p className="text-xs text-highlight">{t('default')}</p>
             </div>
           )}
         </div>

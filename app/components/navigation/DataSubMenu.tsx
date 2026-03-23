@@ -14,8 +14,11 @@ import {
 import { MdOutlineSpaceDashboard } from "react-icons/md";
 
 import { RouterContext } from "../contexts/RouterContext";
+import { useTranslations } from "next-intl";
 
 const DataSubMenu: React.FC = () => {
+  const t = useTranslations('data');
+  const ts = useTranslations('sidebar');
   const { changePage, currentPage } = useContext(RouterContext);
 
   const toDashboard = () => {
@@ -25,7 +28,7 @@ const DataSubMenu: React.FC = () => {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>
-        <p>Data</p>
+        <p>{ts('data')}</p>
       </SidebarGroupLabel>
       <SidebarGroupContent>
         <SidebarMenuItem className="list-none" key={"dashboard"}>
@@ -34,11 +37,11 @@ const DataSubMenu: React.FC = () => {
             onClick={toDashboard}
           >
             <MdOutlineSpaceDashboard />
-            <p>Dashboard</p>
+            <p>{t('dashboard')}</p>
           </SidebarMenuButton>
           <SidebarMenuButton variant="default">
             <TbPackageImport />
-            <p>Import Data (Coming Soon)</p>
+            <p>{t('importData')}</p>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarGroupContent>

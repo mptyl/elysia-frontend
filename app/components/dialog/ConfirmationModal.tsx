@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useContext } from "react";
+import { useTranslations } from "next-intl";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,6 +15,7 @@ import {
 import { ToastContext } from "../contexts/ToastContext";
 
 const ConfirmationModal: React.FC = () => {
+  const t = useTranslations('common');
   const {
     isConfirmModalOpen,
     confirmModalTitle,
@@ -33,13 +35,13 @@ const ConfirmationModal: React.FC = () => {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={handleCancelModal}>
-            Cancel
+            {t('cancel')}
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleConfirmModal}
             className="bg-error/10 text-error border border-error hover:bg-error/20"
           >
-            OK
+            {t('ok')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

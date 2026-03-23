@@ -35,9 +35,12 @@ import { RouterContext } from "../contexts/RouterContext";
 import { ProcessingContext } from "../contexts/ProcessingContext";
 import { deleteAllCollectionMetadata } from "@/app/api/deleteAllCollectionMetadata";
 import DeleteButton from "../navigation/DeleteButton";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 
 const Dashboard: React.FC = () => {
+  const t = useTranslations("data");
+  const tc = useTranslations("common");
   const {
     collections,
     deleteCollection,
@@ -138,13 +141,13 @@ const Dashboard: React.FC = () => {
   if (initError) {
     return (
       <div className="flex flex-col w-full h-full items-center justify-center gap-4">
-        <p className="text-error text-xl font-semibold">Initialization Failed</p>
+        <p className="text-error text-xl font-semibold">{tc('initFailed')}</p>
         <p className="text-secondary text-center max-w-md">{initError}</p>
         <Button
           onClick={() => window.location.reload()}
           className="bg-primary text-background hover:bg-primary/90"
         >
-          Retry
+          {tc('retry')}
         </Button>
       </div>
     );
@@ -154,7 +157,7 @@ const Dashboard: React.FC = () => {
     <div className="flex w-full flex-col gap-2 min-h-0 items-center justify-start h-full fade-in">
       {/* Title */}
       <div className="flex mb-2 w-full justify-start">
-        <p className="text-lg text-primary">Data Dashboard</p>
+        <p className="text-lg text-primary">{t('dashboard')}</p>
       </div>
       <div className="flex flex-col w-full md:w-[60vw] lg:w-[40vw] gap-6 h-full">
         {/* KPI */}
@@ -163,7 +166,7 @@ const Dashboard: React.FC = () => {
             <DataKPI
               loading={loading}
               value={processedCollections}
-              label="Data Sources"
+              label={t('dataSources')}
               icon={<LuDatabase size={20} />}
               color="accent"
               lines={false}
@@ -171,7 +174,7 @@ const Dashboard: React.FC = () => {
             <DataKPI
               loading={loading}
               value={processedObjects}
-              label="Data Objects"
+              label={t('dataObjects')}
               icon={<RiFilePaperLine size={20} />}
               color="highlight"
               lines={false}
@@ -182,7 +185,7 @@ const Dashboard: React.FC = () => {
               <DataKPI
                 loading={loading}
                 value={unprocessedCollections}
-                label="Unknown Sources"
+                label={t('unknownSources')}
                 icon={<LuDatabase size={20} />}
                 color="muted"
                 lines={true}
@@ -190,7 +193,7 @@ const Dashboard: React.FC = () => {
               <DataKPI
                 loading={loading}
                 value={unprocessedObjects}
-                label="Unknown Objects"
+                label={t('unknownObjects')}
                 icon={<RiFilePaperLine size={20} />}
                 color="muted"
                 lines={true}
