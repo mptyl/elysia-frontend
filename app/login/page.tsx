@@ -144,7 +144,7 @@ export default function LoginPage() {
             <div className="w-full max-w-md bg-background_alt rounded-xl border border-border p-8 shadow-lg">
                 <div className="text-center mb-8">
                     <h2 className="text-xl font-semibold text-primary mb-2">
-                        Benvenuto
+                        Benvenuta/o
                     </h2>
                     <p className="text-secondary text-sm">
                         Accedi con il tuo account aziendale per continuare
