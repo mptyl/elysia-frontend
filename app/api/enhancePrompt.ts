@@ -3,6 +3,8 @@ import { host } from "@/app/components/host";
 export interface EnhancePromptPayload {
   enhanced_prompt: string;
   feedback: string;
+  feedback_key?: string;
+  feedback_params?: Record<string, string>;
   error: string;
 }
 

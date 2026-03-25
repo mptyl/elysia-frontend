@@ -9,8 +9,7 @@ import CollectionSelection from "./components/CollectionSelection";
 import { Button } from "@/components/ui/button";
 import { TbSettings } from "react-icons/tb";
 import { RouterContext } from "../contexts/RouterContext";
-import { CHAT_I18N } from "@/app/config/branding";
-import type { PreferredLanguage } from "@/app/types/profile-types";
+import { useTranslations } from "next-intl";
 
 interface QueryInputProps {
   handleSendQuery: (
@@ -26,7 +25,6 @@ interface QueryInputProps {
   selectSettings: () => void;
   defaultRagEnabled?: boolean;
   conversationId?: string | null;
-  preferredLanguage?: PreferredLanguage;
 }
 
 const QueryInput: React.FC<QueryInputProps> = ({
@@ -38,9 +36,10 @@ const QueryInput: React.FC<QueryInputProps> = ({
   selectSettings,
   defaultRagEnabled = false,
   conversationId,
-  preferredLanguage = "it",
 }) => {
-  const t = CHAT_I18N[preferredLanguage];
+  const t = useTranslations('chat');
+  const tq = useTranslations('queryInput');
+  const ts = useTranslations('status');
   const { prefillPrompt, setPrefillPrompt, autoSendPrefill } = useContext(RouterContext);
   const [query, setQuery] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -123,7 +122,15 @@ const QueryInput: React.FC<QueryInputProps> = ({
         {currentStatus != "" ? (
           <div className="flex gap-2 items-center">
             <FaCircle className="text-lg pulsing" />
-            <p className="text-sm shine">{currentStatus}</p>
+            <p className="text-sm shine">{
+              currentStatus.startsWith('status.')
+                ? (() => {
+                    const [key, param] = currentStatus.replace('status.', '').split(':');
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    return param ? ts('running', { tool: param }) : ts(key as Parameters<typeof ts>[0]);
+                  })()
+                : currentStatus
+            }</p>
           </div>
         ) : (
           <div></div>
@@ -134,7 +141,7 @@ const QueryInput: React.FC<QueryInputProps> = ({
           <input
             className="flex-grow p-2 bg-transparent outline-none text-xs resize-none"
             value={route}
-            placeholder="Enter a route: e.g. search/query/text_response"
+            placeholder={tq('enterRoute')}
             onChange={(e) => setRoute(e.target.value)}
           />
           <div className="flex gap-2">
@@ -143,14 +150,14 @@ const QueryInput: React.FC<QueryInputProps> = ({
                 className="btn text-accent"
                 onClick={() => setMimick(false)}
               >
-                <p className="text-xs">Disable Mimicking</p>
+                <p className="text-xs">{tq('disableMimicking')}</p>
               </button>
             ) : (
               <button
                 className="btn text-secondary"
                 onClick={() => setMimick(true)}
               >
-                <p className="text-xs">Enable Mimicking</p>
+                <p className="text-xs">{tq('enableMimicking')}</p>
               </button>
             )}
             <button
@@ -178,8 +185,8 @@ const QueryInput: React.FC<QueryInputProps> = ({
             ref={textareaRef}
             placeholder={
               query_length != 0
-                ? t.placeholderFollowUp
-                : t.placeholderInitial
+                ? t('placeholderFollowUp')
+                : t('placeholderInitial')
             }
             className={`w-full p-2 bg-transparent placeholder:text-secondary outline-none text-sm leading-tight min-h-[5vh] max-h-[20vh] rounded-xl`}
             value={query}
@@ -202,10 +209,10 @@ const QueryInput: React.FC<QueryInputProps> = ({
               className={`${!skipRag ? "text-accent font-bold" : "text-secondary opacity-50"}`}
               onClick={handleToggleRag}
               title={
-                !skipRag ? "RAG Enabled" : "RAG Disabled (Direct Answer)"
+                !skipRag ? tq('ragEnabled') : tq('ragDisabled')
               }
             >
-              RAG
+              {tq('rag')}
             </Button>
             {process.env.NODE_ENV === "development" && (
               <Button

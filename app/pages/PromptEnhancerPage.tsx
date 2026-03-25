@@ -6,6 +6,7 @@ import { SessionContext } from "@/app/components/contexts/SessionContext";
 import { ConversationContext } from "@/app/components/contexts/ConversationContext";
 import { Button } from "@/components/ui/button";
 import { enhancePrompt } from "@/app/api/enhancePrompt";
+import { useTranslations } from "next-intl";
 import {
   MdAutoFixHigh,
   MdCleaningServices,
@@ -16,6 +17,8 @@ import {
 } from "react-icons/md";
 
 export default function PromptEnhancerPage() {
+  const t = useTranslations("promptEnhancer");
+  const te = useTranslations("ethicalGuard");
   const { changePage, setPrefillPrompt } = useContext(RouterContext);
   const { id: userId } = useContext(SessionContext);
   const { currentConversation } = useContext(ConversationContext);
@@ -39,7 +42,9 @@ export default function PromptEnhancerPage() {
       );
 
       if (result.error) {
-        setLowerText(`Errore: ${result.error}`);
+        setLowerText(`${t('errorPrefix')}${result.error}`);
+      } else if (result.feedback_key) {
+        setLowerText(te(result.feedback_key.replace('ethicalGuard.', '') as Parameters<typeof te>[0], result.feedback_params || {}));
       } else if (result.feedback) {
         setLowerText(result.feedback);
       } else if (result.enhanced_prompt) {
@@ -50,7 +55,7 @@ export default function PromptEnhancerPage() {
         setHistoryIndex(newHistory.length - 1);
       }
     } catch {
-      setLowerText("Errore di connessione con il server.");
+      setLowerText(t('connectionError'));
     } finally {
       setIsLoading(false);
     }
@@ -113,7 +118,7 @@ export default function PromptEnhancerPage() {
       <div className="flex items-center gap-2 shrink-0">
         <MdAutoFixHigh className="text-xl text-primary" />
         <p className="text-primary text-xl font-heading font-bold">
-          Prompt Enhancer
+          {t('title')}
         </p>
       </div>
 
@@ -127,7 +132,7 @@ export default function PromptEnhancerPage() {
             disabled={!upperText.trim()}
           >
             <MdSend className="mr-1" />
-            Usa
+            {t('use')}
           </Button>
           <Button
             variant="ghost"
@@ -136,14 +141,14 @@ export default function PromptEnhancerPage() {
             disabled={!upperText && history.length === 0}
           >
             <MdCleaningServices className="mr-1" />
-            Pulisci
+            {t('clean')}
           </Button>
         </div>
         <textarea
           className="flex-1 w-full resize-none bg-background_alt border border-foreground_alt rounded-xl p-4 text-primary text-sm outline-none placeholder:text-secondary leading-relaxed"
           value={upperText}
           onChange={handleUpperTextChange}
-          placeholder="Il prompt migliorato apparirà qui..."
+          placeholder={t('enhancedPlaceholder')}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
@@ -187,7 +192,7 @@ export default function PromptEnhancerPage() {
               disabled={!lowerText.trim() || isLoading}
             >
               <MdAutoFixHigh className="mr-1" />
-              {isLoading ? "Elaborazione..." : "Migliora"}
+              {isLoading ? t('processing') : t('enhance')}
             </Button>
             <Button
               variant="ghost"
@@ -195,7 +200,7 @@ export default function PromptEnhancerPage() {
               onClick={handleAbbandona}
             >
               <MdArrowBack className="mr-1" />
-              Abbandona
+              {t('abandon')}
             </Button>
           </div>
           <Button
@@ -205,14 +210,14 @@ export default function PromptEnhancerPage() {
             disabled={!lowerText}
           >
             <MdCleaningServices className="mr-1" />
-            Pulisci
+            {t('clean')}
           </Button>
         </div>
         <textarea
           className="flex-1 w-full resize-none bg-background_alt border border-foreground_alt rounded-xl p-4 text-primary text-sm outline-none placeholder:text-secondary leading-relaxed"
           value={lowerText}
           onChange={(e) => setLowerText(e.target.value)}
-          placeholder="Scrivi qui il tuo prompt o i suggerimenti di modifica..."
+          placeholder={t('inputPlaceholder')}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();

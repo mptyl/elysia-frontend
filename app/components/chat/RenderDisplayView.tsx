@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useContext, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   DocumentPayload,
   ThreadPayload,
@@ -36,6 +37,8 @@ const RenderDisplayView: React.FC<RenderDisplayViewProps> = ({
   type,
   handleViewChange,
 }) => {
+  const t = useTranslations("chat");
+  const tc = useTranslations("common");
   const { showErrorToast } = useContext(ToastContext);
   const [showRawData, setShowRawData] = useState(false);
   const { currentCollectionName } = useContext(ChatContext);
@@ -153,7 +156,7 @@ const RenderDisplayView: React.FC<RenderDisplayViewProps> = ({
                     transition={{ duration: 0.2, delay: 0.1 }}
                     className="text-alt_color_b text-xs"
                   >
-                    {showRawData ? "Show display" : "Show raw"}
+                    {showRawData ? t('showDisplay') : t('showRaw')}
                   </motion.span>
                 )}
               </AnimatePresence>
@@ -200,7 +203,7 @@ const RenderDisplayView: React.FC<RenderDisplayViewProps> = ({
                   transition={{ duration: 0.2, delay: 0.1 }}
                   className="text-error text-xs"
                 >
-                  Back to chat
+                  {t('backToChat')}
                 </motion.span>
               )}
             </AnimatePresence>
@@ -209,7 +212,7 @@ const RenderDisplayView: React.FC<RenderDisplayViewProps> = ({
       </motion.div>
       {loading && (
         <div className="w-full flex flex-col">
-          <p className="text-secondary shine">Loading...</p>
+          <p className="text-secondary shine">{tc('loading')}</p>
         </div>
       )}
       {showRawData ? (

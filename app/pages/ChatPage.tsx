@@ -35,8 +35,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { useUserProfile } from "@/hooks/useUserProfile";
-import { CHAT_I18N } from "@/app/config/branding";
-import type { PreferredLanguage } from "@/app/types/profile-types";
+import { useTranslations } from "next-intl";
 
 import dynamic from "next/dynamic";
 import { Separator } from "@/components/ui/separator";
@@ -67,8 +66,8 @@ export default function ChatPage() {
   const { getRandomPrompts, collections } = useContext(CollectionContext);
 
   const { profile } = useUserProfile(id || undefined);
-  const lang: PreferredLanguage = profile?.preferred_language ?? "it";
-  const t = CHAT_I18N[lang];
+  const t = useTranslations('chat');
+  const tc = useTranslations('common');
 
   const { fetchDebug } = useDebug(id || "");
 
@@ -192,13 +191,13 @@ export default function ChatPage() {
   if (initError) {
     return (
       <div className="flex flex-col w-screen h-screen items-center justify-center gap-4">
-        <p className="text-error text-xl font-semibold">Initialization Failed</p>
+        <p className="text-error text-xl font-semibold">{tc('initFailed')}</p>
         <p className="text-secondary text-center max-w-md">{initError}</p>
         <Button
           onClick={() => window.location.reload()}
           className="bg-primary text-background hover:bg-primary/90"
         >
-          Retry
+          {tc('retry')}
         </Button>
       </div>
     );
@@ -220,7 +219,7 @@ export default function ChatPage() {
             />
           </div>
         </div>
-        <p className="text-primary text-xl shine">Loading Atena...</p>
+        <p className="text-primary text-xl shine">{t('loadingAtena')}</p>
       </div>
     );
   }
@@ -235,22 +234,22 @@ export default function ChatPage() {
                 {mode === "chat" ? (
                   <>
                     <BsChatFill size={14} className="text-accent" />
-                    <p className="text-accent">Chat</p>
+                    <p className="text-accent">{t('modeChat')}</p>
                   </>
                 ) : mode === "flow" ? (
                   <>
                     <RiFlowChart size={14} className="text-accent" />
-                    <p className="text-accent">Tree</p>
+                    <p className="text-accent">{t('modeTree')}</p>
                   </>
                 ) : mode === "debug" ? (
                   <>
                     <CgDebug size={14} className="text-accent" />
-                    <p className="text-accent">Debug</p>
+                    <p className="text-accent">{t('modeDebug')}</p>
                   </>
                 ) : mode === "settings" ? (
                   <>
                     <TbSettings size={14} className="text-accent" />
-                    <p className="text-accent">Settings</p>
+                    <p className="text-accent">{t('modeSettings')}</p>
                   </>
                 ) : null}
                 <LuChevronDown size={14} className="text-accent" />
@@ -259,27 +258,27 @@ export default function ChatPage() {
             <DropdownMenuContent>
               <DropdownMenuItem onClick={() => setMode("chat")}>
                 <BsChatFill size={14} />
-                Chat
+                {t('modeChat')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setMode("flow")}>
                 <RiFlowChart size={14} />
-                Tree
+                {t('modeTree')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setMode("settings")}>
                 <TbSettings size={14} />
-                Settings
+                {t('modeSettings')}
               </DropdownMenuItem>
               {process.env.NODE_ENV === "development" && (
                 <DropdownMenuItem onClick={() => setMode("debug")}>
                   <CgDebug size={14} />
-                  Debug
+                  {t('modeDebug')}
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
           <div className="flex gap-2 items-center justify-center fade-in">
             <p className="text-primary text-sm">
-              {currentTitle && currentTitle != "New Conversation"
+              {currentTitle && currentTitle !== "New Conversation" && currentTitle !== t('newConversation')
                 ? currentTitle
                 : ""}
             </p>
@@ -291,7 +290,7 @@ export default function ChatPage() {
       {currentConversation != null && <Separator className="w-full" />}
       {loadingConversation && (
         <div className="flex w-full h-screen justify-center items-center">
-          <p className="text-primary text-xl shine">Loading Conversation...</p>
+          <p className="text-primary text-xl shine">{t('loadingConversation')}</p>
         </div>
       )}
       {mode === "chat" && !loadingConversation ? (
@@ -324,7 +323,7 @@ export default function ChatPage() {
                       handleSendQuery={handleSendQuery}
                       isLastQuery={index === array.length - 1}
                       onExpand={(queryId) => setExpandedQueryId(queryId)}
-                      relatedQuestionsLabel={t.relatedQuestions}
+                      relatedQuestionsLabel={t('relatedQuestions')}
                     />
                   </ChatProvider>
                 ))}
@@ -343,7 +342,6 @@ export default function ChatPage() {
               addDistortion={addDistortion}
               selectSettings={selectSettings}
               conversationId={currentConversation}
-              preferredLanguage={lang}
               defaultRagEnabled={(() => {
                 const queries = Object.values(currentQuery);
                 // If a query is expanded, use its RAG state; otherwise use last query
@@ -375,7 +373,7 @@ export default function ChatPage() {
             <div className="absolute flex flex-col justify-center items-center w-full h-full gap-3 fade-in z-10 pointer-events-none pb-32">
               <div className="flex items-center gap-4 pointer-events-auto">
                 <p className="text-primary text-3xl font-semibold drop-shadow-sm">
-                  {t.askTitle}
+                  {t('askTitle')}
                 </p>
                 <Button
                   variant="default"

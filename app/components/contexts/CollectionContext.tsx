@@ -6,6 +6,8 @@ import { getCollections } from "@/app/api/getCollections";
 import { SessionContext } from "./SessionContext";
 import { deleteCollectionMetadata } from "@/app/api/deleteCollectionMetadata";
 import { ToastContext } from "./ToastContext";
+import { useLocale } from "./I18nContext";
+import { useTranslations } from "next-intl";
 
 export const CollectionContext = createContext<{
   collections: Collection[];
@@ -28,6 +30,8 @@ export const CollectionProvider = ({
 }) => {
   const { id, fetchCollectionFlag, initialized } = useContext(SessionContext);
   const { showErrorToast, showSuccessToast } = useContext(ToastContext);
+  const locale = useLocale();
+  const tt = useTranslations("toast");
   const [collections, setCollections] = useState<Collection[]>([]);
   const [loadingCollections, setLoadingCollections] = useState(false);
 
@@ -45,14 +49,20 @@ export const CollectionProvider = ({
     fetchCollections();
   }, [fetchCollectionFlag]);
 
+  // Re-fetch collections when locale changes to get prompts in the new language
+  useEffect(() => {
+    if (!initialFetch.current || !idRef.current) return;
+    fetchCollections();
+  }, [locale]);
+
   const fetchCollections = async () => {
     if (!idRef.current) return;
     setCollections([]);
     setLoadingCollections(true);
-    const collections: Collection[] = await getCollections(idRef.current);
+    const collections: Collection[] = await getCollections(idRef.current, locale);
     setCollections(collections);
     setLoadingCollections(false);
-    showSuccessToast(`${collections.length} Collections Loaded`);
+    showSuccessToast(tt("collectionsLoaded", { count: String(collections.length) }));
   };
 
   const deleteCollection = async (collection_name: string) => {
@@ -63,11 +73,11 @@ export const CollectionProvider = ({
     );
 
     if (result.error) {
-      showErrorToast("Failed to Remove Analysis", result.error);
+      showErrorToast(tt("failedToRemoveAnalysis"), result.error);
     } else {
       showSuccessToast(
-        "Analysis Removed",
-        `Analysis for "${collection_name}" has been removed successfully.`
+        tt("analysisRemoved"),
+        tt("analysisRemovedDescription", { collection: collection_name })
       );
       fetchCollections();
     }

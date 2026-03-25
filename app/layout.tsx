@@ -17,6 +17,7 @@ import { ProcessingProvider } from "./components/contexts/ProcessingContext";
 import { AuthGuard } from "@/components/auth-guard";
 import { AppShell } from "@/components/app-shell";
 import { AuthProvider } from "./components/contexts/AuthContext";
+import { I18nProvider } from "./components/contexts/I18nContext";
 import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
@@ -37,30 +38,32 @@ export default function RootLayout({
       >
         <ThemeProvider>
         <Suspense fallback={<div>Loading...</div>}>
-          <ToastProvider>
-            <RouterProvider>
-              <SessionProvider>
-                <CollectionProvider>
-                  <ConversationProvider>
-                    <SocketProvider>
-                      <EvaluationProvider>
-                        <ProcessingProvider>
-                          <AuthProvider>
-                            <AuthGuard>
-                              <AppShell>
-                                {children}
-                              </AppShell>
-                            </AuthGuard>
-                          </AuthProvider>
-                        </ProcessingProvider>
-                        <Toaster />
-                      </EvaluationProvider>
-                    </SocketProvider>
-                  </ConversationProvider>
-                </CollectionProvider>
-              </SessionProvider>
-            </RouterProvider>
-          </ToastProvider>
+          <I18nProvider>
+            <ToastProvider>
+              <RouterProvider>
+                <SessionProvider>
+                  <CollectionProvider>
+                    <ConversationProvider>
+                      <SocketProvider>
+                        <EvaluationProvider>
+                          <ProcessingProvider>
+                            <AuthProvider>
+                              <AuthGuard>
+                                <AppShell>
+                                  {children}
+                                </AppShell>
+                              </AuthGuard>
+                            </AuthProvider>
+                          </ProcessingProvider>
+                          <Toaster />
+                        </EvaluationProvider>
+                      </SocketProvider>
+                    </ConversationProvider>
+                  </CollectionProvider>
+                </SessionProvider>
+              </RouterProvider>
+            </ToastProvider>
+          </I18nProvider>
         </Suspense>
         </ThemeProvider>
       </body>

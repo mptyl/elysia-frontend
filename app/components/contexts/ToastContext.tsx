@@ -8,9 +8,10 @@ import { Toast } from "@/app/types/objects";
 import { MdContentCopy } from "react-icons/md";
 import { IoCheckmarkOutline } from "react-icons/io5";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 // Component for error toast actions with copy and close buttons
-const ErrorToastActions: React.FC<{ errorText: string }> = ({ errorText }) => {
+const ErrorToastActions: React.FC<{ errorText: string; copyTitle?: string }> = ({ errorText, copyTitle }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async (e: React.MouseEvent) => {
@@ -31,7 +32,7 @@ const ErrorToastActions: React.FC<{ errorText: string }> = ({ errorText }) => {
         variant="ghost"
         size="sm"
         className="h-8 shrink-0 px-3 text-sm font-medium transition-colors hover:bg-secondary focus:outline-none focus:ring-1 focus:ring-ring group-[.destructive]:hover:border-destructive/30 group-[.destructive]:hover:bg-destructive group-[.destructive]:hover:text-destructive-foreground group-[.destructive]:focus:ring-destructive"
-        title="Copy error to clipboard"
+        title={copyTitle || "Copy error to clipboard"}
       >
         {copied ? (
           <IoCheckmarkOutline className="h-4 w-4" />
@@ -89,6 +90,9 @@ export const ToastContext = createContext<{
 
 export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   const { toast } = useToast();
+  const tc = useTranslations("common");
+  const tt = useTranslations("toast");
+  const tSocket = useTranslations("socket");
 
   const [currentToasts, setCurrentToasts] = useState<Toast[]>([]);
   const timerIntervalRef = useRef<NodeJS.Timeout>(undefined);
@@ -115,17 +119,17 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
 
   const showErrorToast = useCallback(
     (title: string, description?: string) => {
-      const errorText = description || "An error occurred. Please try again.";
+      const errorText = description || tc("error");
       const fullErrorText = `${title}: ${errorText}`;
 
       toast({
         title,
         description: errorText,
         variant: "destructive",
-        action: <ErrorToastActions errorText={fullErrorText} />,
+        action: <ErrorToastActions errorText={fullErrorText} copyTitle={tc("copyErrorToClipboard")} />,
       });
     },
-    [toast]
+    [toast, tc]
   );
 
   const showSuccessToast = useCallback(
@@ -143,9 +147,9 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
     (title: string, description?: string) => {
       toast({
         title,
-        description: description || "Please review this warning.",
+        description: description || tc("pleaseReviewWarning"),
         variant: "warning",
-        action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
+        action: <ToastAction altText={tc("dismiss")}>{tc("dismiss")}</ToastAction>,
       });
     },
     [toast]
@@ -192,8 +196,8 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
       if (isProcessing) {
         setTimeout(() => {
           toast({
-            title: "Already analyzing " + collection.name + "...",
-            description: "Please wait for it to finish before analyzing again.",
+            title: tt("alreadyAnalyzing", { collection: collection.name }),
+            description: tt("waitForFinish"),
           });
         }, 0);
         return;
@@ -202,8 +206,8 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
       setTimeout(() => {
         const startTime = Date.now();
         const _toast = toast({
-          title: "0% - Starting analysis of " + collection.name + "...",
-          description: "Connecting to server... (0s)",
+          title: "0% - " + tt("startingAnalysis", { collection: collection.name }),
+          description: tt("connectingToServer") + " (0s)",
           progress: 0,
           duration: 1000000,
         });
@@ -216,7 +220,7 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
               toast: _toast,
               progress: 0,
               startTime: startTime, // Add start time
-              currentMessage: "Connecting to server...", // Initial message
+              currentMessage: tt("connectingToServer"), // Initial message
             },
           ];
 
@@ -228,8 +232,8 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
             socket.send(JSON.stringify(payload));
           } else {
             showErrorToast(
-              "Error analyzing " + collection.name + "...",
-              "Connection to Atena lost (Socket: " +
+              tt("analyzing", { collection: collection.name }),
+              tSocket("connectionLost") + " (Socket: " +
               socket +
               ") (ID: " +
               user_id +
@@ -267,7 +271,7 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
 
       currentToast.toast.update({
         id: currentToast.toast.id,
-        title: `${Math.round(newProgress)}% - Analyzing ${currentToast.collection_name}...`,
+        title: `${Math.round(newProgress)}% - ${tt("analyzing", { collection: currentToast.collection_name })}`,
         description: `${message} (${elapsedTime})`,
         progress: newProgress,
       });
@@ -304,24 +308,24 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
 
         currentToast.toast.update({
           id: currentToast.toast.id,
-          title: `100% - Error analyzing ${currentToast.collection_name}...`,
+          title: `100% - ${tt("analyzing", { collection: currentToast.collection_name })}`,
           variant: "destructive",
           description: errorDescription,
           progress: 100,
-          action: <ErrorToastActions errorText={fullErrorText} />,
+          action: <ErrorToastActions errorText={fullErrorText} copyTitle={tc("copyErrorToClipboard")} />,
         });
       } else {
         currentToast.toast.update({
           id: currentToast.toast.id,
-          title: `100% - Done!`,
-          description: `Collection analyzed successfully (Total time: ${finalElapsedTime})`,
+          title: `100% - ${tt("done")}`,
+          description: `${tt("collectionAnalyzed", { time: finalElapsedTime })}`,
           progress: 100,
           action: (
             <ToastAction
-              altText="Close"
+              altText={tc("close")}
               onClick={() => currentToast.toast.dismiss()}
             >
-              Close
+              {tc("close")}
             </ToastAction>
           ),
         });

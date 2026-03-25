@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -28,6 +29,7 @@ const SettingKey: React.FC<SettingInputProps> = ({
   onChange,
   onRemove,
 }) => {
+  const t = useTranslations("config");
   const [visible, setVisible] = useState(isProtected && !startEditable);
   const [editable, setEditable] = useState(startEditable);
 
@@ -70,7 +72,7 @@ const SettingKey: React.FC<SettingInputProps> = ({
           value={currentKey}
           onChange={(e) => setCurrentKey(e.target.value)}
           disabled={!editable}
-          placeholder="Key name"
+          placeholder={t('keyName')}
         />
       </div>
 
@@ -81,7 +83,7 @@ const SettingKey: React.FC<SettingInputProps> = ({
           value={currentValue}
           onChange={(e) => setCurrentValue(e.target.value)}
           disabled={!editable}
-          placeholder="Key value"
+          placeholder={t('keyValue')}
           className="flex-1"
         />
         {!editable && (

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { MdStorage } from "react-icons/md";
 import { IoCopy } from "react-icons/io5";
 import { FaCloud, FaServer, FaDatabase } from "react-icons/fa";
@@ -45,6 +46,8 @@ export default function StorageSection({
   customStorageHttpHostValid,
   customStorageGrpcHostValid,
 }: StorageSectionProps) {
+  const t = useTranslations("config");
+
   const isLocal = currentFrontendConfig?.save_location_weaviate_is_local;
   const isCustom = currentFrontendConfig?.save_location_weaviate_is_custom;
 
@@ -55,7 +58,7 @@ export default function StorageSection({
           <div className="h-7 w-7 bg-background rounded-md flex items-center justify-center">
             <MdStorage />
           </div>
-          <p className="text-primary text-lg">Atena Storage</p>
+          <p className="text-primary text-lg">{t('atenaStorage')}</p>
         </div>
         <div className="flex items-center justify-end w-full sm:w-auto">
           <div>
@@ -68,7 +71,7 @@ export default function StorageSection({
                 }`}
             >
               <IoCopy />
-              <span className="text-sm font-base">Use Same Cluster</span>
+              <span className="text-sm font-base">{t('useSameCluster')}</span>
             </Button>
           </div>
         </div>
@@ -77,7 +80,7 @@ export default function StorageSection({
       {/* Warning Card for Storage Issues */}
       {storageIssues.length > 0 && (
         <WarningCard
-          title="Storage Configuration Required"
+          title={t('storageConfigRequired')}
           issues={storageIssues}
         />
       )}
@@ -85,21 +88,21 @@ export default function StorageSection({
       <SettingGroup>
         <SettingItem>
           <SettingTitle
-            title="Storage Type"
-            description="Choose between local or remote Weaviate storage."
+            title={t('storageType')}
+            description={t('storageTypeDescription')}
           />
           <SettingToggle
-            value={isLocal ? "Local" : isCustom ? "Custom" : "Cloud"}
+            value={isLocal ? t('local') : isCustom ? t('custom') : t('cloud')}
             onChange={(value) => {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const updates: Record<string, any> = {
-                save_location_weaviate_is_local: value === "Local",
-                save_location_weaviate_is_custom: value === "Custom",
+                save_location_weaviate_is_local: value === t('local'),
+                save_location_weaviate_is_custom: value === t('custom'),
               };
 
               // Auto-populate URL when switching to local if it's empty
               if (
-                value === "Local" &&
+                value === t('local') &&
                 (!currentFrontendConfig?.save_location_wcd_url ||
                   currentFrontendConfig.save_location_wcd_url.trim() === "")
               ) {
@@ -107,7 +110,7 @@ export default function StorageSection({
               }
               onUpdateFrontend(updates);
             }}
-            labels={["Cloud", "Local", "Custom"]}
+            labels={[t('cloud'), t('local'), t('custom')]}
             icons={[
               <FaCloud key="cloud" />,
               <FaServer key="server" />,
@@ -119,7 +122,7 @@ export default function StorageSection({
         {!isCustom && (
           <SettingItem>
             <SettingTitle
-              title="URL"
+              title={t('url')}
               description="The URL of your Weaviate cluster to save configs and conversations to."
             />
             <SettingInput
@@ -142,7 +145,7 @@ export default function StorageSection({
           <>
             <SettingItem>
               <SettingTitle
-                title="HTTP Host"
+                title={t('httpHost')}
                 description="The HTTP host of your custom Weaviate instance."
               />
               <SettingInput
@@ -158,7 +161,7 @@ export default function StorageSection({
             </SettingItem>
             <SettingItem>
               <SettingTitle
-                title="HTTP Port"
+                title={t('httpPort')}
                 description="The HTTP port of your custom Weaviate instance."
               />
               <SettingInput
@@ -173,7 +176,7 @@ export default function StorageSection({
             </SettingItem>
             <SettingItem>
               <SettingTitle
-                title="HTTP Secure"
+                title={t('httpSecure')}
                 description="Whether the HTTP connection is secure."
               />
               <SettingCheckbox
@@ -188,7 +191,7 @@ export default function StorageSection({
             </SettingItem>
             <SettingItem>
               <SettingTitle
-                title="GRPC Host"
+                title={t('grpcHost')}
                 description="The GRPC host of your custom Weaviate instance."
               />
               <SettingInput
@@ -204,7 +207,7 @@ export default function StorageSection({
             </SettingItem>
             <SettingItem>
               <SettingTitle
-                title="GRPC Port"
+                title={t('grpcPort')}
                 description="The GRPC port of your custom Weaviate instance."
               />
               <SettingInput
@@ -219,7 +222,7 @@ export default function StorageSection({
             </SettingItem>
             <SettingItem>
               <SettingTitle
-                title="GRPC Secure"
+                title={t('grpcSecure')}
                 description="Whether the GRPC connection is secure."
               />
               <SettingCheckbox
@@ -239,7 +242,7 @@ export default function StorageSection({
           <>
             <SettingItem>
               <SettingTitle
-                title="GRPC Port"
+                title={t('grpcPort')}
                 description="The GRPCport of the local Weaviate cluster."
               />
               <SettingInput
@@ -256,7 +259,7 @@ export default function StorageSection({
             </SettingItem>
             <SettingItem>
               <SettingTitle
-                title="Port"
+                title={t('port')}
                 description="The port of the local Weaviate cluster."
               />
               <SettingInput
@@ -275,7 +278,7 @@ export default function StorageSection({
 
         <SettingItem>
           <SettingTitle
-            title="API Key"
+            title={t('apiKey')}
             description={
               isLocal
                 ? "The API key of your local Weaviate cluster. Needs to be configured in the local Weaviate cluster."
@@ -301,8 +304,8 @@ export default function StorageSection({
 
         <SettingItem>
           <SettingTitle
-            title="Save Conversations"
-            description="Save conversations to Weaviate."
+            title={t('saveConversations')}
+            description={t('saveConversationsDescription')}
           />
           <SettingCheckbox
             value={currentFrontendConfig?.save_trees_to_weaviate || false}
@@ -314,8 +317,8 @@ export default function StorageSection({
 
         <SettingItem>
           <SettingTitle
-            title="Save Configs"
-            description="Save configs to Weaviate."
+            title={t('saveConfigs')}
+            description={t('saveConfigsDescription')}
           />
           <SettingCheckbox
             value={currentFrontendConfig?.save_configs_to_weaviate || false}

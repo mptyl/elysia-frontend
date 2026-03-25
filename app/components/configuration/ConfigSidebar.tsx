@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -46,6 +47,9 @@ export default function ConfigSidebar({
   onRefreshConfigs,
   onSelectConfig,
 }: ConfigSidebarProps) {
+  const t = useTranslations("config");
+  const tc = useTranslations("common");
+
   return (
     /* Mobile Config Selector - Only visible on small screens */
     <div className="flex lg:hidden w-full">
@@ -53,7 +57,7 @@ export default function ConfigSidebar({
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full">
           <div className="flex flex-col gap-2 w-full sm:w-auto sm:flex-1">
             <label className="text-sm font-medium text-secondary">
-              Configuration
+              {t('configuration')}
             </label>
             <Select
               value={currentUserConfig.id ?? undefined}
@@ -91,7 +95,7 @@ export default function ConfigSidebar({
           <div className="flex flex-row gap-2 w-full sm:w-auto">
             <Button className="flex-1 sm:flex-none" onClick={onCreateConfig}>
               <IoMdAddCircle />
-              <span>New</span>
+              <span>{tc('new')}</span>
             </Button>
             <Button className="w-10 flex-shrink-0" onClick={onRefreshConfigs}>
               <IoIosRefresh />
@@ -116,6 +120,9 @@ export function DesktopConfigSidebar({
   onSelectConfig,
   onDeleteConfig,
 }: ConfigSidebarProps) {
+  const tc = useTranslations("common");
+  const t = useTranslations("config");
+
   return (
     /* Desktop Sidebar - Hidden on mobile */
     <div className="hidden lg:flex flex-col justify-start w-1/4 xl:w-1/5 border-r border-foreground_alt h-full p-4 gap-2 min-h-0">
@@ -123,7 +130,7 @@ export function DesktopConfigSidebar({
       <div className="flex flex-row items-center justify-between gap-2 w-full">
         <Button className="flex-1" onClick={onCreateConfig}>
           <IoMdAddCircle />
-          <span>New</span>
+          <span>{tc('new')}</span>
         </Button>
         <Button className="w-10" onClick={onRefreshConfigs}>
           <IoIosRefresh />
@@ -179,7 +186,7 @@ export function DesktopConfigSidebar({
         {loadingConfigs && (
           <div className="flex flex-row items-center justify-center w-full">
             <p className="text-primary shine text-sm mt-4">
-              Loading configs...
+              {t('loadingConfigs')}
             </p>
           </div>
         )}

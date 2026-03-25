@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { TbManualGearboxFilled, TbArrowBackUp } from "react-icons/tb";
 import { DeleteButton } from "@/app/components/navigation/DeleteButton";
 import { FaRobot } from "react-icons/fa";
@@ -60,6 +61,8 @@ export default function ModelsSection({
   title = "Models",
   onResetConfig,
 }: ModelsSectionProps) {
+  const t = useTranslations("config");
+
   return (
     <SettingCard>
       <SettingHeader
@@ -67,7 +70,7 @@ export default function ModelsSection({
         className="bg-alt_color_a"
         header={title}
         buttonIcon={showDocumentation ? <FaRobot /> : undefined}
-        buttonText={showDocumentation ? "Available Models" : undefined}
+        buttonText={showDocumentation ? t('availableModels') : undefined}
         onClick={
           showDocumentation
             ? () => {
@@ -80,7 +83,7 @@ export default function ModelsSection({
       {/* Warning Card for Models Issues */}
       {modelsIssues.length > 0 && (
         <WarningCard
-          title="Model Configuration Required"
+          title={t('modelConfigRequired')}
           issues={modelsIssues}
         />
       )}
@@ -90,17 +93,15 @@ export default function ModelsSection({
         <div className="flex flex-col gap-3">
           <div className="flex flex-col w-full">
             <div className="flex items-center justify-start gap-2">
-              <p className="text-primary font-bold">Base Model</p>
+              <p className="text-primary font-bold">{t('baseModel')}</p>
             </div>
             <p className="text-sm text-secondary">
-              Used for the decision agent, as well as any tools requiring
-              simpler tasks that require speed over precision. Can be the same
-              as complex model for consistency at the cost of performance.
+              {t('baseModelDescription')}
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:gap-4 w-full">
             <div className="w-full">
-              <p className="text-sm text-secondary mb-2">Provider</p>
+              <p className="text-sm text-secondary mb-2">{t('provider')}</p>
               <SettingCombobox
                 value={currentUserConfig?.settings.BASE_PROVIDER || ""}
                 values={modelsData ? Object.keys(modelsData) : []}
@@ -119,16 +120,16 @@ export default function ModelsSection({
                   }
                 }}
                 placeholder={
-                  loadingModels ? "Loading providers..." : "Select provider..."
+                  loadingModels ? t('loadingProviders') : t('selectProvider')
                 }
-                searchPlaceholder="Search providers..."
+                searchPlaceholder={t('searchProviders')}
                 isInvalid={!baseProviderValid}
               />
             </div>
             {currentUserConfig?.settings.BASE_PROVIDER && (
               <div className="w-full">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
-                  <p className="text-sm text-secondary">Model</p>
+                  <p className="text-sm text-secondary">{t('model')}</p>
                   <ModelBadges
                     modelsData={modelsData}
                     provider={currentUserConfig?.settings.BASE_PROVIDER || ""}
@@ -150,9 +151,9 @@ export default function ModelsSection({
                     onUpdateSettings("BASE_MODEL", value);
                   }}
                   placeholder={
-                    loadingModels ? "Loading models..." : "Select model..."
+                    loadingModels ? t('loadingModels') : t('selectModel')
                   }
-                  searchPlaceholder="Search models..."
+                  searchPlaceholder={t('searchModels')}
                   isInvalid={!baseModelValid}
                 />
               </div>
@@ -164,18 +165,15 @@ export default function ModelsSection({
         <div className="flex flex-col gap-3">
           <div className="flex flex-col w-full">
             <div className="flex items-center justify-start gap-2">
-              <p className="text-primary font-bold">Complex Model</p>
+              <p className="text-primary font-bold">{t('complexModel')}</p>
             </div>
             <p className="text-sm text-secondary">
-              Used in tools that require complex tasks requiring higher
-              precision and reasoning, such as the query and aggregate tools.
-              Speed may be slower but quality is higher. Can be the same as base
-              model.
+              {t('complexModelDescription')}
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:gap-4 w-full">
             <div className="w-full">
-              <p className="text-sm text-secondary mb-2">Provider</p>
+              <p className="text-sm text-secondary mb-2">{t('provider')}</p>
               <SettingCombobox
                 value={currentUserConfig?.settings.COMPLEX_PROVIDER || ""}
                 values={modelsData ? Object.keys(modelsData) : []}
@@ -194,16 +192,16 @@ export default function ModelsSection({
                   }
                 }}
                 placeholder={
-                  loadingModels ? "Loading providers..." : "Select provider..."
+                  loadingModels ? t('loadingProviders') : t('selectProvider')
                 }
-                searchPlaceholder="Search providers..."
+                searchPlaceholder={t('searchProviders')}
                 isInvalid={!complexProviderValid}
               />
             </div>
             {currentUserConfig?.settings.COMPLEX_PROVIDER && (
               <div className="w-full">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
-                  <p className="text-sm text-secondary">Model</p>
+                  <p className="text-sm text-secondary">{t('model')}</p>
                   <ModelBadges
                     modelsData={modelsData}
                     provider={
@@ -227,9 +225,9 @@ export default function ModelsSection({
                     onUpdateSettings("COMPLEX_MODEL", value);
                   }}
                   placeholder={
-                    loadingModels ? "Loading models..." : "Select model..."
+                    loadingModels ? t('loadingModels') : t('selectModel')
                   }
-                  searchPlaceholder="Search models..."
+                  searchPlaceholder={t('searchModels')}
                   isInvalid={!complexModelValid}
                 />
               </div>
@@ -239,8 +237,8 @@ export default function ModelsSection({
 
         <SettingItem>
           <SettingTitle
-            title="API Base URL"
-            description="Use this to specify custom endpoints for accessing models, such as self-hosted or private models"
+            title={t('apiBaseUrl')}
+            description={t('customEndpoints')}
           />
           <SettingInput
             isProtected={false}
@@ -281,9 +279,9 @@ export default function ModelsSection({
           <div className="flex w-full items-center justify-center pt-4">
             <DeleteButton
               onClick={onResetConfig}
-              text="Reset Config"
+              text={t('resetConfig')}
               icon={<TbArrowBackUp />}
-              confirmText="Are you sure?"
+              confirmText={t('areYouSure')}
             />
           </div>
         )}

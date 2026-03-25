@@ -24,8 +24,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 
 import { Input } from "@/components/ui/input";
+import { useTranslations } from "next-intl";
 
 const RateLimitDialog: React.FC = () => {
+  const t = useTranslations('rateLimit');
+  const tc = useTranslations('common');
   const [open, setOpen] = useState(() => {
     // Check if we're in the browser environment
     if (typeof window !== "undefined") {
@@ -62,23 +65,20 @@ const RateLimitDialog: React.FC = () => {
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Thank you for trying Atena!</DialogTitle>
+          <DialogTitle>{t('title')}</DialogTitle>
           <DialogDescription>
-            You hit today&apos;s rate limit, but no worries, we&apos;ll reset it
-            tomorrow!
+            {t('description')}
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-6">
           <p>
-            In the meantime, you can follow us on social media to stay updated
-            on Atena, or subscribe to one of our newsletters to get updates on
-            our latest features.
+            {t('followUp')}
           </p>
           <div className="flex flex-col gap-2">
-            <p>Subscribe to our newsletter</p>
+            <p>{t('subscribeNewsletter')}</p>
             <div className="flex flex-row gap-2">
               <Input
-                placeholder="Enter your email"
+                placeholder={t('enterEmail')}
                 disabled={true}
                 className="border-secondary"
               />
@@ -87,7 +87,7 @@ const RateLimitDialog: React.FC = () => {
                 className="text-primary border-secondary"
                 disabled={true}
               >
-                Subscribe
+                {tc('subscribe')}
               </Button>
             </div>
           </div>
@@ -192,10 +192,10 @@ const RateLimitDialog: React.FC = () => {
               checked={dontShowAgain}
               onCheckedChange={handleCheck}
             />
-            <p className="text-sm">Don&apos;t show again</p>
+            <p className="text-sm">{tc('dontShowAgain')}</p>
           </div>
           <Button variant="outline" onClick={handleContinue}>
-            Got it!
+            {tc('gotIt')}
           </Button>
         </DialogFooter>
       </DialogContent>

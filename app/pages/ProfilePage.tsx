@@ -15,6 +15,8 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { useTranslations } from "next-intl";
+import { useRefetchLocale } from "@/app/components/contexts/I18nContext";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useRoleStandardInstructions } from "@/hooks/useRoleStandardInstructions";
 import type {
@@ -26,6 +28,9 @@ import type {
 } from "@/app/types/profile-types";
 
 export default function ProfilePage() {
+    const t = useTranslations("profile");
+    const tc = useTranslations("common");
+    const refetchLocale = useRefetchLocale();
     const supabase = createClient();
     const [user, setUser] = useState<User | null>(null);
 
@@ -98,6 +103,9 @@ export default function ProfilePage() {
 
             setSaveSuccess(true);
             await refetch();
+            await refetchLocale();
+            // Collections are automatically re-fetched by CollectionContext
+            // when locale changes (useEffect on locale dependency)
 
             setTimeout(() => setSaveSuccess(false), 3000);
         } catch (err) {
@@ -115,7 +123,7 @@ export default function ProfilePage() {
     return (
         <div className="flex flex-col items-center flex-1 self-stretch h-[calc(100vh-120px)] min-h-0 gap-6 p-6 pb-12 overflow-y-auto">
             <h1 className="text-2xl font-bold font-heading text-primary shrink-0">
-                Profilo Utente
+                {t('title')}
             </h1>
 
             <div className="w-full max-w-4xl bg-background_alt rounded-xl border border-border p-8 shadow-sm flex-shrink-0 mb-8">
@@ -136,7 +144,7 @@ export default function ProfilePage() {
                             </div>
                             <div>
                                 <h2 className="text-xl font-bold text-foreground">
-                                    {user.user_metadata?.full_name || "User"}
+                                    {user.user_metadata?.full_name || t('fallbackName')}
                                 </h2>
                                 <p className="text-secondary">{user.email}</p>
                             </div>
@@ -146,19 +154,19 @@ export default function ProfilePage() {
 
                         {/* Section 1: Identità Organizzativa */}
                         <h3 className="text-lg font-semibold text-foreground">
-                            Identità Organizzativa
+                            {t('organizationalIdentity')}
                         </h3>
 
                         <div className="flex gap-4">
                             {/* Department (read-only) */}
                             <div className="flex flex-col gap-2 w-1/5">
                                 <Label className="text-sm font-semibold text-secondary uppercase tracking-wider">
-                                    Department
+                                    {t('department')}
                                 </Label>
                                 <div className="p-3 rounded-lg bg-background border border-border text-sm text-secondary">
                                     {profile?.department || (
                                         <span className="italic text-secondary/50">
-                                            Non disponibile
+                                            {tc('notAvailable')}
                                         </span>
                                     )}
                                 </div>
@@ -167,12 +175,12 @@ export default function ProfilePage() {
                             {/* Job Title (read-only) */}
                             <div className="flex flex-col gap-2 flex-1">
                                 <Label className="text-sm font-semibold text-secondary uppercase tracking-wider">
-                                    Job Title
+                                    {t('jobTitle')}
                                 </Label>
                                 <div className="p-3 rounded-lg bg-background border border-border text-sm text-secondary">
                                     {profile?.job_title || (
                                         <span className="italic text-secondary/50">
-                                            Non disponibile
+                                            {tc('notAvailable')}
                                         </span>
                                     )}
                                 </div>
@@ -185,7 +193,7 @@ export default function ProfilePage() {
                             {/* Livello di dettaglio */}
                             <div className="flex flex-col gap-2">
                                 <Label className="text-sm font-semibold text-secondary uppercase tracking-wider">
-                                    Livello di dettaglio
+                                    {t('detailLevel')}
                                 </Label>
                                 <Select
                                     value={responseDetailLevel}
@@ -195,9 +203,9 @@ export default function ProfilePage() {
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="executive_summary">Sintesi esecutiva</SelectItem>
-                                        <SelectItem value="balanced">Bilanciato</SelectItem>
-                                        <SelectItem value="operational_detail">Dettaglio operativo</SelectItem>
+                                        <SelectItem value="executive_summary">{t('executiveSummary')}</SelectItem>
+                                        <SelectItem value="balanced">{t('balanced')}</SelectItem>
+                                        <SelectItem value="operational_detail">{t('operationalDetail')}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -205,7 +213,7 @@ export default function ProfilePage() {
                             {/* Tono */}
                             <div className="flex flex-col gap-2">
                                 <Label className="text-sm font-semibold text-secondary uppercase tracking-wider">
-                                    Tono
+                                    {t('tone')}
                                 </Label>
                                 <Select
                                     value={communicationTone}
@@ -215,9 +223,9 @@ export default function ProfilePage() {
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="formal">Formale</SelectItem>
-                                        <SelectItem value="professional">Professionale</SelectItem>
-                                        <SelectItem value="direct">Diretto</SelectItem>
+                                        <SelectItem value="formal">{t('formal')}</SelectItem>
+                                        <SelectItem value="professional">{t('professional')}</SelectItem>
+                                        <SelectItem value="direct">{t('direct')}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -225,7 +233,7 @@ export default function ProfilePage() {
                             {/* Lingua preferita */}
                             <div className="flex flex-col gap-2">
                                 <Label className="text-sm font-semibold text-secondary uppercase tracking-wider">
-                                    Lingua preferita
+                                    {t('preferredLanguage')}
                                 </Label>
                                 <Select
                                     value={preferredLanguage}
@@ -235,8 +243,8 @@ export default function ProfilePage() {
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="it">Italiano</SelectItem>
-                                        <SelectItem value="en">English</SelectItem>
+                                        <SelectItem value="it">{t('italian')}</SelectItem>
+                                        <SelectItem value="en">{t('english')}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -244,7 +252,7 @@ export default function ProfilePage() {
                             {/* Focus risposte */}
                             <div className="flex flex-col gap-2">
                                 <Label className="text-sm font-semibold text-secondary uppercase tracking-wider">
-                                    Focus risposte
+                                    {t('responseFocus')}
                                 </Label>
                                 <Select
                                     value={responseFocus}
@@ -254,10 +262,10 @@ export default function ProfilePage() {
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="normative">Normativo/regolamentare</SelectItem>
-                                        <SelectItem value="managerial">Gestionale/organizzativo</SelectItem>
-                                        <SelectItem value="technical">Tecnico/specialistico</SelectItem>
-                                        <SelectItem value="relational">Comunicazione/relazionale</SelectItem>
+                                        <SelectItem value="normative">{t('normative')}</SelectItem>
+                                        <SelectItem value="managerial">{t('managerial')}</SelectItem>
+                                        <SelectItem value="technical">{t('technical')}</SelectItem>
+                                        <SelectItem value="relational">{t('relational')}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -268,19 +276,19 @@ export default function ProfilePage() {
                         {/* Standard Instructions (read-only) */}
                         <div className="flex flex-col gap-2">
                             <Label className="text-sm font-semibold text-secondary uppercase tracking-wider">
-                                Istruzioni standard
+                                {t('standardInstructions')}
                             </Label>
                             <div className="w-full min-h-[120px] p-4 rounded-lg bg-background border border-border text-sm text-secondary whitespace-pre-wrap">
                                 {stdInstrLoading ? (
                                     <span className="flex items-center gap-2">
                                         <Loader2 className="w-4 h-4 animate-spin" />
-                                        Caricamento...
+                                        {t('loadingInstructions')}
                                     </span>
                                 ) : standardInstructions ? (
                                     standardInstructions
                                 ) : (
                                     <span className="italic text-secondary/50">
-                                        Nessuna istruzione standard per il ruolo corrente
+                                        {t('noStandardInstructions')}
                                     </span>
                                 )}
                             </div>
@@ -289,13 +297,13 @@ export default function ProfilePage() {
                         {/* Custom Instructions */}
                         <div className="flex flex-col gap-2">
                             <Label htmlFor="custom-instructions" className="text-sm font-semibold text-secondary uppercase tracking-wider">
-                                Istruzioni personalizzate
+                                {t('customInstructions')}
                             </Label>
                             <textarea
                                 id="custom-instructions"
                                 value={customInstructions}
                                 onChange={(e) => setCustomInstructions(e.target.value)}
-                                placeholder="Inserisci istruzioni personalizzate per l'AI..."
+                                placeholder={t('customInstructionsPlaceholder')}
                                 className="w-full min-h-[200px] p-4 rounded-lg bg-background border border-foreground_alt text-primary text-sm resize-y focus:outline-none focus:ring-1 focus:ring-ring focus:border-primary transition-colors font-mono"
                             />
                         </div>
@@ -310,12 +318,12 @@ export default function ProfilePage() {
                                 }
                             />
                             <Label htmlFor="instructions-mode" className="text-sm font-semibold text-secondary uppercase tracking-wider cursor-pointer">
-                                Sovrascrivi istruzioni standard
+                                {t('overrideStandard')}
                             </Label>
                             <span className="text-sm text-primary">
                                 {customInstructionsMode === "override"
-                                    ? "Le istruzioni personalizzate sostituiscono quelle standard"
-                                    : "Le istruzioni personalizzate si aggiungono a quelle standard"}
+                                    ? t('overrideActive')
+                                    : t('appendActive')}
                             </span>
                         </div>
 
@@ -324,7 +332,7 @@ export default function ProfilePage() {
                         {/* Save Button */}
                         <div className="flex justify-end items-center gap-4">
                             {saveSuccess && (
-                                <span className="text-green-500 text-sm">Profilo salvato!</span>
+                                <span className="text-green-500 text-sm">{t('saved')}</span>
                             )}
                             {saveError && (
                                 <span className="text-red-500 text-sm">{saveError}</span>
@@ -340,7 +348,7 @@ export default function ProfilePage() {
                                 ) : (
                                     <Save className="w-4 h-4" />
                                 )}
-                                Salva
+                                {tc('save')}
                             </Button>
                         </div>
                     </div>

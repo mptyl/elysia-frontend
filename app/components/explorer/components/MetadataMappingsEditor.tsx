@@ -1,4 +1,7 @@
+"use client";
+
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { FaEdit, FaTrash, FaLongArrowAltRight } from "react-icons/fa";
 import { MdDisplaySettings } from "react-icons/md";
@@ -49,7 +52,9 @@ const MetadataMappingsEditor: React.FC<MetadataMappingsEditorProps> = ({
   saving,
   hasChanges,
   currentMappings,
-}) => (
+}) => {
+  const t = useTranslations("data");
+  return (
   <div className="flex flex-col gap-2 border border-foreground p-4 rounded-md">
     <div className="flex flex-row items-center gap-2 justify-between">
       <div className="flex items-center gap-2">
@@ -126,7 +131,7 @@ const MetadataMappingsEditor: React.FC<MetadataMappingsEditorProps> = ({
                         >
                           <SelectTrigger className="w-[120px] md:w-[150px] h-8 border-background_alt bg-background_alt">
                             <SelectValue
-                              placeholder="Select field"
+                              placeholder={t('selectField')}
                               className="text-primary"
                             />
                           </SelectTrigger>
@@ -236,6 +241,7 @@ const MetadataMappingsEditor: React.FC<MetadataMappingsEditorProps> = ({
       )}
     </div>
   </div>
-);
+  );
+};
 
 export default MetadataMappingsEditor;

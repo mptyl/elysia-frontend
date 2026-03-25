@@ -1,4 +1,7 @@
+"use client";
+
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { FaEdit, FaCheck, FaTimes } from "react-icons/fa";
 import SaveCancelButtons from "./SaveCancelButtons";
@@ -28,6 +31,7 @@ const NamedVectorsEditor: React.FC<NamedVectorsEditorProps> = ({
   onCancel,
   onDescriptionChange,
 }) => {
+  const t = useTranslations("data");
   if (!namedVectors || Object.keys(namedVectors).length === 0) return null;
   return (
     <div className="flex flex-col gap-2 w-full">
@@ -74,7 +78,7 @@ const NamedVectorsEditor: React.FC<NamedVectorsEditorProps> = ({
                       value={namedVectorsDraft[key]?.description || ""}
                       onChange={(e) => onDescriptionChange(key, e.target.value)}
                       disabled={saving}
-                      placeholder="Enter description..."
+                      placeholder={t('enterDescription')}
                     />
                   </div>
                 ) : (

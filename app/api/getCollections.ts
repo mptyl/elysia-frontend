@@ -4,6 +4,7 @@ import { Collection } from "../types/objects";
 
 export async function getCollections(
   user_id: string | null | undefined,
+  lang?: string,
 ): Promise<Collection[]> {
   const startTime = performance.now();
   try {
@@ -11,7 +12,10 @@ export async function getCollections(
       return [];
     }
 
-    const response = await fetch(`${host}/collections/${user_id}/list`, {
+    const url = lang
+      ? `${host}/collections/${user_id}/list?lang=${lang}`
+      : `${host}/collections/${user_id}/list`;
+    const response = await fetch(url, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });

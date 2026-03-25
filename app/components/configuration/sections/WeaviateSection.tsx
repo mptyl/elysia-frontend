@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { FaDatabase, FaCloud, FaServer } from "react-icons/fa";
 import { BsDatabaseFillAdd } from "react-icons/bs";
 import {
@@ -53,6 +54,8 @@ export default function WeaviateSection({
   onUpdateSettings,
   onUpdateFrontend,
 }: WeaviateSectionProps) {
+  const t = useTranslations("config");
+
   const isLocal = currentUserConfig?.settings.WEAVIATE_IS_LOCAL as boolean;
   const isCustom = currentUserConfig?.settings.WEAVIATE_IS_CUSTOM as boolean;
 
@@ -61,9 +64,9 @@ export default function WeaviateSection({
       <SettingHeader
         icon={<FaDatabase />}
         className="bg-accent"
-        header="Weaviate Cluster"
+        header={t('weaviateCluster')}
         buttonIcon={<BsDatabaseFillAdd />}
-        buttonText="Create Cluster"
+        buttonText={t('createCluster')}
         onClick={() => {
           window.open("https://console.weaviate.cloud/", "_blank");
         }}
@@ -72,7 +75,7 @@ export default function WeaviateSection({
       {/* Warning Card for Weaviate Issues */}
       {weaviateIssues.length > 0 && (
         <WarningCard
-          title="Weaviate Configuration Required"
+          title={t('weaviateConfigRequired')}
           issues={weaviateIssues}
         />
       )}
@@ -80,21 +83,21 @@ export default function WeaviateSection({
       <SettingGroup>
         <SettingItem>
           <SettingTitle
-            title="Cluster Type"
-            description="Choose between cloud-hosted, local, or custom Weaviate instance."
+            title={t('clusterType')}
+            description={t('clusterTypeDescription')}
           />
           <SettingToggle
-            value={isLocal ? "Local" : isCustom ? "Custom" : "Cloud"}
+            value={isLocal ? t('local') : isCustom ? t('custom') : t('cloud')}
             onChange={(value) => {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const updates: Record<string, any> = {
-                WEAVIATE_IS_LOCAL: value === "Local",
-                WEAVIATE_IS_CUSTOM: value === "Custom",
+                WEAVIATE_IS_LOCAL: value === t('local'),
+                WEAVIATE_IS_CUSTOM: value === t('custom'),
               };
 
               // Auto-populate URL when switching to local if it's empty
               if (
-                value === "Local" &&
+                value === t('local') &&
                 (!currentUserConfig?.settings?.WCD_URL ||
                   currentUserConfig.settings.WCD_URL.trim() === "")
               ) {
@@ -103,7 +106,7 @@ export default function WeaviateSection({
 
               onUpdateSettings(updates);
             }}
-            labels={["Cloud", "Local", "Custom"]}
+            labels={[t('cloud'), t('local'), t('custom')]}
             icons={[
               <FaCloud key="cloud" />,
               <FaServer key="server" />,
@@ -147,7 +150,7 @@ export default function WeaviateSection({
             </SettingItem>
             <SettingItem>
               <SettingTitle
-                title="Port"
+                title={t('port')}
                 description="The port of the local Weaviate cluster."
               />
               <SettingInput
@@ -287,8 +290,8 @@ export default function WeaviateSection({
 
         <SettingItem>
           <SettingTitle
-            title="Tree Timeout"
-            description="The timeout for the tree."
+            title={t('treeTimeout')}
+            description={t('treeTimeoutDescription')}
           />
           <SettingInput
             isProtected={false}
@@ -301,8 +304,8 @@ export default function WeaviateSection({
 
         <SettingItem>
           <SettingTitle
-            title="Client Timeout"
-            description="The timeout for the client."
+            title={t('clientTimeout')}
+            description={t('clientTimeoutDescription')}
           />
           <SettingInput
             isProtected={false}

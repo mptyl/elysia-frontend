@@ -18,8 +18,10 @@ import { EvaluationContext } from "../contexts/EvaluationContext";
 
 import { RouterContext } from "../contexts/RouterContext";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const EvalSubMenu: React.FC = () => {
+  const t = useTranslations('eval');
   const searchParams = useSearchParams();
 
   const [currentDisplay, setCurrentDisplay] = useState<string | null>(null);
@@ -38,17 +40,17 @@ const EvalSubMenu: React.FC = () => {
   };
 
   const displays = [
-    { name: "Text Response", path: "text_response" },
-    { name: "Initial Response", path: "initial_response" },
-    { name: "Table", path: "table" },
-    { name: "Tickets", path: "tickets" },
-    { name: "Products", path: "product" },
-    { name: "Document", path: "document" },
-    { name: "Thread", path: "thread" },
-    { name: "Single Message", path: "singleMessage" },
-    { name: "Aggregation", path: "aggregation" },
-    { name: "Chart", path: "chart" },
-    { name: "Bar Chart", path: "bar_chart" },
+    { name: t('textResponse'), path: "text_response" },
+    { name: t('initialResponse'), path: "initial_response" },
+    { name: t('table'), path: "table" },
+    { name: t('tickets'), path: "tickets" },
+    { name: t('products'), path: "product" },
+    { name: t('document'), path: "document" },
+    { name: t('thread'), path: "thread" },
+    { name: t('singleMessage'), path: "singleMessage" },
+    { name: t('aggregation'), path: "aggregation" },
+    { name: t('chart'), path: "chart" },
+    { name: t('barChart'), path: "bar_chart" },
   ];
 
   useEffect(() => {
@@ -62,7 +64,7 @@ const EvalSubMenu: React.FC = () => {
     <>
       <SidebarGroup>
         <SidebarGroupLabel>
-          <p>Evaluation</p>
+          <p>{t('title')}</p>
         </SidebarGroupLabel>
         <SidebarMenuItem className="list-none" key={"dashboard"}>
           <SidebarMenuButton
@@ -70,7 +72,7 @@ const EvalSubMenu: React.FC = () => {
             onClick={toDashboard}
           >
             <MdOutlineSpaceDashboard />
-            <p>Dashboard</p>
+            <p>{t('dashboard')}</p>
           </SidebarMenuButton>
         </SidebarMenuItem>
         <SidebarMenuItem className="list-none" key={"Feedback Button"}>
@@ -79,14 +81,14 @@ const EvalSubMenu: React.FC = () => {
             onClick={() => changePage("feedback", {}, true)}
           >
             <MdOutlineFeedback />
-            <p>Feedback</p>
+            <p>{t('feedback')}</p>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarGroup>
       {process.env.NODE_ENV === "development" && (
         <SidebarGroup>
           <SidebarGroupLabel>
-            <p>Displays</p>
+            <p>{t('displays')}</p>
           </SidebarGroupLabel>
           <SidebarGroupContent>
             {displays.map((display) => (

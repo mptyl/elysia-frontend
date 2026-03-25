@@ -26,8 +26,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { SlOptionsVertical } from "react-icons/sl";
+import { useTranslations } from "next-intl";
 
 const HomeSubMenu: React.FC = () => {
+  const t = useTranslations('conversations');
+  const tc = useTranslations('common');
   const {
     startNewConversation,
     currentConversation,
@@ -50,22 +53,22 @@ const HomeSubMenu: React.FC = () => {
               <FaCircle className="text-secondary pulsing mr-2" />
             )}
             {loadingConversations ||
-              (loadingConversation && <p>Loading conversations...</p>)}
+              (loadingConversation && <p>{t('loading')}</p>)}
             {!loadingConversations && !loadingConversation && (
               <p>
                 {creatingNewConversation
-                  ? "Initializing conversation..."
-                  : "Conversations"}
+                  ? t('initializing')
+                  : t('title')}
               </p>
             )}
           </div>
         </SidebarGroupLabel>
         <SidebarGroupAction
-          title="Add Conversation"
+          title={t('addConversation')}
           onClick={() => startNewConversation()}
           disabled={creatingNewConversation}
         >
-          <FaPlus /> <span className="sr-only">Add Conversation</span>
+          <FaPlus /> <span className="sr-only">{t('addConversation')}</span>
         </SidebarGroupAction>
       </div>
       <SidebarGroupContent>
@@ -82,7 +85,7 @@ const HomeSubMenu: React.FC = () => {
                 variant={currentConversation === key ? "active" : "default"}
                 onClick={() => selectConversation(key)}
               >
-                <p className="truncate max-w-[13rem]">{value.title}</p>
+                <p className="truncate max-w-[13rem]">{value.title === "New Conversation" ? t('addConversation') : value.title}</p>
               </SidebarMenuButton>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -93,7 +96,7 @@ const HomeSubMenu: React.FC = () => {
                 <DropdownMenuContent side="right" align="start">
                   <DropdownMenuItem onClick={() => removeConversation(key)}>
                     <GoTrash className="text-error" />
-                    <span className="text-error">Delete</span>
+                    <span className="text-error">{tc('delete')}</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
