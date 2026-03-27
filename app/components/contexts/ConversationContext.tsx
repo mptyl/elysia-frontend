@@ -168,6 +168,17 @@ export const ConversationProvider = ({
   const [loadingConversation, setLoadingConversation] = useState(false);
   const [chunksVisible, setChunksVisible] = useState(true);
 
+  useEffect(() => {
+    const saved = localStorage.getItem("chunksVisible");
+    if (saved !== null) {
+      setChunksVisible(saved === "true");
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("chunksVisible", String(chunksVisible));
+  }, [chunksVisible]);
+
   const getDecisionTree = async (user_id: string, conversation_id: string) => {
     if (user_id === "") return null;
     const data: DecisionTreePayload = await initializeTree(

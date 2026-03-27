@@ -341,7 +341,6 @@ const RenderChat: React.FC<RenderChatProps> = ({
                               payloadsToMerge={item.payloadsToMerge}
                               baseKey={`${index}-${item.id}`}
                               messageId={item.id}
-                              handleViewChange={handleViewChange}
                               handleResultPayloadChange={
                                 handleResultPayloadChange
                               }
@@ -353,13 +352,6 @@ const RenderChat: React.FC<RenderChatProps> = ({
                           message.type === "result" && (
                             <div className="w-full flex flex-col justify-start items-start gap-3">
                               <div className="flex items-center gap-2 w-full">
-                                {(message.payload as ResultPayload).code && (
-                                  <CodeDisplay
-                                    payload={[message.payload as ResultPayload]}
-                                    merged={false}
-                                    handleViewChange={handleViewChange}
-                                  />
-                                )}
                                 <button
                                   onClick={() => setChunksVisible(!chunksVisible)}
                                   className="ml-auto flex-shrink-0 p-1 text-secondary hover:text-primary transition-colors duration-200"

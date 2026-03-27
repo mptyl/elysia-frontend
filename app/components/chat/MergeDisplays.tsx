@@ -1,7 +1,6 @@
 import React, { useContext, useRef, useState } from "react";
 import { ResultPayload } from "@/app/types/chat";
 import RenderDisplay from "./RenderDisplay";
-import CodeDisplay from "./components/ViewCodeButton";
 import MergedDisplayTabs from "./components/MergedDisplayTabs";
 import { Eye, EyeOff } from "lucide-react";
 import { ConversationContext } from "../contexts/ConversationContext";
@@ -10,10 +9,6 @@ interface MergeDisplaysProps {
   payloadsToMerge: ResultPayload[];
   baseKey: string;
   messageId: string;
-  handleViewChange: (
-    view: "chat" | "code" | "result",
-    payload: ResultPayload[] | null
-  ) => void;
   handleResultPayloadChange: (
     type: string,
     payload: /* eslint-disable @typescript-eslint/no-explicit-any */ any,
@@ -25,7 +20,6 @@ const MergeDisplays: React.FC<MergeDisplaysProps> = ({
   payloadsToMerge,
   baseKey,
   messageId,
-  handleViewChange,
   handleResultPayloadChange,
 }) => {
   const [activeTab, setActiveTab] = useState(`${baseKey}-tab-0`);
@@ -39,11 +33,6 @@ const MergeDisplays: React.FC<MergeDisplaysProps> = ({
   return (
     <div className="w-full flex flex-col">
       <div className="flex items-center gap-2 mb-1 w-full">
-        <CodeDisplay
-          payload={payloadsToMerge}
-          merged={true}
-          handleViewChange={handleViewChange}
-        />
         <div className="flex overflow-x-auto gap-2 flex-nowrap scrollbar-thin scrollbar-thumb-foreground scrollbar-track-background_alt">
           {payloadsToMerge.map((payload, idx) => {
             const tabValue = `${baseKey}-tab-${idx}`;
