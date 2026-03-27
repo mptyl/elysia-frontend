@@ -100,6 +100,8 @@ export const ConversationContext = createContext<{
   renameConversationTitle: (conversationId: string, newTitle: string) => void;
   handleWebsocketMessage: (message: Message) => void;
   loadingConversation: boolean;
+  chunksVisible: boolean;
+  setChunksVisible: (visible: boolean) => void;
 }>({
   conversations: [],
   setConversations: () => { },
@@ -134,6 +136,8 @@ export const ConversationContext = createContext<{
   getAllEnabledCollections: () => [],
   loadConversationsFromDB: () => { },
   renameConversationTitle: () => { },
+  chunksVisible: true,
+  setChunksVisible: () => { },
 });
 
 export const ConversationProvider = ({
@@ -162,6 +166,7 @@ export const ConversationProvider = ({
   const [loadingConversations, setLoadingConversations] = useState(false);
   const [creatingNewConversation, setCreatingNewConversation] = useState(false);
   const [loadingConversation, setLoadingConversation] = useState(false);
+  const [chunksVisible, setChunksVisible] = useState(true);
 
   const getDecisionTree = async (user_id: string, conversation_id: string) => {
     if (user_id === "") return null;
@@ -1020,6 +1025,8 @@ export const ConversationProvider = ({
         getAllEnabledCollections,
         loadConversationsFromDB,
         renameConversationTitle,
+        chunksVisible,
+        setChunksVisible,
         handleWebsocketMessage,
         loadingConversation,
       }}
