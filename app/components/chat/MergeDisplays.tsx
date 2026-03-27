@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { ResultPayload } from "@/app/types/chat";
 import RenderDisplay from "./RenderDisplay";
 import CodeDisplay from "./components/ViewCodeButton";
 import MergedDisplayTabs from "./components/MergedDisplayTabs";
+import { Eye, EyeOff } from "lucide-react";
+import { ConversationContext } from "../contexts/ConversationContext";
 
 interface MergeDisplaysProps {
   payloadsToMerge: ResultPayload[];
@@ -27,6 +29,8 @@ const MergeDisplays: React.FC<MergeDisplaysProps> = ({
   handleResultPayloadChange,
 }) => {
   const [activeTab, setActiveTab] = useState(`${baseKey}-tab-0`);
+  const { chunksVisible, setChunksVisible } = useContext(ConversationContext);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   if (!payloadsToMerge || payloadsToMerge.length === 0) {
     return null;
@@ -58,23 +62,39 @@ const MergeDisplays: React.FC<MergeDisplaysProps> = ({
             );
           })}
         </div>
+        <button
+          onClick={() => setChunksVisible(!chunksVisible)}
+          className="ml-auto flex-shrink-0 p-1 text-secondary hover:text-primary transition-colors duration-200"
+          title={chunksVisible ? "Hide chunks" : "Show chunks"}
+        >
+          {chunksVisible ? <Eye size={16} /> : <EyeOff size={16} />}
+        </button>
       </div>
-      <div className="mt-2 flex flex-col gap-4">
-        {payloadsToMerge.map((payload, idx) => {
-          const tabValue = `${baseKey}-tab-${idx}`;
-          if (activeTab !== tabValue) return null;
+      <div
+        ref={contentRef}
+        className="overflow-hidden transition-all duration-300 ease-in-out"
+        style={{
+          maxHeight: chunksVisible ? contentRef.current?.scrollHeight ?? 1000 : 0,
+          opacity: chunksVisible ? 1 : 0,
+        }}
+      >
+        <div className="mt-2 flex flex-col gap-4">
+          {payloadsToMerge.map((payload, idx) => {
+            const tabValue = `${baseKey}-tab-${idx}`;
+            if (activeTab !== tabValue) return null;
 
-          return (
-            <div key={`${baseKey}-content-${idx}`}>
-              <RenderDisplay
-                payload={payload}
-                index={idx}
-                handleResultPayloadChange={handleResultPayloadChange}
-                messageId={messageId}
-              />
-            </div>
-          );
-        })}
+            return (
+              <div key={`${baseKey}-content-${idx}`}>
+                <RenderDisplay
+                  payload={payload}
+                  index={idx}
+                  handleResultPayloadChange={handleResultPayloadChange}
+                  messageId={messageId}
+                />
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
