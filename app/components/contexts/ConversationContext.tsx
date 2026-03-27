@@ -386,6 +386,7 @@ export const ConversationProvider = ({
     const oldTitle = conversationPreviews[conversationId]?.title;
     setConversationTitle(newTitle, conversationId);
 
+    if (!id) return;
     const result = await renameConversation(id, conversationId, newTitle);
     if (result.error) {
       console.error("Failed to rename conversation, reverting:", result.error);

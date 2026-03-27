@@ -90,7 +90,7 @@ const HomeSubMenu: React.FC = () => {
               {editingId === key ? (
                 <input
                   ref={inputRef}
-                  className="w-full bg-transparent border border-border rounded px-2 py-1 text-sm outline-none focus:border-primary"
+                  className="w-full rounded px-2 py-1 text-sm outline-none border border-primary !text-primary !bg-background"
                   value={editTitle}
                   placeholder={value.title === "New Conversation" ? t('addConversation') : value.title}
                   onChange={(e) => setEditTitle(e.target.value)}
@@ -122,17 +122,6 @@ const HomeSubMenu: React.FC = () => {
                   >
                     <p className="truncate max-w-[13rem]">{value.title === "New Conversation" ? t('addConversation') : value.title}</p>
                   </SidebarMenuButton>
-                  <SidebarMenuAction
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setEditingId(key);
-                      setEditTitle("");
-                      setTimeout(() => inputRef.current?.focus(), 0);
-                    }}
-                    title={tc('rename')}
-                  >
-                    <FiEdit2 />
-                  </SidebarMenuAction>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <SidebarMenuAction>
@@ -140,6 +129,14 @@ const HomeSubMenu: React.FC = () => {
                       </SidebarMenuAction>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent side="right" align="start">
+                      <DropdownMenuItem onClick={() => {
+                        setEditingId(key);
+                        setEditTitle("");
+                        setTimeout(() => inputRef.current?.focus(), 0);
+                      }}>
+                        <FiEdit2 />
+                        <span>{tc('rename')}</span>
+                      </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => removeConversation(key)}>
                         <GoTrash className="text-error" />
                         <span className="text-error">{tc('delete')}</span>
