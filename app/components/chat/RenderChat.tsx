@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useContext, useEffect, useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 import {
   Message,
@@ -32,6 +33,7 @@ import MergeDisplays from "./MergeDisplays";
 import RenderDisplayView from "./RenderDisplayView";
 import CitationDisplay from "./displays/Summary/CitationDisplay";
 import { ChatContext } from "../contexts/ChatContext";
+import { ConversationContext } from "../contexts/ConversationContext";
 import CodeView from "./displays/QueryCode/CodeView";
 import { DisplayProvider } from "../contexts/DisplayContext";
 import SelfHealingErrorDisplay from "./displays/SystemMessages/SelfHealingErrorDisplay";
@@ -91,6 +93,7 @@ const RenderChat: React.FC<RenderChatProps> = ({
     handleViewChange,
     handleResultPayloadChange,
   } = useContext(ChatContext);
+  const { chunksVisible, setChunksVisible } = useContext(ConversationContext);
 
   const filterMessages = (_messages: Message[]) => {
     return _messages.filter((message) => message.type !== "training_update");
@@ -349,21 +352,38 @@ const RenderChat: React.FC<RenderChatProps> = ({
                         {item.type !== "merged_result" &&
                           message.type === "result" && (
                             <div className="w-full flex flex-col justify-start items-start gap-3">
-                              {(message.payload as ResultPayload).code && (
-                                <CodeDisplay
-                                  payload={[message.payload as ResultPayload]}
-                                  merged={false}
-                                  handleViewChange={handleViewChange}
+                              <div className="flex items-center gap-2 w-full">
+                                {(message.payload as ResultPayload).code && (
+                                  <CodeDisplay
+                                    payload={[message.payload as ResultPayload]}
+                                    merged={false}
+                                    handleViewChange={handleViewChange}
+                                  />
+                                )}
+                                <button
+                                  onClick={() => setChunksVisible(!chunksVisible)}
+                                  className="ml-auto flex-shrink-0 p-1 text-secondary hover:text-primary transition-colors duration-200"
+                                  title={chunksVisible ? "Hide chunks" : "Show chunks"}
+                                >
+                                  {chunksVisible ? <Eye size={16} /> : <EyeOff size={16} />}
+                                </button>
+                              </div>
+                              <div
+                                className="w-full overflow-hidden transition-all duration-300 ease-in-out"
+                                style={{
+                                  maxHeight: chunksVisible ? 2000 : 0,
+                                  opacity: chunksVisible ? 1 : 0,
+                                }}
+                              >
+                                <RenderDisplay
+                                  payload={message.payload as ResultPayload}
+                                  index={index}
+                                  messageId={message.id}
+                                  handleResultPayloadChange={
+                                    handleResultPayloadChange
+                                  }
                                 />
-                              )}
-                              <RenderDisplay
-                                payload={message.payload as ResultPayload}
-                                index={index}
-                                messageId={message.id}
-                                handleResultPayloadChange={
-                                  handleResultPayloadChange
-                                }
-                              />
+                              </div>
                             </div>
                           )}
                         {/* Text Messages */}
