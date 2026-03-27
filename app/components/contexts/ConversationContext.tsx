@@ -33,6 +33,7 @@ import { loadConversation } from "@/app/api/loadConversation";
 import { initializeTree } from "@/app/api/InitializeTree";
 import { getSuggestions } from "@/app/api/getSuggestions";
 import { deleteConversation } from "@/app/api/deleteConversation";
+import { renameConversation } from "@/app/api/renameConversation";
 import { addFeedback } from "@/app/api/addFeedback";
 import { deleteFeedback } from "@/app/api/deleteFeedback";
 import { RouterContext } from "./RouterContext";
@@ -96,6 +97,7 @@ export const ConversationContext = createContext<{
     user_id: string
   ) => void;
   loadConversationsFromDB: () => void;
+  renameConversationTitle: (conversationId: string, newTitle: string) => void;
   handleWebsocketMessage: (message: Message) => void;
   loadingConversation: boolean;
 }>({
@@ -131,6 +133,7 @@ export const ConversationContext = createContext<{
   addSuggestionToConversation: () => { },
   getAllEnabledCollections: () => [],
   loadConversationsFromDB: () => { },
+  renameConversationTitle: () => { },
 });
 
 export const ConversationProvider = ({
@@ -374,6 +377,22 @@ export const ConversationProvider = ({
         last_update_time: new Date().toISOString(),
       },
     }));
+  };
+
+  const renameConversationTitle = async (
+    conversationId: string,
+    newTitle: string
+  ) => {
+    const oldTitle = conversationPreviews[conversationId]?.title;
+    setConversationTitle(newTitle, conversationId);
+
+    const result = await renameConversation(id, conversationId, newTitle);
+    if (result.error) {
+      console.error("Failed to rename conversation, reverting:", result.error);
+      if (oldTitle) {
+        setConversationTitle(oldTitle, conversationId);
+      }
+    }
   };
 
   const setAllConversationStatuses = (status: string) => {
@@ -999,6 +1018,7 @@ export const ConversationProvider = ({
         addSuggestionToConversation,
         getAllEnabledCollections,
         loadConversationsFromDB,
+        renameConversationTitle,
         handleWebsocketMessage,
         loadingConversation,
       }}

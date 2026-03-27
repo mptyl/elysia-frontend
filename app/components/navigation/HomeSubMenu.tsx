@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useContext } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { FaCircle } from "react-icons/fa";
 
 import { ConversationContext } from "../contexts/ConversationContext";
 
 import { FaPlus } from "react-icons/fa6";
 import { GoTrash } from "react-icons/go";
+import { FiEdit2 } from "react-icons/fi";
 
 import {
   SidebarGroup,
@@ -35,12 +36,17 @@ const HomeSubMenu: React.FC = () => {
     startNewConversation,
     currentConversation,
     removeConversation,
+    renameConversationTitle,
     selectConversation,
     conversationPreviews,
     loadingConversations,
     creatingNewConversation,
     loadingConversation,
   } = useContext(ConversationContext);
+
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   return (
     <SidebarGroup>
@@ -81,25 +87,67 @@ const HomeSubMenu: React.FC = () => {
           )
           .map(([key, value]) => (
             <SidebarMenuItem className="list-none fade-in" key={key}>
-              <SidebarMenuButton
-                variant={currentConversation === key ? "active" : "default"}
-                onClick={() => selectConversation(key)}
-              >
-                <p className="truncate max-w-[13rem]">{value.title === "New Conversation" ? t('addConversation') : value.title}</p>
-              </SidebarMenuButton>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <SidebarMenuAction>
-                    <SlOptionsVertical />
+              {editingId === key ? (
+                <input
+                  ref={inputRef}
+                  className="w-full bg-transparent border border-border rounded px-2 py-1 text-sm outline-none focus:border-primary"
+                  value={editTitle}
+                  placeholder={value.title === "New Conversation" ? t('addConversation') : value.title}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      if (editTitle.trim()) {
+                        renameConversationTitle(key, editTitle.trim());
+                      }
+                      setEditingId(null);
+                      setEditTitle("");
+                    } else if (e.key === "Escape") {
+                      setEditingId(null);
+                      setEditTitle("");
+                    }
+                  }}
+                  onBlur={() => {
+                    setEditingId(null);
+                    setEditTitle("");
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                  autoFocus
+                />
+              ) : (
+                <>
+                  <SidebarMenuButton
+                    variant={currentConversation === key ? "active" : "default"}
+                    onClick={() => selectConversation(key)}
+                  >
+                    <p className="truncate max-w-[13rem]">{value.title === "New Conversation" ? t('addConversation') : value.title}</p>
+                  </SidebarMenuButton>
+                  <SidebarMenuAction
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingId(key);
+                      setEditTitle("");
+                      setTimeout(() => inputRef.current?.focus(), 0);
+                    }}
+                    title={tc('rename')}
+                  >
+                    <FiEdit2 />
                   </SidebarMenuAction>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent side="right" align="start">
-                  <DropdownMenuItem onClick={() => removeConversation(key)}>
-                    <GoTrash className="text-error" />
-                    <span className="text-error">{tc('delete')}</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <SidebarMenuAction>
+                        <SlOptionsVertical />
+                      </SidebarMenuAction>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent side="right" align="start">
+                      <DropdownMenuItem onClick={() => removeConversation(key)}>
+                        <GoTrash className="text-error" />
+                        <span className="text-error">{tc('delete')}</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </>
+              )}
             </SidebarMenuItem>
           ))}
       </SidebarGroupContent>
