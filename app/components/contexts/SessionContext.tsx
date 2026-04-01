@@ -18,6 +18,7 @@ import { loadConfig } from "@/app/api/loadConfig";
 import { deleteConfig } from "@/app/api/deleteConfig";
 import { ToastContext } from "./ToastContext";
 import { useAuthUserId } from "@/hooks/useAuthUserId";
+import { createClient } from "@/lib/supabase/client";
 
 export const SessionContext = createContext<{
   mode: string;
@@ -191,7 +192,27 @@ export const SessionProvider = ({
     }
     // Reset error state on new initialization attempt
     setInitError(null);
-    const user_object = await initializeUser(id);
+
+    // Fetch roles from Supabase before initializing the backend
+    let roles: string[] = [];
+    try {
+      const supabase = createClient();
+      const { data: rolesData } = await supabase
+        .from("user_roles")
+        .select("roles(name)")
+        .eq("user_id", id);
+      roles = (rolesData ?? [])
+        .map((r: Record<string, unknown>) => {
+          const joined = r.roles as { name: string } | { name: string }[] | null;
+          if (Array.isArray(joined)) return joined[0]?.name;
+          return joined?.name;
+        })
+        .filter((name): name is string => !!name);
+    } catch {
+      // roles fetch failed — proceed with empty roles
+    }
+
+    const user_object = await initializeUser(id, roles);
     setLoadingConfig(true);
 
     if (user_object.error) {

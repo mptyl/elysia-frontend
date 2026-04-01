@@ -187,6 +187,29 @@ export default function ProfilePage() {
                             </div>
                         </div>
 
+                        {/* Roles (read-only) */}
+                        <div className="flex flex-col gap-2">
+                            <Label className="text-sm font-semibold text-secondary uppercase tracking-wider">
+                                {t('roles')}
+                            </Label>
+                            <div className="flex flex-wrap gap-2">
+                                {profile?.roles && profile.roles.length > 0 ? (
+                                    profile.roles.map((role) => (
+                                        <span
+                                            key={role}
+                                            className="px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium border border-primary/20"
+                                        >
+                                            {role}
+                                        </span>
+                                    ))
+                                ) : (
+                                    <span className="italic text-secondary/50 text-sm">
+                                        {t('noRoles')}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+
                         <div className="h-px w-full bg-border" />
 
                         <div className="grid grid-cols-2 gap-4">
