@@ -33,6 +33,7 @@ import { loadConversation } from "@/app/api/loadConversation";
 import { initializeTree } from "@/app/api/InitializeTree";
 import { getSuggestions } from "@/app/api/getSuggestions";
 import { deleteConversation } from "@/app/api/deleteConversation";
+import { renameConversation } from "@/app/api/renameConversation";
 import { addFeedback } from "@/app/api/addFeedback";
 import { deleteFeedback } from "@/app/api/deleteFeedback";
 import { RouterContext } from "./RouterContext";
@@ -96,8 +97,11 @@ export const ConversationContext = createContext<{
     user_id: string
   ) => void;
   loadConversationsFromDB: () => void;
+  renameConversationTitle: (conversationId: string, newTitle: string) => void;
   handleWebsocketMessage: (message: Message) => void;
   loadingConversation: boolean;
+  chunksVisible: boolean;
+  setChunksVisible: (visible: boolean) => void;
 }>({
   conversations: [],
   setConversations: () => { },
@@ -131,6 +135,9 @@ export const ConversationContext = createContext<{
   addSuggestionToConversation: () => { },
   getAllEnabledCollections: () => [],
   loadConversationsFromDB: () => { },
+  renameConversationTitle: () => { },
+  chunksVisible: true,
+  setChunksVisible: () => { },
 });
 
 export const ConversationProvider = ({
@@ -159,6 +166,18 @@ export const ConversationProvider = ({
   const [loadingConversations, setLoadingConversations] = useState(false);
   const [creatingNewConversation, setCreatingNewConversation] = useState(false);
   const [loadingConversation, setLoadingConversation] = useState(false);
+  const [chunksVisible, setChunksVisible] = useState(true);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("chunksVisible");
+    if (saved !== null) {
+      setChunksVisible(saved === "true");
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("chunksVisible", String(chunksVisible));
+  }, [chunksVisible]);
 
   const getDecisionTree = async (user_id: string, conversation_id: string) => {
     if (user_id === "") return null;
@@ -374,6 +393,23 @@ export const ConversationProvider = ({
         last_update_time: new Date().toISOString(),
       },
     }));
+  };
+
+  const renameConversationTitle = async (
+    conversationId: string,
+    newTitle: string
+  ) => {
+    const oldTitle = conversationPreviews[conversationId]?.title;
+    setConversationTitle(newTitle, conversationId);
+
+    if (!id) return;
+    const result = await renameConversation(id, conversationId, newTitle);
+    if (result.error) {
+      console.error("Failed to rename conversation, reverting:", result.error);
+      if (oldTitle) {
+        setConversationTitle(oldTitle, conversationId);
+      }
+    }
   };
 
   const setAllConversationStatuses = (status: string) => {
@@ -999,6 +1035,9 @@ export const ConversationProvider = ({
         addSuggestionToConversation,
         getAllEnabledCollections,
         loadConversationsFromDB,
+        renameConversationTitle,
+        chunksVisible,
+        setChunksVisible,
         handleWebsocketMessage,
         loadingConversation,
       }}

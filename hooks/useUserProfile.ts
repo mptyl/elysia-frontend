@@ -47,7 +47,6 @@ export function useUserProfile(userId: string | undefined): UseUserProfileResult
                 const newProfile = {
                     id: userId,
                     department_id: null,
-                    app_role: "user",
                     response_detail_level: "balanced",
                     communication_tone: "professional",
                     preferred_language: "it",
@@ -107,8 +106,27 @@ export function useUserProfile(userId: string | undefined): UseUserProfileResult
                 dept = (deptRow as Department | null) ?? null;
             }
 
+            // Fetch user roles from the junction table
+            const { data: rolesData, error: rolesError } = await supabase
+                .from("user_roles")
+                .select("roles(name)")
+                .eq("user_id", resolvedProfile.id);
+
+            if (rolesError) {
+                throw rolesError;
+            }
+
+            const roles: string[] = (rolesData ?? [])
+                .map((r: Record<string, unknown>) => {
+                    const joined = r.roles as { name: string } | { name: string }[] | null;
+                    if (Array.isArray(joined)) return joined[0]?.name;
+                    return joined?.name;
+                })
+                .filter((name): name is string => !!name);
+
             setProfile({
                 ...resolvedProfile,
+                roles,
                 departments: dept,
             } as UserProfileWithDepartment);
         } catch (err) {

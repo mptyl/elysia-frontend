@@ -2,7 +2,8 @@ import { UserInitPayload } from "@/app/types/payloads";
 import { host } from "@/app/components/host";
 
 export async function initializeUser(
-  user_id: string
+  user_id: string,
+  roles?: string[]
 ): Promise<UserInitPayload> {
   const startTime = performance.now();
   try {
@@ -11,6 +12,7 @@ export async function initializeUser(
       headers: {
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({ roles: roles ?? [] }),
     });
 
     if (!response.ok) {

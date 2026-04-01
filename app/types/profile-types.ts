@@ -30,7 +30,7 @@ export interface UserProfile {
     department_id: string | null;
     job_title: string | null;
     department: string | null;
-    app_role: string;
+    roles: string[];
     response_detail_level: ResponseDetailLevel;
     communication_tone: CommunicationTone;
     preferred_language: PreferredLanguage;

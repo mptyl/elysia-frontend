@@ -45,7 +45,6 @@ grant all on table public.departments to postgres;
 create table if not exists public.user_profiles (
     id uuid primary key references auth.users(id) on delete cascade,
     display_name text,
-    app_role text not null default 'user',
     department_id uuid references public.departments(id) on delete set null,
     job_title text,
     department text,
