@@ -135,7 +135,9 @@
     "overrideStandard": "Override standard instructions",
     "overrideActive": "Custom instructions replace the standard ones",
     "appendActive": "Custom instructions are added to the standard ones",
-    "saved": "Profile saved!"
+    "saved": "Profile saved!",
+    "roles": "Roles",
+    "noRoles": "No roles assigned"
   },
   "data": {
     "dashboard": "Data Dashboard",

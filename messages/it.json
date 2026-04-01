@@ -135,7 +135,9 @@
     "overrideStandard": "Sovrascrivi istruzioni standard",
     "overrideActive": "Le istruzioni personalizzate sostituiscono quelle standard",
     "appendActive": "Le istruzioni personalizzate si aggiungono a quelle standard",
-    "saved": "Profilo salvato!"
+    "saved": "Profilo salvato!",
+    "roles": "Ruoli",
+    "noRoles": "Nessun ruolo assegnato"
   },
   "data": {
     "dashboard": "Dashboard Dati",
