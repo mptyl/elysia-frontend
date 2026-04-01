@@ -117,7 +117,11 @@ export function useUserProfile(userId: string | undefined): UseUserProfileResult
             }
 
             const roles: string[] = (rolesData ?? [])
-                .map((r: { roles: { name: string } | null }) => r.roles?.name)
+                .map((r: Record<string, unknown>) => {
+                    const joined = r.roles as { name: string } | { name: string }[] | null;
+                    if (Array.isArray(joined)) return joined[0]?.name;
+                    return joined?.name;
+                })
                 .filter((name): name is string => !!name);
 
             setProfile({
