@@ -4,6 +4,7 @@ import React, { useContext, useState, useCallback } from "react";
 import { RouterContext } from "@/app/components/contexts/RouterContext";
 import { SessionContext } from "@/app/components/contexts/SessionContext";
 import { ConversationContext } from "@/app/components/contexts/ConversationContext";
+import CollectionSelection from "@/app/components/chat/components/CollectionSelection";
 import { Button } from "@/components/ui/button";
 import { enhancePrompt } from "@/app/api/enhancePrompt";
 import { useTranslations } from "next-intl";
@@ -19,9 +20,20 @@ import {
 export default function PromptEnhancerPage() {
   const t = useTranslations("promptEnhancer");
   const te = useTranslations("ethicalGuard");
+  const tq = useTranslations("queryInput");
   const { changePage, setPrefillPrompt } = useContext(RouterContext);
   const { id: userId } = useContext(SessionContext);
-  const { currentConversation } = useContext(ConversationContext);
+  const { currentConversation, conversations, setConversationRagEnabled } = useContext(ConversationContext);
+
+  const ragEnabled = currentConversation
+    ? (conversations.find((c) => c.id === currentConversation)?.rag_enabled ?? true)
+    : true;
+
+  const handleToggleRag = useCallback(() => {
+    if (currentConversation) {
+      setConversationRagEnabled(currentConversation, !ragEnabled);
+    }
+  }, [currentConversation, ragEnabled, setConversationRagEnabled]);
 
   const [upperText, setUpperText] = useState("");
   const [lowerText, setLowerText] = useState("");
@@ -194,6 +206,16 @@ export default function PromptEnhancerPage() {
               <MdAutoFixHigh className="mr-1" />
               {isLoading ? t('processing') : t('enhance')}
             </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`${ragEnabled ? "text-accent font-bold" : "text-secondary opacity-50"}`}
+              onClick={handleToggleRag}
+              title={ragEnabled ? tq('ragEnabled') : tq('ragDisabled')}
+            >
+              {tq('rag')}
+            </Button>
+            {ragEnabled && <CollectionSelection />}
             <Button
               variant="ghost"
               size="sm"
