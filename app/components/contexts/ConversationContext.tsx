@@ -890,6 +890,9 @@ export const ConversationProvider = ({
         message.query_id,
         message.user_id
       );
+    } else if (message.type === "cancelled") {
+      setConversationStatus("", message.conversation_id);
+      finishQuery(message.conversation_id, message.query_id);
     } else if (message.type === "tree_update") {
       updateTree(message);
     } else {

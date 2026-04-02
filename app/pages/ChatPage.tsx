@@ -51,7 +51,7 @@ const AbstractSphereScene = dynamic(
 );
 
 export default function ChatPage() {
-  const { sendQuery, socketOnline } = useContext(SocketContext);
+  const { sendQuery, cancelQuery, socketOnline } = useContext(SocketContext);
   const { id, showRateLimitDialog, initError } = useContext(SessionContext);
   const {
     changeBaseToQuery,
@@ -62,6 +62,8 @@ export default function ChatPage() {
     updateFeedbackForQuery,
     loadingConversation,
     setConversationRagEnabled,
+    setConversationStatus,
+    finishQuery,
   } = useContext(ConversationContext);
 
   const { getRandomPrompts, collections } = useContext(CollectionContext);
@@ -129,6 +131,21 @@ export default function ChatPage() {
       addTreeToConversation(_conversation.id);
       addQueryToConversation(_conversation.id, trimmedQuery, query_id, !disable_rag);
     }
+  };
+
+  const handleCancelQuery = () => {
+    if (currentStatus === "" || !currentConversation) return;
+    const conversation = conversations.find((c) => c.id === currentConversation);
+    if (!conversation) return;
+
+    const activeQueryEntry = Object.entries(conversation.queries).find(
+      ([_, q]) => !q.finished
+    );
+    if (!activeQueryEntry) return;
+
+    cancelQuery(id || "", currentConversation, activeQueryEntry[0]);
+    setConversationStatus("", currentConversation);
+    finishQuery(currentConversation, activeQueryEntry[0]);
   };
 
   const selectSettings = () => {
@@ -339,6 +356,7 @@ export default function ChatPage() {
               query_length={Object.keys(currentQuery).length}
               currentStatus={currentStatus}
               handleSendQuery={handleSendQuery}
+              handleCancelQuery={handleCancelQuery}
               addDisplacement={addDisplacement}
               addDistortion={addDistortion}
               selectSettings={selectSettings}

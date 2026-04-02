@@ -19,9 +19,15 @@ export const SocketContext = createContext<{
     mimick?: boolean,
     disable_rag?: boolean
   ) => Promise<boolean>;
+  cancelQuery: (
+    user_id: string,
+    conversation_id: string,
+    query_id: string
+  ) => void;
 }>({
   socketOnline: false,
   sendQuery: async () => false,
+  cancelQuery: () => {},
 });
 
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
@@ -152,8 +158,23 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     return Promise.resolve(true);
   };
 
+  const cancelQuery = (
+    user_id: string,
+    conversation_id: string,
+    query_id: string
+  ) => {
+    socket?.send(
+      JSON.stringify({
+        type: "cancel",
+        user_id,
+        conversation_id,
+        query_id,
+      })
+    );
+  };
+
   return (
-    <SocketContext.Provider value={{ socketOnline, sendQuery }}>
+    <SocketContext.Provider value={{ socketOnline, sendQuery, cancelQuery }}>
       {children}
     </SocketContext.Provider>
   );

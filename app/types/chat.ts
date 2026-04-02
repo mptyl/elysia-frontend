@@ -31,7 +31,8 @@ export type Message = {
   | "warning"
   | "tree_update"
   | "training_update"
-  | "suggestion";
+  | "suggestion"
+  | "cancelled";
   conversation_id: string;
   id: string;
   user_id: string;

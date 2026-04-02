@@ -95,7 +95,8 @@
     "enableMimicking": "Enable Mimicking",
     "ragEnabled": "RAG Enabled",
     "ragDisabled": "RAG Disabled (Direct Answer)",
-    "rag": "RAG"
+    "rag": "RAG",
+    "stopGeneration": "Stop generation"
   },
   "rateLimit": {
     "title": "Thank you for trying Atena!",
