@@ -61,6 +61,10 @@ export const ConversationContext = createContext<{
     collections: { [key: string]: boolean },
     collection_id: string
   ) => void;
+  setConversationRagEnabled: (
+    conversationId: string,
+    enabled: boolean
+  ) => void;
   toggleCollectionEnabled: (
     collection_id: string,
     conversationId: string
@@ -121,6 +125,7 @@ export const ConversationContext = createContext<{
   addMessageToConversation: () => { },
   initializeEnabledCollections: () => { },
   handleConversationError: () => { },
+  setConversationRagEnabled: () => { },
   toggleCollectionEnabled: () => { },
   handleWebsocketMessage: () => { },
   updateTree: () => { },
@@ -261,6 +266,7 @@ export const ConversationProvider = ({
             (acc, c) => ({ ...acc, [c.name]: true }),
             {}
           ),
+          rag_enabled: true,
           id: conversationId,
           name: conversationName,
           tree_updates: [],
@@ -502,6 +508,20 @@ export const ConversationProvider = ({
     );
   };
 
+  const setConversationRagEnabled = (
+    conversationId: string,
+    enabled: boolean
+  ) => {
+    setConversations((prevConversations) =>
+      prevConversations.map((c) => {
+        if (c.id === conversationId) {
+          return { ...c, rag_enabled: enabled };
+        }
+        return c;
+      })
+    );
+  };
+
   const toggleCollectionEnabled = (
     collection_id: string,
     conversationId: string
@@ -718,7 +738,7 @@ export const ConversationProvider = ({
           rag_enabled
         );
         if (c.id === conversationId) {
-          return { ...c, queries: { ...c.queries, [query_id]: newQuery } };
+          return { ...c, rag_enabled, queries: { ...c.queries, [query_id]: newQuery } };
         }
         return c;
       })
@@ -731,6 +751,8 @@ export const ConversationProvider = ({
         if (c.id === conversationId && c.queries[queryId]) {
           return {
             ...c,
+            // Sync conversation-level RAG state with completed query
+            ...(rag_enabled !== undefined ? { rag_enabled } : {}),
             queries: {
               ...c.queries,
               [queryId]: {
@@ -1016,6 +1038,7 @@ export const ConversationProvider = ({
         setAllConversationStatuses,
         addMessageToConversation,
         initializeEnabledCollections,
+        setConversationRagEnabled,
         toggleCollectionEnabled,
         updateTree,
         addTreeToConversation,

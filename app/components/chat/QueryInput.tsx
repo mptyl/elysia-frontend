@@ -25,6 +25,7 @@ interface QueryInputProps {
   selectSettings: () => void;
   defaultRagEnabled?: boolean;
   conversationId?: string | null;
+  onRagToggle?: (enabled: boolean) => void;
 }
 
 const QueryInput: React.FC<QueryInputProps> = ({
@@ -36,6 +37,7 @@ const QueryInput: React.FC<QueryInputProps> = ({
   selectSettings,
   defaultRagEnabled = false,
   conversationId,
+  onRagToggle,
 }) => {
   const t = useTranslations('chat');
   const tq = useTranslations('queryInput');
@@ -85,7 +87,9 @@ const QueryInput: React.FC<QueryInputProps> = ({
   // Track user manual interaction with the toggle
   const handleToggleRag = () => {
     userHasInteractedRef.current = true;
-    setSkipRag(!skipRag);
+    const newSkipRag = !skipRag;
+    setSkipRag(newSkipRag);
+    onRagToggle?.(!newSkipRag);
   };
 
   useEffect(() => {

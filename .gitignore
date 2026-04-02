@@ -46,4 +46,4 @@ next-env.d.ts
 
 # Server-specific env profiles (contain instance keys)
 config/env/.env.*.server-vpn
-
+.worktrees

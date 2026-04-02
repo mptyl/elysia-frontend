@@ -61,6 +61,7 @@ export default function ChatPage() {
     conversations,
     updateFeedbackForQuery,
     loadingConversation,
+    setConversationRagEnabled,
   } = useContext(ConversationContext);
 
   const { getRandomPrompts, collections } = useContext(CollectionContext);
@@ -343,15 +344,16 @@ export default function ChatPage() {
               selectSettings={selectSettings}
               conversationId={currentConversation}
               defaultRagEnabled={(() => {
-                const queries = Object.values(currentQuery);
-                // If a query is expanded, use its RAG state; otherwise use last query
-                if (expandedQueryId && currentQuery[expandedQueryId]) {
-                  return currentQuery[expandedQueryId].rag_enabled ?? false;
-                }
-                const sorted = queries.sort((a, b) => b.index - a.index);
-                const lastQuery = sorted[0];
-                return lastQuery?.rag_enabled ?? false;
+                // Use conversation-level RAG preference (persists across page navigation)
+                const conv = conversations.find((c) => c.id === currentConversation);
+                if (conv) return conv.rag_enabled;
+                return false;
               })()}
+              onRagToggle={(enabled) => {
+                if (currentConversation) {
+                  setConversationRagEnabled(currentConversation, enabled);
+                }
+              }}
             />
           </div>
           {Object.keys(currentQuery).length === 0 && (

@@ -88,6 +88,7 @@ export type UserLimitResponse = {
 
 export type Conversation = {
   enabled_collections: { [key: string]: boolean };
+  rag_enabled: boolean;
   id: string;
   name: string;
   tree_updates: TreeUpdatePayload[];
@@ -107,6 +108,7 @@ export const initialConversation: Conversation = {
   tree_updates: [],
   timestamp: new Date(),
   enabled_collections: {},
+  rag_enabled: true,
   tree: [],
   base_tree: null,
   current: "",
