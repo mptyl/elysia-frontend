@@ -211,4 +211,4 @@ Criteri di accettazione:
 ## Fuori scope (follow-up tracciati)
 
 - Reintrodurre i rami `html`, `csv`, `xlsx`, `pdf` in modo corretto (oggi `binaryPropertyName` è valorizzato con un oggetto invece che un nome di proprietà; inoltre riferiscono il nodo disabilitato `ReportDefinition`).
-- Integrare ag-grid in `/opt/athena/reportistica/app/pages/ReportisticaPage.tsx` per consumare il nuovo contratto e renderizzare `columns` + `data` in tabella.
+- Integrare ag-grid in `/opt/athena/elysia-frontend/.worktrees/reportistica/app/pages/ReportisticaPage.tsx` per consumare il nuovo contratto e renderizzare `columns` + `data` in tabella.

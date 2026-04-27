@@ -200,7 +200,13 @@
     "awaitingConfig": "Table — awaiting JSON configuration",
     "emptyResponse": "Empty response from server",
     "timeout": "Timeout: the server did not respond within 30 seconds",
-    "view": "View"
+    "view": "View",
+    "executing": "Running report...",
+    "executeError": "Report execution failed",
+    "selectReportToView": "Select a report",
+    "fillRequiredParams": "Fill in the required parameters",
+    "rowsLoaded": "Rows: {count}",
+    "noRows": "No rows returned"
   },
   "promptEnhancer": {
     "title": "Prompt Enhancer",

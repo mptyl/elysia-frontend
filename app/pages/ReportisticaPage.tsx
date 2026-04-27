@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Card,
   CardContent,
@@ -14,23 +14,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTranslations } from "next-intl";
+import ReportDataGrid from "@/app/components/reportistica/ReportDataGrid";
 
 const CATEGORIES_URL = "/n8n/webhook/get-categories";
 const REPORTS_URL = "/n8n/webhook/get-reports";
 const PARAMS_URL = "/n8n/webhook/get-params";
+const EXECUTE_URL = "/n8n/webhook/execute";
 const FETCH_TIMEOUT_MS = 30_000;
+const EXECUTE_DEBOUNCE_MS = 400;
 
 interface ParamOption {
   value: string;
@@ -69,6 +64,14 @@ export default function ReportisticaPage() {
   const [paramsError, setParamsError] = useState<string | null>(null);
   const [paramsFetchKey, setParamsFetchKey] = useState(0);
   const [formValues, setFormValues] = useState<Record<string, string>>({});
+
+  const [executing, setExecuting] = useState(false);
+  const [executeError, setExecuteError] = useState<string | null>(null);
+  const [gridColumns, setGridColumns] = useState<string[]>([]);
+  const [gridData, setGridData] = useState<Record<string, unknown>[]>([]);
+  const [gridReportName, setGridReportName] = useState<string>("");
+  const [gridRowCount, setGridRowCount] = useState<number>(0);
+  const [executeKey, setExecuteKey] = useState(0);
 
   const retryCategories = useCallback(() => {
     setFetchKey((k) => k + 1);
@@ -256,6 +259,106 @@ export default function ReportisticaPage() {
     setFormValues((prev) => ({ ...prev, [name]: value }));
   }, []);
 
+  // Reset grid data when the selected report changes
+  useEffect(() => {
+    setGridColumns([]);
+    setGridData([]);
+    setGridReportName("");
+    setGridRowCount(0);
+    setExecuteError(null);
+  }, [selectedReport]);
+
+  const requiredFilled =
+    !!selectedReport &&
+    !paramsLoading &&
+    !paramsError &&
+    params.every(
+      (p) => !p.required || (formValues[p.name] ?? "").toString().length > 0
+    );
+
+  const formSignature = useMemo(
+    () => JSON.stringify({ id: selectedReport, v: formValues }),
+    [selectedReport, formValues]
+  );
+
+  // Auto-execute the report once selection + required params are complete.
+  useEffect(() => {
+    if (!selectedReport || !requiredFilled) {
+      return;
+    }
+
+    let cancelled = false;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
+    const debounce = setTimeout(() => {
+      setExecuting(true);
+      setExecuteError(null);
+
+      fetch(EXECUTE_URL, {
+        method: "POST",
+        signal: controller.signal,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reportId: Number(selectedReport),
+          params: formValues,
+          output: "json",
+        }),
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.text();
+        })
+        .then((text) => {
+          if (!text) throw new Error(t("emptyResponse"));
+          const parsed = JSON.parse(text);
+          const body = Array.isArray(parsed) ? parsed[0] : parsed;
+          if (!body || body.success === false) {
+            throw new Error(body?.error || t("executeError"));
+          }
+          if (!cancelled) {
+            setGridColumns(Array.isArray(body.columns) ? body.columns : []);
+            setGridData(Array.isArray(body.data) ? body.data : []);
+            setGridReportName(body.reportName ?? "");
+            setGridRowCount(
+              typeof body.rowCount === "number"
+                ? body.rowCount
+                : Array.isArray(body.data)
+                  ? body.data.length
+                  : 0
+            );
+          }
+        })
+        .catch((err) => {
+          if (cancelled) return;
+          if (err.name === "AbortError") {
+            setExecuteError(t("timeout"));
+          } else {
+            setExecuteError(err.message || t("executeError"));
+          }
+          setGridColumns([]);
+          setGridData([]);
+          setGridRowCount(0);
+        })
+        .finally(() => {
+          clearTimeout(timeout);
+          if (!cancelled) setExecuting(false);
+        });
+    }, EXECUTE_DEBOUNCE_MS);
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+      clearTimeout(timeout);
+      clearTimeout(debounce);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formSignature, requiredFilled, executeKey]);
+
+  const retryExecute = useCallback(() => {
+    setExecuteKey((k) => k + 1);
+  }, []);
+
   const renderParam = (param: ReportParam) => {
     switch (param.type) {
       case "select":
@@ -268,11 +371,13 @@ export default function ReportisticaPage() {
               <SelectValue placeholder={t('select')} />
             </SelectTrigger>
             <SelectContent>
-              {(param.options ?? []).map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
+              {(param.options ?? [])
+                .filter((opt) => opt.value !== null && opt.value !== undefined)
+                .map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label ?? opt.value}
+                  </SelectItem>
+                ))}
             </SelectContent>
           </Select>
         );
@@ -454,23 +559,45 @@ export default function ReportisticaPage() {
       {/* Riga inferiore: Tabella grande */}
       <Card className="min-h-[70vh] w-full">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm">{t('dataTable')}</CardTitle>
+          <div className="flex flex-row items-center justify-between gap-3">
+            <CardTitle className="text-sm">
+              {t('dataTable')}
+              {gridReportName && (
+                <span className="text-secondary font-normal ml-2">
+                  — {gridReportName}
+                </span>
+              )}
+            </CardTitle>
+            {gridData.length > 0 && (
+              <span className="text-secondary text-xs">
+                {t('rowsLoaded', { count: gridRowCount.toLocaleString() })}
+              </span>
+            )}
+          </div>
         </CardHeader>
         <CardContent className="flex-1">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-secondary">&mdash;</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <TableCell className="text-secondary text-sm">
-                  {t('awaitingConfig')}
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+          {!selectedReport ? (
+            <p className="text-secondary text-sm">{t('selectReportToView')}</p>
+          ) : !requiredFilled && !executing && gridData.length === 0 ? (
+            <p className="text-secondary text-sm">{t('fillRequiredParams')}</p>
+          ) : executeError ? (
+            <div className="flex flex-col gap-2 items-start">
+              <p className="text-destructive text-sm">{executeError}</p>
+              <Button variant="outline" size="sm" onClick={retryExecute}>
+                {tc('retry')}
+              </Button>
+            </div>
+          ) : executing && gridData.length === 0 ? (
+            <p className="text-secondary text-sm">{t('executing')}</p>
+          ) : gridData.length === 0 ? (
+            <p className="text-secondary text-sm">{t('noRows')}</p>
+          ) : (
+            <ReportDataGrid
+              columns={gridColumns}
+              data={gridData}
+              loading={executing}
+            />
+          )}
         </CardContent>
       </Card>
     </div>
