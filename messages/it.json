@@ -206,7 +206,8 @@
     "selectReportToView": "Seleziona un report",
     "fillRequiredParams": "Compila i parametri obbligatori",
     "rowsLoaded": "Righe: {count}",
-    "noRows": "Nessuna riga restituita"
+    "noRows": "Nessuna riga restituita",
+    "allValues": "Tutti"
   },
   "promptEnhancer": {
     "title": "Prompt Enhancer",

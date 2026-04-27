@@ -206,7 +206,8 @@
     "selectReportToView": "Select a report",
     "fillRequiredParams": "Fill in the required parameters",
     "rowsLoaded": "Rows: {count}",
-    "noRows": "No rows returned"
+    "noRows": "No rows returned",
+    "allValues": "All"
   },
   "promptEnhancer": {
     "title": "Prompt Enhancer",

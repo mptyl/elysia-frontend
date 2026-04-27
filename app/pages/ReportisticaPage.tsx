@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTranslations } from "next-intl";
 import ReportDataGrid from "@/app/components/reportistica/ReportDataGrid";
+import ParamCombobox from "@/app/components/reportistica/ParamCombobox";
 
 const CATEGORIES_URL = "/n8n/webhook/get-categories";
 const REPORTS_URL = "/n8n/webhook/get-reports";
@@ -26,6 +27,11 @@ const PARAMS_URL = "/n8n/webhook/get-params";
 const EXECUTE_URL = "/n8n/webhook/execute";
 const FETCH_TIMEOUT_MS = 30_000;
 const EXECUTE_DEBOUNCE_MS = 400;
+const WILDCARD_DEFAULTS = ["%", "-1"] as const;
+
+const isWildcardDefault = (def: string | null | undefined): boolean =>
+  def !== null && def !== undefined &&
+  WILDCARD_DEFAULTS.includes(def as (typeof WILDCARD_DEFAULTS)[number]);
 
 interface ParamOption {
   value: string;
@@ -224,9 +230,13 @@ export default function ReportisticaPage() {
           const o = data?.output_options ?? [];
           setParams(p);
           setOutputOptions(o);
+          // Per i param "wildcard" (default %, -1) lasciamo l'input vuoto:
+          // l'utente vede placeholder "Tutti", e al submit sostituiamo col jolly.
           const defaults: Record<string, string> = {};
           p.forEach((param) => {
-            if (param.default) defaults[param.name] = param.default;
+            if (param.default && !isWildcardDefault(param.default)) {
+              defaults[param.name] = param.default;
+            }
           });
           setFormValues(defaults);
           // Default output to "Visualizza" if present, else first
@@ -272,9 +282,12 @@ export default function ReportisticaPage() {
     !!selectedReport &&
     !paramsLoading &&
     !paramsError &&
-    params.every(
-      (p) => !p.required || (formValues[p.name] ?? "").toString().length > 0
-    );
+    params.every((p) => {
+      if (!p.required) return true;
+      // Param required ma con default jolly: vuoto è considerato "Tutti" → ok
+      if (isWildcardDefault(p.default)) return true;
+      return (formValues[p.name] ?? "").toString().length > 0;
+    });
 
   const formSignature = useMemo(
     () => JSON.stringify({ id: selectedReport, v: formValues }),
@@ -295,13 +308,25 @@ export default function ReportisticaPage() {
       setExecuting(true);
       setExecuteError(null);
 
+      // Per i param con default jolly (%, -1) sostituisci l'input vuoto
+      // col jolly atteso dal backend.
+      const submitParams: Record<string, string> = { ...formValues };
+      params.forEach((p) => {
+        if (
+          isWildcardDefault(p.default) &&
+          (submitParams[p.name] ?? "").length === 0
+        ) {
+          submitParams[p.name] = p.default as string;
+        }
+      });
+
       fetch(EXECUTE_URL, {
         method: "POST",
         signal: controller.signal,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           reportId: Number(selectedReport),
-          params: formValues,
+          params: submitParams,
           output: "json",
         }),
       })
@@ -360,26 +385,27 @@ export default function ReportisticaPage() {
   }, []);
 
   const renderParam = (param: ReportParam) => {
+    const wildcardPlaceholder = isWildcardDefault(param.default)
+      ? t('allValues')
+      : undefined;
     switch (param.type) {
       case "select":
         return (
-          <Select
+          <ParamCombobox
             value={formValues[param.name] || undefined}
-            onValueChange={(v) => updateFormValue(param.name, v)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder={t('select')} />
-            </SelectTrigger>
-            <SelectContent>
-              {(param.options ?? [])
-                .filter((opt) => opt.value !== null && opt.value !== undefined)
-                .map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label ?? opt.value}
-                  </SelectItem>
-                ))}
-            </SelectContent>
-          </Select>
+            onChange={(v) => updateFormValue(param.name, v)}
+            placeholder={t('select')}
+            pinnedValue={param.default ?? undefined}
+            pinnedLabel={
+              isWildcardDefault(param.default) ? t('allValues') : undefined
+            }
+            options={(param.options ?? [])
+              .filter((opt) => opt.value !== null && opt.value !== undefined)
+              .map((opt) => ({
+                value: opt.value,
+                label: opt.label ?? opt.value,
+              }))}
+          />
         );
       case "date":
         return (
@@ -394,6 +420,7 @@ export default function ReportisticaPage() {
           <Input
             type="number"
             value={formValues[param.name] ?? ""}
+            placeholder={wildcardPlaceholder}
             onChange={(e) => updateFormValue(param.name, e.target.value)}
           />
         );
@@ -402,6 +429,7 @@ export default function ReportisticaPage() {
           <Input
             type="text"
             value={formValues[param.name] ?? ""}
+            placeholder={wildcardPlaceholder}
             onChange={(e) => updateFormValue(param.name, e.target.value)}
           />
         );
