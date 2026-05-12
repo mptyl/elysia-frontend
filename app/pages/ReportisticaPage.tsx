@@ -308,12 +308,17 @@ export default function ReportisticaPage() {
       className="flex flex-col w-full gap-4 items-start justify-start"
       tabIndex={0}
     >
-      <p className="text-primary text-xl font-heading font-bold">
-        {t('title')}
-      </p>
+      <div className="flex items-center gap-3">
+        <p className="text-primary text-xl font-heading font-bold">
+          {t('title')}
+        </p>
+        <span className="text-xs font-semibold px-2 py-0.5 rounded-full border text-warning border-warning bg-warning/10">
+          Coming Soon
+        </span>
+      </div>
 
       {/* Riga superiore: 2 Select + Form dinamica */}
-      <div className="flex flex-row gap-4 w-full">
+      <div className="flex flex-row gap-4 w-full pointer-events-none opacity-60">
         <Card className="w-[220px] shrink-0">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">{t('reportCategory')}</CardTitle>
