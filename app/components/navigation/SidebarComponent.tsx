@@ -173,7 +173,12 @@ const SidebarComponent: React.FC = () => {
 
     setThothLoading(true);
 
-    const thothUrl = process.env.NEXT_PUBLIC_THOTH_URL ?? 'http://localhost:3040';
+    // Derive ThothAI URL from current origin so it works for any hostname
+    // (localhost on the server, atena.uni.com from LAN, etc.). The env var
+    // is still honored if explicitly set.
+    const thothUrl =
+      process.env.NEXT_PUBLIC_THOTH_URL ??
+      `${window.location.protocol}//${window.location.hostname}:3040`;
     let token: string | undefined;
     let popup: Window | null = null;
 
